@@ -3,4 +3,6 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="action_sign_in">Sign in or register</string>
     <string name="signInFailed">Sign-In failed</string>
+    <string name="application_logo_content_description">Application logo</string>
+    <string name="action_sign_out">Sign out</string>
 </resources>

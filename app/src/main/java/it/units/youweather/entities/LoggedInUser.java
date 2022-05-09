@@ -45,15 +45,6 @@ public class LoggedInUser {
         this.profilePhotoUri = profilePhotoUri;
     }
 
-    /**
-     * Creates a new instance starting from a non-null {@link FirebaseUser}.
-     */
-    public LoggedInUser(@NonNull FirebaseUser firebaseUser) {
-        this(Objects.requireNonNull(firebaseUser).getUid(),
-                Objects.requireNonNull(firebaseUser.getDisplayName()),
-                firebaseUser.getPhotoUrl());
-    }
-
     public String getUserId() {
         return userId;
     }
