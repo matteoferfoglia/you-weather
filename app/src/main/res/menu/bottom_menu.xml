@@ -3,8 +3,8 @@
 
     <item
         android:id="@+id/homeFragment"
-        android:icon="@drawable/common_full_open_on_phone"
-        android:title="@string/app_name" />
-    <!-- TODO : change icons -->
+        android:icon="@drawable/ic_baseline_home_24"
+        android:title="@string/home" />
+
     <!-- item's ids are the same as ones specified in nav_graph.xml for fragments -->
 </menu>

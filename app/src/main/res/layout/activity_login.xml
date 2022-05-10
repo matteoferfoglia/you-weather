@@ -20,6 +20,7 @@
         app:srcCompat="@drawable/ic_baseline_wb_sunny_24">
 
         <!-- Linear layout to set relative width for the image wrt. its container -->
+        <!-- TODO : linear layout needed ? -->
         <ImageView
             android:id="@+id/applicationLogo"
             android:layout_width="0dp"

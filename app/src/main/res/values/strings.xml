@@ -5,4 +5,5 @@
     <string name="signInFailed">Sign-In failed</string>
     <string name="application_logo_content_description">Application logo</string>
     <string name="action_sign_out">Sign out</string>
+    <string name="home">Home</string>
 </resources>

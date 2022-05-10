@@ -24,13 +24,13 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // view binding
+        ActivityLoginBinding viewBinding = ActivityLoginBinding.inflate(getLayoutInflater());
+        setContentView(viewBinding.getRoot());
+
         if (Authentication.isUserSignedIn()) {
             startMainActivity();
         } else {
-
-            // view binding
-            ActivityLoginBinding viewBinding = ActivityLoginBinding.inflate(getLayoutInflater());
-            setContentView(viewBinding.getRoot());
 
             // Create sign-in intent
             Consumer<LoggedInUser> onSuccessfulAuthentication = loggedInUser -> {
