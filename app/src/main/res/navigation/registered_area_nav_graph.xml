@@ -2,12 +2,33 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/registered_area_nav_graph.xml"
+    android:id="@+id/registered_area_nav_graph"
     app:startDestination="@id/homeFragment">
 
     <fragment
         android:id="@+id/homeFragment"
         android:name="it.units.youweather.ui.logged_in_area.HomeFragment"
         android:label="fragment_home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home" >
+    </fragment>
+    <fragment
+        android:id="@+id/newReportFragment"
+        android:name="it.units.youweather.ui.logged_in_area.NewReportFragment"
+        android:label="fragment_new_report"
+        tools:layout="@layout/fragment_new_report" >
+    </fragment>
+    <fragment
+        android:id="@+id/userPageWithHistoryFragment"
+        android:name="it.units.youweather.ui.logged_in_area.UserPageWithHistoryFragment"
+        android:label="fragment_user_page_with_history"
+        tools:layout="@layout/fragment_user_page_with_history" >
+        <action
+            android:id="@+id/action_userPageWithHistoryFragment_to_historyMapFragment"
+            app:destination="@id/historyMapFragment" /><!-- TODO: when clickin on button to "see on the map", go to the fragment with the map -->
+    </fragment>
+    <fragment
+        android:id="@+id/historyMapFragment"
+        android:name="it.units.youweather.ui.logged_in_area.HistoryMapFragment"
+        android:label="fragment_history_map"
+        tools:layout="@layout/fragment_history_map" />
 </navigation>

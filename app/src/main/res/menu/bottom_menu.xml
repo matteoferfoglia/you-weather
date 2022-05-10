@@ -6,5 +6,15 @@
         android:icon="@drawable/ic_baseline_home_24"
         android:title="@string/home" />
 
+    <item
+        android:id="@+id/newReportFragment"
+        android:icon="@drawable/ic_baseline_wb_sunny_24"
+        android:title="@string/new_report" />
+
+    <item
+        android:id="@+id/userPageWithHistoryFragment"
+        android:icon="@drawable/ic_baseline_home_24"
+        android:title="@string/account" />
+
     <!-- item's ids are the same as ones specified in nav_graph.xml for fragments -->
 </menu>

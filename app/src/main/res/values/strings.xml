@@ -6,4 +6,19 @@
     <string name="application_logo_content_description">Application logo</string>
     <string name="action_sign_out">Sign out</string>
     <string name="home">Home</string>
+    <string name="search_location">Search for a location</string>
+    <string name="you_re_favourite_locations">You\'re favourite locations:</string>
+    <string name="new_report">New report</string>
+    <string name="account">Account</string>
+    <string name="hello">Hello</string>
+    <string name="history_of_your_reports">History of your reports</string>
+    <string name="location">Location</string>
+    <string name="date_time">Date-time</string>
+    <string name="weather">Weather</string>
+    <string name="see_on_the_map">See on the map</string>
+    <string name="filter_by_date">Filter by date</string>
+    <string name="from">From</string>
+    <string name="to">To</string>
+    <string name="insert_new_report">Insert new report</string>
+    <!-- TODO: missing translations -->
 </resources>

@@ -19,8 +19,9 @@
             </intent-filter>
         </activity>
         <activity
+            android:windowSoftInputMode="adjustPan"
             android:name=".ui.MainActivity"
-            android:exported="false" />
+            android:exported="false" /> <!-- adjustPan avoid the navigation bar to move up when the keyboard appears -->
     </application>
 
 </manifest>
