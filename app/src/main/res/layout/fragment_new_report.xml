@@ -1,46 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<!-- TODO: this layout has not been implemented yet -->
-
-
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:weightSum="10"
     tools:context=".ui.logged_in_area.NewReportFragment">
 
-    <!-- TODO: Update blank fragment layout -->
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/insert_new_report" />
+        android:layout_height="wrap_content"
+        android:text="@string/insert_new_report"/>
 
-    <EditText
+    <TextView
+        android:id="@+id/location_heading"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:importantForAutofill="no"
+        android:text="@string/location_name"/>
+    <TextView
         android:id="@+id/location_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:text="Location name" />
-
-    <Button
-        android:id="@+id/use_current_position"
+        android:importantForAutofill="no"/>
+    <TextView
+        android:id="@+id/location_latitude"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Button" />
-
-    <EditText
-        android:id="@+id/editTextTextPersonName2"
+        android:importantForAutofill="no"/>
+    <TextView
+        android:id="@+id/location_longitude"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="textPersonName" />
+        android:importantForAutofill="no"/>
 
     <Button
         android:id="@+id/insert_new_report"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Insert" />
+        android:layout_gravity="center"
+        android:text="@string/insert" />
 
 </LinearLayout>

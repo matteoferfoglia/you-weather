@@ -27,11 +27,6 @@ public class HomeFragment extends Fragment {
      */
     private final static String TAG = HomeFragment.class.getSimpleName();
 
-    /**
-     * View binding
-     */
-    private FragmentHomeBinding viewBinding = null;
-
     public HomeFragment() {
         // Required empty public constructor
     }
@@ -48,7 +43,7 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        viewBinding = FragmentHomeBinding.inflate(getLayoutInflater());
+        FragmentHomeBinding viewBinding = FragmentHomeBinding.inflate(getLayoutInflater());
         viewBinding.authButton.setOnClickListener(_view -> signOut());
         return viewBinding.getRoot();
     }

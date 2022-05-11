@@ -13,6 +13,9 @@ import it.units.youweather.R;
 /**
  * Fragment containing user's info and the history of her/his
  * weather reports.
+ * This page should allow to filter past reports in a
+ * range of date-time and exhibits a link to a fragment
+ * where the same history data can be seen on a map.
  */
 public class UserPageWithHistoryFragment extends Fragment { // TODO
 

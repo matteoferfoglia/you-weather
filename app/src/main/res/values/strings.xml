@@ -20,5 +20,7 @@
     <string name="from">From</string>
     <string name="to">To</string>
     <string name="insert_new_report">Insert new report</string>
+    <string name="insert">Insert</string>
+    <string name="location_name">Location:</string>
     <!-- TODO: missing translations -->
 </resources>
