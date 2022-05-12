@@ -1,21 +1,23 @@
 package it.units.youweather.ui.logged_in_area;
 
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+
+import it.units.youweather.R;
 import it.units.youweather.databinding.FragmentNewReportBinding;
-import it.units.youweather.ui.MainActivity;
+import it.units.youweather.entities.forecast_fields.WeatherCondition;
+import it.units.youweather.utils.ActivityStaticResourceHandler;
 import it.units.youweather.utils.LocationHelper;
 import it.units.youweather.utils.Permissions;
-import it.units.youweather.utils.Stoppable;
 
 /**
  * Fragment allowing the user to insert a new report
@@ -49,6 +51,28 @@ public class NewReportFragment extends Fragment {
             // TODO: do not allow to insert anything if missing permissions (hide the textview
             //       for location and coords and show error message in a text view)
         }
+
+
+        // TODO : set location name with view binding
+        // TODO : add fields to create a Forecast object (temperature, ...): only the location and the weather condition are mandatory, otherwise user cannot proceed with insertion
+
+        // Drop-down menu
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(
+                requireActivity(), android.R.layout.simple_spinner_item, WeatherCondition.getWeatherDescriptions());
+        arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        final int spinnerPosition_sunny = arrayAdapter.getPosition(ActivityStaticResourceHandler.getResString(R.string.WEATHER800)); // clear sky
+        viewBinding.weatherConditionSpinner.setAdapter(arrayAdapter);
+        viewBinding.weatherConditionSpinner.setSelection(spinnerPosition_sunny);
+        viewBinding.weatherConditionSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {    // TODO
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+
 
         // TODO : insert action when click on button
 

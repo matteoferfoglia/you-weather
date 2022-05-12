@@ -22,5 +22,65 @@
     <string name="insert_new_report">Insert new report</string>
     <string name="insert">Insert</string>
     <string name="location_name">Location:</string>
+
+    <!-- WEATHER CONDITIONS start -->
+    <string name="WEATHER200">Thunderstorm with light rain</string>
+    <string name="WEATHER201">Thunderstorm with rain</string>
+    <string name="WEATHER202">Thunderstorm with heavy rain</string>
+    <string name="WEATHER210">Light thunderstorm</string>
+    <string name="WEATHER211">Thunderstorm</string>
+    <string name="WEATHER212">Heavy thunderstorm</string>
+    <string name="WEATHER221">Ragged thunderstorm</string>
+    <string name="WEATHER230">Thunderstorm with light drizzle</string>
+    <string name="WEATHER231">Thunderstorm with drizzle</string>
+    <string name="WEATHER232">Thunderstorm with heavy drizzle</string>
+    <string name="WEATHER300">Light intensity drizzle</string>
+    <string name="WEATHER301">Drizzle</string>
+    <string name="WEATHER302">Heavy intensity drizzle</string>
+    <string name="WEATHER310">Light intensity drizzle rain</string>
+    <string name="WEATHER311">Drizzle rain</string>
+    <string name="WEATHER312">Heavy intensity drizzle rain</string>
+    <string name="WEATHER313">Shower rain and drizzle</string>
+    <string name="WEATHER314">Heavy shower rain and drizzle</string>
+    <string name="WEATHER321">Shower drizzle</string>
+    <string name="WEATHER500">Light rain</string>
+    <string name="WEATHER501">Moderate rain</string>
+    <string name="WEATHER502">Heavy intensity rain</string>
+    <string name="WEATHER503">Very heavy rain</string>
+    <string name="WEATHER504">Extreme rain</string>
+    <string name="WEATHER511">Freezing rain</string>
+    <string name="WEATHER520">Light intensity shower rain</string>
+    <string name="WEATHER521">Shower rain</string>
+    <string name="WEATHER522">Heavy intensity shower rain</string>
+    <string name="WEATHER531">Ragged shower rain</string>
+    <string name="WEATHER600">Light snow</string>
+    <string name="WEATHER601">Snow</string>
+    <string name="WEATHER602">Heavy snow</string>
+    <string name="WEATHER611">Sleet</string>
+    <string name="WEATHER612">Light shower sleet</string>
+    <string name="WEATHER613">Shower sleet</string>
+    <string name="WEATHER615">Light rain and snow</string>
+    <string name="WEATHER616">Rain and snow</string>
+    <string name="WEATHER620">Light shower snow</string>
+    <string name="WEATHER621">Shower snow</string>
+    <string name="WEATHER622">Heavy shower snow</string>
+    <string name="WEATHER701">Mist</string>
+    <string name="WEATHER711">Smoke</string>
+    <string name="WEATHER721">Haze</string>
+    <string name="WEATHER731">Sand/dust whirls</string>
+    <string name="WEATHER741">Fog</string>
+    <string name="WEATHER751">Sand</string>
+    <string name="WEATHER761">Dust</string>
+    <string name="WEATHER762">Volcanic ash</string>
+    <string name="WEATHER771">Squalls</string>
+    <string name="WEATHER781">Tornado</string>
+    <string name="WEATHER800">Clear sky</string>
+    <string name="WEATHER801">Few clouds: 11–25%</string>
+    <string name="WEATHER802">Scattered clouds: 25–50%</string>
+    <string name="WEATHER803">Broken clouds: 51–84%</string>
+    <string name="WEATHER804">Overcast clouds: 85–100%</string>
+    <!-- WEATHER CONDITIONS end -->
+    <string name="weather_condition">Weather condition</string>
+
     <!-- TODO: missing translations -->
 </resources>

@@ -20,6 +20,7 @@ import java.util.Objects;
 
 import it.units.youweather.R;
 import it.units.youweather.databinding.ActivityMainBinding;
+import it.units.youweather.utils.ActivityStaticResourceHandler;
 import it.units.youweather.utils.Permissions;
 
 public class MainActivity extends AppCompatActivity {
@@ -30,6 +31,8 @@ public class MainActivity extends AppCompatActivity {
 
         ActivityMainBinding viewBinding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(viewBinding.getRoot());
+
+        ActivityStaticResourceHandler.initialize(this);
 
         // nav bar
 
