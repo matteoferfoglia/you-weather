@@ -1,11 +1,14 @@
 package it.units.youweather.entities.forecast_fields;
 
 public class Wind {
-    
+
     private double speed;
     private int deg;
-    
-    private Wind(){};
+
+    private Wind() {
+    }
+
+    ;
 
     public double getSpeed() {
         return speed;
@@ -27,5 +30,5 @@ public class Wind {
     public String toString() {
         return "Wind{" + "speed=" + speed + ", deg=" + deg + '}';
     }
-    
+
 }

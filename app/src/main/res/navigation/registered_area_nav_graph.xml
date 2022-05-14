@@ -9,19 +9,17 @@
         android:id="@+id/homeFragment"
         android:name="it.units.youweather.ui.logged_in_area.HomeFragment"
         android:label="fragment_home"
-        tools:layout="@layout/fragment_home" >
-    </fragment>
+        tools:layout="@layout/fragment_home" />
     <fragment
         android:id="@+id/newReportFragment"
         android:name="it.units.youweather.ui.logged_in_area.NewReportFragment"
         android:label="fragment_new_report"
-        tools:layout="@layout/fragment_new_report" >
-    </fragment>
+        tools:layout="@layout/fragment_new_report" />
     <fragment
         android:id="@+id/userPageWithHistoryFragment"
         android:name="it.units.youweather.ui.logged_in_area.UserPageWithHistoryFragment"
         android:label="fragment_user_page_with_history"
-        tools:layout="@layout/fragment_user_page_with_history" >
+        tools:layout="@layout/fragment_user_page_with_history">
         <action
             android:id="@+id/action_userPageWithHistoryFragment_to_mapWithReportHistoryFragment"
             app:destination="@id/mapWithReportHistoryFragment" />

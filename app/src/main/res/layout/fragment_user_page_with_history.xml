@@ -35,7 +35,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/report_history_header"
-        app:layout_constraintBottom_toTopOf="@+id/history_reports_table"/>
+        app:layout_constraintBottom_toTopOf="@+id/history_reports_table" />
 
 
     <LinearLayout
@@ -51,13 +51,14 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="@string/from"
-            android:layout_weight="1"/>
+            android:layout_weight="1" />
+
         <Spinner
             android:id="@+id/spinner_start_date"
             android:layout_weight="3"
             android:layout_width="0dp"
             android:layout_height="wrap_content" /><!-- TODO: must open the data picker to choose a date, otherwise shows the date of the first valid report-->
-            <!-- TODO: use text-date instead of spinner? -->
+        <!-- TODO: use text-date instead of spinner? -->
 
         <TextView
             android:id="@+id/to_date"
@@ -65,7 +66,8 @@
             android:layout_height="wrap_content"
             android:text="@string/to"
             android:layout_marginStart="20dp"
-            android:layout_weight="1"/>
+            android:layout_weight="1" />
+
         <Spinner
             android:id="@+id/spinner_end_date"
             android:layout_weight="3"

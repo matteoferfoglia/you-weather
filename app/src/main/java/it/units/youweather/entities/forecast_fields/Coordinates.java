@@ -5,10 +5,11 @@ import androidx.annotation.NonNull;
 public class Coordinates {
     private double lon;
     private double lat;
-    
-    private Coordinates(){}
-    
-    public Coordinates(double lon, double lat){
+
+    private Coordinates() {
+    }
+
+    public Coordinates(double lon, double lat) {
         this.lon = lon;
         this.lat = lat;
     }

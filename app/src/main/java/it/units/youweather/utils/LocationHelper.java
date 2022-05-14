@@ -85,7 +85,8 @@ public class LocationHelper {
         }
 
         @Override
-        @SuppressWarnings({"deprecation", "RedundantSuppression"})  // "deprecation": this abstract method must be overridden; "RedundantSuppression": IDE thinks the suppression is redundant but Xlint warns for it
+        @SuppressWarnings({"deprecation", "RedundantSuppression"})
+        // "deprecation": this abstract method must be overridden; "RedundantSuppression": IDE thinks the suppression is redundant but Xlint warns for it
         public void onStatusChanged(String provider, int status, Bundle extras) {
         }
     };
@@ -129,7 +130,8 @@ public class LocationHelper {
     /**
      * Permissions thrown when {@link #userCurrentLocation} is null
      */
-    @SuppressWarnings({"serial", "RedundantSuppression"}) // "serial": helper class, not to be serialized; "RedundantSuppression": IDE says redundant suppression for "serial", Xlint instead warns
+    @SuppressWarnings({"serial", "RedundantSuppression"})
+    // "serial": helper class, not to be serialized; "RedundantSuppression": IDE says redundant suppression for "serial", Xlint instead warns
     private static class UnavailablePositionException extends Throwable {
         UnavailablePositionException() {
             super();
@@ -166,7 +168,7 @@ public class LocationHelper {
                 }
 
                 // location changed
-                Location newLocation =  userCurrentLocation.getCopyOfLocation();
+                Location newLocation = userCurrentLocation.getCopyOfLocation();
                 lastUpdateOfCurrentLocationContainer.setLocation(newLocation);
                 Objects.requireNonNull(onChange).accept(newLocation);
             }
@@ -229,12 +231,12 @@ public class LocationHelper {
             if (o == null || getClass() != o.getClass()) return false;
             LocationContainer that = (LocationContainer) o;
 
-            if(location==null && that.location==null) return true;
+            if (location == null && that.location == null) return true;
 
-            if(location!=null && that.location!=null) {
+            if (location != null && that.location != null) {
                 double EPSILON = 1e-15;
-                        return Math.abs(location.getLongitude() - that.location.getLongitude())<EPSILON
-                                && Math.abs(location.getLatitude() - that.location.getLatitude())<EPSILON;
+                return Math.abs(location.getLongitude() - that.location.getLongitude()) < EPSILON
+                        && Math.abs(location.getLatitude() - that.location.getLatitude()) < EPSILON;
             }
 
             return false;

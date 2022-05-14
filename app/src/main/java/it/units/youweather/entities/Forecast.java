@@ -2,6 +2,8 @@ package it.units.youweather.entities;
 
 import androidx.annotation.NonNull;
 
+import java.util.Arrays;
+
 import it.units.youweather.entities.forecast_fields.Clouds;
 import it.units.youweather.entities.forecast_fields.Coordinates;
 import it.units.youweather.entities.forecast_fields.MainForecastData;
@@ -9,8 +11,6 @@ import it.units.youweather.entities.forecast_fields.Sys;
 import it.units.youweather.entities.forecast_fields.WeatherCondition;
 import it.units.youweather.entities.forecast_fields.Wind;
 import it.units.youweather.utils.Timing;
-
-import java.util.Arrays;
 
 /**
  * Class representing a Weather forecast, with its fields,
@@ -33,8 +33,9 @@ public class Forecast {
     private long id;
     private String name;
     private int cod;
-    
-    private Forecast(){}
+
+    private Forecast() {
+    }
 
     public Coordinates getCoord() {
         return coord;
@@ -143,19 +144,19 @@ public class Forecast {
     @NonNull
     @Override
     public String toString() {
-        return "Forecast{" 
-                + "coord=" + coord 
-                + ", weather=" + Arrays.toString(weather) 
-                + ", base=" + base 
-                + ", main=" + main 
-                + ", visibility=" + visibility 
-                + ", wind=" + wind 
-                + ", clouds=" + clouds 
+        return "Forecast{"
+                + "coord=" + coord
+                + ", weather=" + Arrays.toString(weather)
+                + ", base=" + base
+                + ", main=" + main
+                + ", visibility=" + visibility
+                + ", wind=" + wind
+                + ", clouds=" + clouds
                 + ", dt=" + Timing.convertEpochMillisToFormattedDate(dt)
-                + ", sys=" + sys 
-                + ", timezone=" + timezone 
-                + ", id=" + id 
-                + ", name=" + name 
+                + ", sys=" + sys
+                + ", timezone=" + timezone
+                + ", id=" + id
+                + ", name=" + name
                 + ", cod=" + cod + '}';
     }
 

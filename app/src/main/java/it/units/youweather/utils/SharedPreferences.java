@@ -50,7 +50,7 @@ public class SharedPreferences {
                 .getSharedPreferences(
                         Objects.requireNonNull(SHARED_PREFERENCES_NAME), Context.MODE_PRIVATE)
                 .getString(sharedPreferenceName.name(), null/*default value if absent*/);
-        if(preferenceValueAsJson!=null) {
+        if (preferenceValueAsJson != null) {
 
             @SuppressWarnings("unchecked")
             Pair<String, String> preferenceValue_class_value = (Pair<String, String>)

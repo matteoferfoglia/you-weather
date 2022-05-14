@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -11,31 +10,35 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/insert_new_report"/>
+        android:text="@string/insert_new_report" />
 
     <TextView
         android:id="@+id/location_heading"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/location_name"/>
+        android:text="@string/location_name" />
+
     <TextView
         android:id="@+id/location_name"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content" />
+
     <TextView
         android:id="@+id/location_latitude"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content" />
+
     <TextView
         android:id="@+id/location_longitude"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content" />
 
     <TextView
         android:id="@+id/weather_condition_heading"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/weather_condition"/>
+        android:text="@string/weather_condition" />
+
     <Spinner
         android:id="@+id/weather_condition_spinner"
         android:spinnerMode="dialog"

@@ -165,7 +165,7 @@ public class WeatherCondition {
 
         // icon ids must have 2 digits and a letter
         final int fixedNumOfDigitsForIconId = 3;
-        this.icon =  new String(new char[fixedNumOfDigitsForIconId - iconId.length()])
+        this.icon = new String(new char[fixedNumOfDigitsForIconId - iconId.length()])
                 .replace('\0', '0') + iconId;
     }
 

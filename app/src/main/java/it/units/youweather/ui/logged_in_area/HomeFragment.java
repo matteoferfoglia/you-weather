@@ -8,12 +8,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import it.units.youweather.R;
 import it.units.youweather.auth.Authentication;
-import it.units.youweather.databinding.ActivityMainBinding;
 import it.units.youweather.databinding.FragmentHomeBinding;
 import it.units.youweather.ui.LoginActivity;
 

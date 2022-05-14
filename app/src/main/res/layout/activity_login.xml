@@ -41,6 +41,6 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/applicationLogo"
-        android:layout_marginBottom="100dp"/>
+        android:layout_marginBottom="100dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

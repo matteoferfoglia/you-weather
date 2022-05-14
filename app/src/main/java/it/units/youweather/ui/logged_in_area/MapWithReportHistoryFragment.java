@@ -20,7 +20,6 @@ import org.osmdroid.views.overlay.ScaleBarOverlay;
 import org.osmdroid.views.overlay.compass.CompassOverlay;
 import org.osmdroid.views.overlay.compass.InternalCompassOrientationProvider;
 import org.osmdroid.views.overlay.gestures.RotationGestureOverlay;
-import org.osmdroid.views.overlay.gridlines.LatLonGridlineOverlay2;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 

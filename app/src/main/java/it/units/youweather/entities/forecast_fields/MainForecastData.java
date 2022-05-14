@@ -1,15 +1,16 @@
 package it.units.youweather.entities.forecast_fields;
 
 public class MainForecastData {
-    
+
     private double temp;
     private double feels_like;
     private double temp_min;
     private double temp_max;
     private double pressure;
     private double humidity;
-    
-    public MainForecastData(){}
+
+    public MainForecastData() {
+    }
 
     public double getTemp() {
         return temp;
@@ -63,5 +64,5 @@ public class MainForecastData {
     public String toString() {
         return "MainForecastData{" + "temp=" + temp + ", feels_like=" + feels_like + ", temp_min=" + temp_min + ", temp_max=" + temp_max + ", pressure=" + pressure + ", humidity=" + humidity + '}';
     }
-    
+
 }

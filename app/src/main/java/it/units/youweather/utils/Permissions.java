@@ -45,8 +45,9 @@ public class Permissions {
 
     /**
      * Check if permissions are granted for the given {@link Activity}.
+     *
      * @param neededPermissions array of the needed permissions.
-     * @param activity The {@link Activity}.
+     * @param activity          The {@link Activity}.
      * @return true if all permissions in the given array are granted for the given activity.
      */
     public static boolean arePermissionsGrantedForActivity(

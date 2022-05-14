@@ -1,9 +1,11 @@
 package it.units.youweather.entities.forecast_fields;
 
 public class Clouds {
-    
+
     private int all;
-    private Clouds(){}
+
+    private Clouds() {
+    }
 
     public int getAll() {
         return all;
@@ -17,5 +19,5 @@ public class Clouds {
     public String toString() {
         return "Clouds{" + "all=" + all + '}';
     }
-    
+
 }

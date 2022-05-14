@@ -5,8 +5,6 @@ import android.net.Uri;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.google.firebase.auth.FirebaseUser;
-
 import java.util.Objects;
 
 /**
