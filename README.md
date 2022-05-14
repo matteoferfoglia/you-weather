@@ -10,6 +10,9 @@ The application is entirely distributed and no servers are present.
 
 For online services, the application uses third parties services (e.g., *Google Firebase*).
 
+**Important** for the build: you have to replace the file *google-services.json* with your own file
+taken from Google Firebase Console, otherwise you will have troubles with your build.
+
 ## Main features
 
 ### Firebase authentication

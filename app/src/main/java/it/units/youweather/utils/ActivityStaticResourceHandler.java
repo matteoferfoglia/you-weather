@@ -17,7 +17,7 @@ import java.util.Objects;
  * If you want to use this class in an activity, this class must be initialized
  * (by invoking method {@link #initialize(Context)}) fro that class.
  */
-public abstract class ActivityStaticResourceHandler extends AppCompatActivity {
+public abstract class ActivityStaticResourceHandler {
     @SuppressLint("StaticFieldLeak") // Saves the Application Context
     private volatile static Context _context;
 

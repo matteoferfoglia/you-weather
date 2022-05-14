@@ -85,6 +85,7 @@ public class LocationHelper {
         }
 
         @Override
+        @SuppressWarnings({"deprecation", "RedundantSuppression"})  // "deprecation": this abstract method must be overridden; "RedundantSuppression": IDE thinks the suppression is redundant but Xlint warns for it
         public void onStatusChanged(String provider, int status, Bundle extras) {
         }
     };
@@ -128,6 +129,7 @@ public class LocationHelper {
     /**
      * Permissions thrown when {@link #userCurrentLocation} is null
      */
+    @SuppressWarnings({"serial", "RedundantSuppression"}) // "serial": helper class, not to be serialized; "RedundantSuppression": IDE says redundant suppression for "serial", Xlint instead warns
     private static class UnavailablePositionException extends Throwable {
         UnavailablePositionException() {
             super();
