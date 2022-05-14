@@ -27,10 +27,6 @@ public class HomeFragment extends Fragment {
      */
     private final static String TAG = HomeFragment.class.getSimpleName();
 
-    public HomeFragment() {
-        // Required empty public constructor
-    }
-
     /**
      * Signs the user out.
      */
