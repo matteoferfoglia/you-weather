@@ -1,14 +1,19 @@
 package it.units.youweather.ui.logged_in_area;
 
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
+
+import java.util.Objects;
+
 import it.units.youweather.R;
+import it.units.youweather.databinding.FragmentUserPageWithHistoryBinding;
 
 /**
  * Fragment containing user's info and the history of her/his
@@ -25,9 +30,24 @@ public class UserPageWithHistoryFragment extends Fragment { // TODO
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_user_page_with_history, container, false);
+        FragmentUserPageWithHistoryBinding viewBinding = FragmentUserPageWithHistoryBinding.inflate(getLayoutInflater());
+
+        // navigation to the map containing user's report history
+
+        NavHostFragment navHostController = (NavHostFragment)
+                requireActivity()
+                        .getSupportFragmentManager()
+                        .findFragmentById(R.id.nav_host_fragment_container_activity_main);
+        NavController navController = Objects.requireNonNull(navHostController).getNavController();
+
+        viewBinding.goToMapButton.setOnClickListener(_view ->
+                navController.navigate(R.id.action_userPageWithHistoryFragment_to_mapWithReportHistoryFragment));
+
+        // navigation to the map containing user's report history
+
+        return viewBinding.getRoot();
     }
 }

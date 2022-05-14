@@ -1,13 +1,10 @@
 package it.units.youweather.ui;
 
-import android.Manifest;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -15,13 +12,11 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import java.util.ArrayList;
 import java.util.Objects;
 
 import it.units.youweather.R;
 import it.units.youweather.databinding.ActivityMainBinding;
 import it.units.youweather.utils.ActivityStaticResourceHandler;
-import it.units.youweather.utils.Permissions;
 
 public class MainActivity extends AppCompatActivity {
 

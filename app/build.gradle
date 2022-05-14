@@ -71,6 +71,25 @@ dependencies {
     // When using the BoM, you don't specify versions in Firebase library dependencies
     implementation 'com.google.firebase:firebase-database'
     /* END FIREBASE REALTIME DATABASE */
+
+    /* OPEN STREET MAP */
+    // osmdroid-android (the map engine)
+    def map_version = "6.1.11"
+    implementation "org.osmdroid:osmdroid-android:$map_version"
+
+    // osmdroid-wms - Adds basic support for WMS servers, specifically GeoServer
+    def map_wms_version = "6.1.11"
+    implementation "org.osmdroid:osmdroid-wms:$map_wms_version"
+
+    // osmdroid-mapsforge - Adds Maps Forge support
+    def map_mapsforge_version = "6.1.11"
+    implementation "org.osmdroid:osmdroid-mapsforge:$map_mapsforge_version"
+
+    // osmdroid-geopackage - Adds geopackage support
+    def map_geopackage_version = "6.1.11"
+    implementation "org.osmdroid:osmdroid-geopackage:$map_geopackage_version"
+
+    /* END OPEN STREET MAP */
 }
 
 apply plugin: 'com.google.gms.google-services'

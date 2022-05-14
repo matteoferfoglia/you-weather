@@ -23,12 +23,12 @@
         android:label="fragment_user_page_with_history"
         tools:layout="@layout/fragment_user_page_with_history" >
         <action
-            android:id="@+id/action_userPageWithHistoryFragment_to_historyMapFragment"
-            app:destination="@id/historyMapFragment" /><!-- TODO: when clickin on button to "see on the map", go to the fragment with the map -->
+            android:id="@+id/action_userPageWithHistoryFragment_to_mapWithReportHistoryFragment"
+            app:destination="@id/mapWithReportHistoryFragment" />
     </fragment>
     <fragment
-        android:id="@+id/historyMapFragment"
-        android:name="it.units.youweather.ui.logged_in_area.HistoryMapFragment"
-        android:label="fragment_history_map"
-        tools:layout="@layout/fragment_history_map" />
+        android:id="@+id/mapWithReportHistoryFragment"
+        android:name="it.units.youweather.ui.logged_in_area.MapWithReportHistoryFragment"
+        android:label="fragment_map_with_report_history"
+        tools:layout="@layout/fragment_map_with_report_history" />
 </navigation>

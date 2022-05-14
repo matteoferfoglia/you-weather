@@ -4,16 +4,19 @@
     <item
         android:id="@+id/homeFragment"
         android:icon="@drawable/ic_baseline_home_24"
-        android:title="@string/home" />
+        android:menuCategory="secondary"
+        android:title="@string/home" /><!-- android:menuCategory="secondary" needed to navigate back to the previous fragment when back button is tapped -->
 
     <item
         android:id="@+id/newReportFragment"
         android:icon="@drawable/ic_baseline_wb_sunny_24"
+        android:menuCategory="secondary"
         android:title="@string/new_report" />
 
     <item
         android:id="@+id/userPageWithHistoryFragment"
         android:icon="@drawable/ic_baseline_home_24"
+        android:menuCategory="secondary"
         android:title="@string/account" />
 
     <!-- item's ids are the same as ones specified in nav_graph.xml for fragments -->
