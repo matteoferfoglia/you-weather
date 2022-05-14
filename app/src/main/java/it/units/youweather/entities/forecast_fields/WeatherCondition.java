@@ -4,10 +4,11 @@ import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
 
 import it.units.youweather.R;
 import it.units.youweather.utils.ActivityStaticResourceHandler;
@@ -25,7 +26,7 @@ public class WeatherCondition {
      */
     public static List<String> getWeatherDescriptions() {
 
-        if(weatherConditions==null) {
+        if (weatherConditions == null) {
             populateWeatherDescriptions();
         }
 
@@ -36,6 +37,25 @@ public class WeatherCondition {
         Collections.sort(weatherConditionsDescriptions);
 
         return weatherConditionsDescriptions;
+    }
+
+    /**
+     * @param description The index of the description. The description must be
+     *                    valid, i.e., it must be present in the {@link List}
+     *                    returned by {@link #getWeatherDescriptions()}.
+     * @return the Url (as {@link String} for the icon for the description whose
+     * index is given as parameter.
+     * @throws NoSuchElementException if the given description is not found.
+     */
+    public static String getIconUrlForDescription(@NonNull String description) {
+        Objects.requireNonNull(description);
+        // TODO : distinguish between day 'd' and night 'n'
+        for (WeatherCondition w : weatherConditions.values()) {
+            if (w.getDescription().equals(description)) {
+                return w.getIconUrl();
+            }
+        }
+        throw new NoSuchElementException("\"" + description + "\" not found");
     }
 
     private static void populateWeatherDescriptions() {
@@ -49,7 +69,7 @@ public class WeatherCondition {
         final int snowIcon = 13;
         final int atmosphereIcon = 50;
 
-        weatherConditions = new ConcurrentHashMap<>();
+        weatherConditions = new LinkedHashMap<>();
 
 
         for (String dayNight : new String[]{"d", "n"}) {
@@ -142,7 +162,11 @@ public class WeatherCondition {
         this.id = id;
         this.main = Objects.requireNonNull(main).getMainDescription();
         this.description = ActivityStaticResourceHandler.getResString(descriptionId);
-        this.icon = Objects.requireNonNull(iconId);
+
+        // icon ids must have 2 digits and a letter
+        final int fixedNumOfDigitsForIconId = 3;
+        this.icon =  new String(new char[fixedNumOfDigitsForIconId - iconId.length()])
+                .replace('\0', '0') + iconId;
     }
 
     /**
@@ -150,7 +174,7 @@ public class WeatherCondition {
      * {@link WeatherCondition}.
      */
     public String getIconUrl() {
-        return "http://openweathermap.org/img/wn/" + icon + "@2x.png";
+        return "http://openweathermap.org/img/wn/" + icon + "@4x.png";
     }
 
     public int getId() {

@@ -45,8 +45,14 @@
         <!-- To be populated programmatically -->
     </Spinner>
 
+    <ImageView
+        android:id="@+id/weather_condition_icon"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:contentDescription="@string/weather_icon" />
+
     <Button
-        android:id="@+id/insert_new_report"
+        android:id="@+id/insert_new_report_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"

@@ -80,7 +80,9 @@
     <string name="WEATHER803">Broken clouds: 51–84%</string>
     <string name="WEATHER804">Overcast clouds: 85–100%</string>
     <!-- WEATHER CONDITIONS end -->
+
     <string name="weather_condition">Weather condition</string>
+    <string name="weather_icon">Weather icon</string>
 
     <!-- TODO: missing translations -->
 </resources>

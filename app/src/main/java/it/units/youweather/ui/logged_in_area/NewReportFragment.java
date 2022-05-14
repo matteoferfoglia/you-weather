@@ -1,5 +1,6 @@
 package it.units.youweather.ui.logged_in_area;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -7,10 +8,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.concurrent.atomic.AtomicReference;
 
 import it.units.youweather.R;
 import it.units.youweather.databinding.FragmentNewReportBinding;
@@ -56,6 +61,29 @@ public class NewReportFragment extends Fragment {
         // TODO : set location name with view binding
         // TODO : add fields to create a Forecast object (temperature, ...): only the location and the weather condition are mandatory, otherwise user cannot proceed with insertion
 
+        // Reference to the current selected weather condition
+        final AtomicReference<String> currentSelectedWeatherCondition = new AtomicReference<>(null);
+
+        // Weather icon setter
+        Thread weatherIconSetter = new Thread(() -> {
+            String currentSelectedWeatherConditionLocal = currentSelectedWeatherCondition.get();
+            try {
+                if (currentSelectedWeatherConditionLocal != null) {
+                    InputStream iconIS = new URL(WeatherCondition
+                            .getIconUrlForDescription(currentSelectedWeatherConditionLocal))
+                            .openStream();
+                    Drawable weatherIcon = Drawable.createFromStream(iconIS, "weatherIcon");
+                    requireActivity().runOnUiThread(() ->
+                            viewBinding.weatherConditionIcon.setImageDrawable(weatherIcon));
+                } else {
+                    throw new NullPointerException();
+                }
+            } catch (NullPointerException | IOException e) {
+                Log.e(TAG, "Error getting icon for weather condition \""
+                        + currentSelectedWeatherConditionLocal + "\"", e);
+            }
+        });
+
         // Drop-down menu
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(
                 requireActivity(), android.R.layout.simple_spinner_item, WeatherCondition.getWeatherDescriptions());
@@ -66,6 +94,8 @@ public class NewReportFragment extends Fragment {
         viewBinding.weatherConditionSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {    // TODO
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                currentSelectedWeatherCondition.set(arrayAdapter.getItem((int) id));
+                weatherIconSetter.start();
             }
 
             @Override
@@ -74,7 +104,11 @@ public class NewReportFragment extends Fragment {
         });
 
 
-        // TODO : insert action when click on button
+        // Insertion button
+        viewBinding.insertNewReportButton.setOnClickListener(_view -> {
+            // TODO : insert action when click on button
+            Log.i(TAG, "Selected: " + currentSelectedWeatherCondition.get());
+        });
 
         return viewBinding.getRoot();
     }
