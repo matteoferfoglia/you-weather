@@ -116,7 +116,7 @@ public class MapWithReportHistoryFragment extends Fragment {
         myLocationOverlay.enableFollowLocation();   // center the map on user's location
         mapView.getOverlays().add(myLocationOverlay);
 
-        // Add a compass overlay    // TODO : not rotating when map rotates
+        // Add a compass overlay    // works only on actual hardware (not in emulator) // TODO: check
         CompassOverlay myCompassOverlay = new CompassOverlay(
                 requireContext(),
                 new InternalCompassOrientationProvider(requireContext()),
