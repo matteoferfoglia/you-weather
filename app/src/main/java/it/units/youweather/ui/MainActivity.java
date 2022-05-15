@@ -24,10 +24,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        ActivityStaticResourceHandler.initialize(this);
+
         ActivityMainBinding viewBinding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(viewBinding.getRoot());
-
-        ActivityStaticResourceHandler.initialize(this);
 
         // nav bar
 

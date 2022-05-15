@@ -1,4 +1,4 @@
-package it.units.youweather.auth;
+package it.units.youweather.utils.auth;
 
 import android.app.Activity;
 import android.content.Context;

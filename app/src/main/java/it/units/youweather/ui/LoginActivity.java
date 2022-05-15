@@ -10,10 +10,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.firebase.ui.auth.AuthUI;
 
 import it.units.youweather.R;
-import it.units.youweather.auth.Authentication;
 import it.units.youweather.databinding.ActivityLoginBinding;
 import it.units.youweather.entities.LoggedInUser;
 import it.units.youweather.utils.SharedPreferences;
+import it.units.youweather.utils.auth.Authentication;
 import it.units.youweather.utils.functionals.Consumer;
 
 public class LoginActivity extends AppCompatActivity {

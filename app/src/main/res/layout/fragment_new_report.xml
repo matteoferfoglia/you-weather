@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+<!-- TODO: this fragment must be inhibited if user's position is not available, and notify it to the user (e.g., a message "Please enable your position") -->
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -18,10 +21,14 @@
         android:layout_height="wrap_content"
         android:text="@string/location_name" />
 
-    <TextView
+    <Spinner
         android:id="@+id/location_name"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:prompt="@string/location_name"
+        android:spinnerMode="dialog">
+        <!-- To be populated programmatically according to user's position -->
+    </Spinner>
 
     <TextView
         android:id="@+id/location_latitude"
@@ -41,10 +48,10 @@
 
     <Spinner
         android:id="@+id/weather_condition_spinner"
-        android:spinnerMode="dialog"
-        android:prompt="@string/weather_condition"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:prompt="@string/weather_condition"
+        android:spinnerMode="dialog">
         <!-- To be populated programmatically -->
     </Spinner>
 

@@ -31,6 +31,9 @@ interruptions.
 
 The provider for weather information is *OpenWeather*.
 
+You must require an API key to use OpenWeather's services and put it into the file
+*app/src/main/res/raw/openweathermap_apikey.txt* (in the raw resources).
+
 ### Maps
 
 *OpenStreetMap* is used as geographic database, for showing locations on a map.

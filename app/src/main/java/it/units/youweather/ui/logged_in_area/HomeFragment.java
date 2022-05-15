@@ -10,9 +10,9 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-import it.units.youweather.auth.Authentication;
 import it.units.youweather.databinding.FragmentHomeBinding;
 import it.units.youweather.ui.LoginActivity;
+import it.units.youweather.utils.auth.Authentication;
 
 /**
  * A simple {@link Fragment} subclass.

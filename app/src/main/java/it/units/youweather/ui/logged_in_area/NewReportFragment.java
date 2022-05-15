@@ -15,10 +15,13 @@ import androidx.fragment.app.Fragment;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReference;
 
 import it.units.youweather.R;
 import it.units.youweather.databinding.FragmentNewReportBinding;
+import it.units.youweather.entities.City;
+import it.units.youweather.entities.forecast_fields.Coordinates;
 import it.units.youweather.entities.forecast_fields.WeatherCondition;
 import it.units.youweather.utils.ActivityStaticResourceHandler;
 import it.units.youweather.utils.LocationHelper;
@@ -35,6 +38,12 @@ public class NewReportFragment extends Fragment {
      */
     private static final String TAG = NewReportFragment.class.getSimpleName();
 
+    /**
+     * Saves and updates the {@link City} for the user's current position.
+     * This is the city chosen by the user from the drop down menu.
+     */
+    private City cityMatchingCurrentUserPosition = null;
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -44,13 +53,55 @@ public class NewReportFragment extends Fragment {
         // Set user's current location in the view
         try {
             LocationHelper locationHelper = new LocationHelper(requireActivity());
-            locationHelper.addPositionChangeListener(newLocation ->
+            locationHelper.addPositionChangeListener(newLocation -> {
+                if (newLocation != null) {  // TODO: test if coordinates update when location change
+
+                    final double newLat = newLocation.getLatitude();
+                    final double newLon = newLocation.getLongitude();
+
                     requireActivity().runOnUiThread(() -> { // changes on the view must be executed by the main thread
-                        if (newLocation != null) {  // TODO: test if coordinates update when location change
-                            viewBinding.locationLatitude.setText(String.valueOf(newLocation.getLatitude()));
-                            viewBinding.locationLongitude.setText(String.valueOf(newLocation.getLongitude()));
-                        }
-                    }));
+                        viewBinding.locationLatitude.setText(String.valueOf(newLat));
+                        viewBinding.locationLongitude.setText(String.valueOf(newLon));
+                    });
+
+                    LocationHelper.getCitiesFromCoordinatesAndConsume(
+                            new Coordinates(newLat, newLon),
+                            cities -> {
+
+                                Log.d(TAG, "Locations matching the user's current position: "
+                                        + Arrays.toString(cities));
+
+                                // Saves location names
+                                String[] locationNames = new String[cities.length];
+                                for (int i = 0; i < cities.length; i++) {
+                                    locationNames[i] = cities[i].toString();
+                                }
+
+                                // Drop-down menu for choosing the correct location among ones matching coordinates from the user's current position
+                                ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(
+                                        requireActivity(), android.R.layout.simple_spinner_item, locationNames);
+                                arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+                                requireActivity().runOnUiThread(() -> {
+                                    viewBinding.locationName.setAdapter(arrayAdapter);
+                                    viewBinding.locationName.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                                        @Override
+                                        public void onItemSelected(AdapterView<?> parent, View view, int position, long cityIndex) {
+                                            cityMatchingCurrentUserPosition = cities[(int) cityIndex];
+                                        }
+
+                                        @Override
+                                        public void onNothingSelected(AdapterView<?> parent) {
+                                            if (cities.length > 0) {
+                                                cityMatchingCurrentUserPosition = cities[0];
+                                            }
+                                        }
+                                    });
+                                });
+
+                            });
+                }
+            });
         } catch (Permissions.MissingPermissionsException e) {
             Log.i(TAG, "Missing permissions for location.");
             // TODO: do not allow to insert anything if missing permissions (hide the textview
@@ -84,7 +135,7 @@ public class NewReportFragment extends Fragment {
             }
         });
 
-        // Drop-down menu
+        // Drop-down menu for choosing the weather condition
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(
                 requireActivity(), android.R.layout.simple_spinner_item, WeatherCondition.getWeatherDescriptions());
         arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);

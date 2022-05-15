@@ -14,11 +14,20 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.google.gson.Gson;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import it.units.youweather.R;
+import it.units.youweather.entities.City;
 import it.units.youweather.entities.forecast_fields.Coordinates;
 import it.units.youweather.utils.functionals.Consumer;
+import it.units.youweather.utils.http.HTTPRequest;
+import it.units.youweather.utils.http.HTTPResponse;
 
 /**
  * This class supports geo-location features, like getting
@@ -42,7 +51,7 @@ public class LocationHelper {
     /**
      * Current user's location.
      */
-    private volatile LocationContainer userCurrentLocation = new LocationContainer();
+    private final LocationContainer userCurrentLocation = new LocationContainer();
 
     /**
      * Refresh time (seconds) for current user's location.
@@ -246,6 +255,81 @@ public class LocationHelper {
         public int hashCode() {
             return Objects.hash(location);
         }
+    }
+
+// -------------------------------------------------------------------------------------------------
+
+    private static final String OPEN_WEATHER_MAP_API_KEY;
+
+    static {
+        String openWeatherMapApiKeyTmp;
+        try {
+            openWeatherMapApiKeyTmp = new BufferedReader(
+                    new InputStreamReader(
+                            Objects.requireNonNull(
+                                    ActivityStaticResourceHandler.getAppContext().getResources()
+                                            .openRawResource(R.raw.openweathermap_apikey))))
+                    .readLine();
+        } catch (IOException e) {
+            openWeatherMapApiKeyTmp = "";
+            Log.e(TAG, "Error in file opening", e);
+        }
+        OPEN_WEATHER_MAP_API_KEY = openWeatherMapApiKeyTmp;
+    }
+
+    /**
+     * This method performs a HTTP request to the server in charge of resolving
+     * coordinates into cities and returns the array of cities satisfying the
+     * request.
+     * <strong>Important</strong>: this method performs networking operation,
+     * so, it cannot be invoked from the main thread. Use method
+     * {@link } instead.
+     *
+     * @param coordinates Coordinates.
+     * @return the array of know cities complying with the request.
+     */
+    public static City[] getCitiesFromCoordinates(@NonNull Coordinates coordinates) {
+
+        City[] resolvedCities;
+
+        // Reverse Geocoding API to resolve coordinates into cities
+
+        final String requestString = "https://api.openweathermap.org/geo/1.0/reverse?"
+                + "lat=" + Objects.requireNonNull(coordinates).getLat()
+                + "&lon=" + coordinates.getLon()
+                + "&appid=" + OPEN_WEATHER_MAP_API_KEY;
+
+        try {
+            HTTPRequest req = new HTTPRequest(requestString);
+            final String responseString = new HTTPResponse(req).getResponse();
+            resolvedCities = new Gson().fromJson(responseString, City[].class);
+        } catch (IOException e) {
+            Log.e(TAG, "Unable to open HTTP connection", e);
+            resolvedCities = new City[0];
+        }
+
+        return resolvedCities;
+    }
+
+    /**
+     * This method is similar to {@link #getCitiesFromCoordinates(Coordinates)},
+     * but this one performs all the operation on a separate thread (this means that
+     * the invoker thread returns immediately), and then, instead of returning the
+     * {@link City} array, consumes it according to the given {@link Consumer}.
+     * This method performs asynchronous operations.
+     *
+     * @param coordinates       Coordinates.
+     * @param cityArrayConsumer The {@link Consumer} for the array of cities matching
+     *                          the request and returned by the server.
+     * @return The {@link Thread} responsible for the asynchronous operations, after
+     * having <strong>already</strong> started it.
+     */
+    public static Thread getCitiesFromCoordinatesAndConsume(
+            @NonNull Coordinates coordinates, @NonNull Consumer<City[]> cityArrayConsumer) {
+        Thread t = new Thread(() -> Objects.requireNonNull(cityArrayConsumer)
+                .accept(getCitiesFromCoordinates(coordinates)));
+        t.start();
+        return t;
     }
 
 }

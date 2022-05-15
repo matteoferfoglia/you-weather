@@ -1,17 +1,43 @@
 package it.units.youweather.entities.forecast_fields;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 
 public class Coordinates {
+
+    private static final String TAG = Coordinates.class.getSimpleName();
+
     private double lon;
     private double lat;
 
     private Coordinates() {
     }
 
-    public Coordinates(double lon, double lat) {
-        this.lon = lon;
-        this.lat = lat;
+    public Coordinates(double latitude, double longitude) {
+        final double MAX_ABS_LAT_VALUE = 90d;    // the maximum valid absolute value for latitude  (it must be in [-90,+90])
+        final double MAX_ABS_LON_VALUE = 180d;   // the maximum valid absolute value for longitude (it must be in [-180,+180])
+
+        this.lat = validateCoordinateValue(latitude, MAX_ABS_LAT_VALUE);
+        this.lon = validateCoordinateValue(longitude, MAX_ABS_LON_VALUE);
+    }
+
+    /**
+     * Validates a coordinate value, to be invoked before assigning it to the internal state.
+     */
+    private double validateCoordinateValue(
+            double inputCoordinateValue, double maxAbsoluteValueForCoordinate) {
+        double validatedCoordinateValue;
+        if (Math.abs(inputCoordinateValue) <= maxAbsoluteValueForCoordinate) {
+            validatedCoordinateValue = inputCoordinateValue;
+        } else {
+            validatedCoordinateValue = (inputCoordinateValue + maxAbsoluteValueForCoordinate) % (2 * maxAbsoluteValueForCoordinate) - maxAbsoluteValueForCoordinate;
+            Log.w(TAG, "Illegal coordinate value: expected -"
+                    + maxAbsoluteValueForCoordinate + "<=latitude<=" + maxAbsoluteValueForCoordinate
+                    + ", found coordinate=" + inputCoordinateValue
+                    + ", set coordinate=" + validatedCoordinateValue);
+        }
+        return validatedCoordinateValue;
     }
 
     public double getLon() {

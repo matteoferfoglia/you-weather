@@ -73,11 +73,8 @@ public class City {
     @NonNull
     @Override
     public String toString() {
-        return "City{" + "name=" + name
-                + ", local_names=" + local_names
-                + ", lat=" + lat
-                + ", lon=" + lon
-                + ", country=" + country
-                + ", state=" + state + '}';
+        return name
+                + (country != null ? (", " + country) : "")
+                + (state != null ? (", " + state) : "");
     }
 }

@@ -21,7 +21,7 @@
     <string name="to">To</string>
     <string name="insert_new_report">Insert new report</string>
     <string name="insert">Insert</string>
-    <string name="location_name">Location:</string>
+    <string name="location_name">Location</string>
 
     <!-- WEATHER CONDITIONS start -->
     <string name="WEATHER200">Thunderstorm with light rain</string>
