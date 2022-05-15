@@ -19,8 +19,6 @@ import org.osmdroid.config.Configuration;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.ScaleBarOverlay;
-import org.osmdroid.views.overlay.compass.CompassOverlay;
-import org.osmdroid.views.overlay.compass.InternalCompassOrientationProvider;
 import org.osmdroid.views.overlay.gestures.RotationGestureOverlay;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
@@ -115,18 +113,6 @@ public class MapWithReportHistoryFragment extends Fragment {
         myLocationOverlay.enableMyLocation();
         myLocationOverlay.enableFollowLocation();   // center the map on user's location
         mapView.getOverlays().add(myLocationOverlay);
-
-        // Add a compass overlay    // works only on actual hardware (not in emulator) // TODO: check
-        CompassOverlay myCompassOverlay = new CompassOverlay(
-                requireContext(),
-                new InternalCompassOrientationProvider(requireContext()),
-                mapView);
-        myCompassOverlay.enableCompass();
-        mapView.getOverlays().add(myCompassOverlay);
-
-//        // Add the Grid line Overlay - for displaying latitude/longitude grid lines
-//        LatLonGridlineOverlay2 overlay = new LatLonGridlineOverlay2();
-//        mapView.getOverlays().add(overlay);
 
         // Add Map Scale bar overlay
         final DisplayMetrics dm = requireContext().getResources().getDisplayMetrics();
