@@ -15,7 +15,7 @@
 
     <item
         android:id="@+id/userPageWithHistoryFragment"
-        android:icon="@drawable/ic_baseline_home_24"
+        android:icon="@drawable/ic_baseline_person_24"
         android:menuCategory="secondary"
         android:title="@string/account" />
 

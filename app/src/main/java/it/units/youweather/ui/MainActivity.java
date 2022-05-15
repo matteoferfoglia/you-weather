@@ -18,6 +18,8 @@ import it.units.youweather.utils.ActivityStaticResourceHandler;
 
 public class MainActivity extends AppCompatActivity {
 
+    private BottomNavigationView bottomNavigationMenuView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
                 .findFragmentById(R.id.nav_host_fragment_container_activity_main);
         NavController navController = Objects.requireNonNull(navHostController).getNavController();
 
-        BottomNavigationView bottomNavigationMenuView = viewBinding.bottomNavView;
+        bottomNavigationMenuView = viewBinding.bottomNavView;
         NavigationUI.setupWithNavController(bottomNavigationMenuView, navController);
 
         if (getSupportActionBar() != null) {   // if the action bar exists
@@ -48,4 +50,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public BottomNavigationView getBottomNavigationMenuView() {
+        return Objects.requireNonNull(bottomNavigationMenuView);
+    }
 }

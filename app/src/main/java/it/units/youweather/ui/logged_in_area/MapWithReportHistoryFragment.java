@@ -12,6 +12,8 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+
 import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
@@ -24,6 +26,7 @@ import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
 import it.units.youweather.databinding.FragmentMapWithReportHistoryBinding;
+import it.units.youweather.ui.MainActivity;
 import it.units.youweather.utils.Permissions;
 
 /**
@@ -49,11 +52,33 @@ public class MapWithReportHistoryFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         // Inflate the layout for this fragment
-        FragmentMapWithReportHistoryBinding viewBinding = FragmentMapWithReportHistoryBinding.inflate(getLayoutInflater());
+        FragmentMapWithReportHistoryBinding viewBinding
+                = FragmentMapWithReportHistoryBinding.inflate(getLayoutInflater());
+
+        hideBottomMenu();
 
         mapSetUp(viewBinding);
 
         return viewBinding.getRoot();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        showBottomMenu();
+    }
+
+    private void hideBottomMenu() {
+        setBottomMenuVisibility(View.GONE);
+    }
+
+    private void setBottomMenuVisibility(int visibility) {
+        BottomNavigationView bottomMenu = ((MainActivity) requireActivity()).getBottomNavigationMenuView();
+        bottomMenu.setVisibility(visibility);
+    }
+
+    private void showBottomMenu() {
+        setBottomMenuVisibility(View.VISIBLE);
     }
 
     /**
@@ -94,7 +119,8 @@ public class MapWithReportHistoryFragment extends Fragment {
         // Add a compass overlay    // TODO : not rotating when map rotates
         CompassOverlay myCompassOverlay = new CompassOverlay(
                 requireContext(),
-                new InternalCompassOrientationProvider(requireContext()), mapView);
+                new InternalCompassOrientationProvider(requireContext()),
+                mapView);
         myCompassOverlay.enableCompass();
         mapView.getOverlays().add(myCompassOverlay);
 
