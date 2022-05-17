@@ -24,6 +24,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import it.units.youweather.R;
 import it.units.youweather.entities.City;
+import it.units.youweather.entities.Forecast;
 import it.units.youweather.entities.forecast_fields.Coordinates;
 import it.units.youweather.utils.functionals.Consumer;
 import it.units.youweather.utils.http.HTTPRequest;
@@ -330,6 +331,42 @@ public class LocationHelper {
                 .accept(getCitiesFromCoordinates(coordinates)));
         t.start();
         return t;
+    }
+
+    /**
+     * Get the {@link Forecast weather forecast} for the given
+     * {@link Coordinates location}.
+     * <br/>
+     * <strong>The operation is asynchronous</strong>: when completed,
+     * the given {@link Consumer} will consumes the result.
+     * <br/>
+     * This method does not throw any exceptions, but, if they happened
+     * while retrieving the data, the given handler will be executed.
+     *
+     * @param coordinates      {@link Coordinates} for the place for which you want to know
+     *                         to have the {@link Forecast weather forecast}.
+     * @param consumer         The {@link Consumer} for the {@link Forecast}.
+     * @param exceptionHandler The {@link Consumer exception handler} for the
+     *                         eventually thrown exception.
+     */
+    public static void getForecastForCoordinates(
+            @NonNull Coordinates coordinates,
+            @NonNull Consumer<Forecast> consumer,
+            @NonNull Consumer<IOException> exceptionHandler) {
+        new Thread(() -> {
+            String requestString = "https://api.openweathermap.org/data/2.5/weather?"
+                    + "lat=" + Objects.requireNonNull(coordinates).getLat()
+                    + "&lon=" + coordinates.getLon()
+                    + "&appid=" + OPEN_WEATHER_MAP_API_KEY;
+            try {
+                HTTPRequest req = new HTTPRequest(requestString);
+                String responseString = new HTTPResponse(req).getResponse();
+                Objects.requireNonNull(consumer)
+                        .accept(new Gson().fromJson(responseString, Forecast.class));
+            } catch (IOException e) {
+                Objects.requireNonNull(exceptionHandler).accept(e);
+            }
+        }).start();
     }
 
 }

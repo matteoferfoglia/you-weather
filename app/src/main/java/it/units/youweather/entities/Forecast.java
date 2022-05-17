@@ -22,7 +22,6 @@ import it.units.youweather.utils.Timing;
 public class Forecast {
     private Coordinates coord;
     private WeatherCondition[] weather;
-    private String base;
     private MainForecastData main;
     private int visibility;
     private Wind wind;
@@ -32,7 +31,6 @@ public class Forecast {
     private int timezone;
     private long id;
     private String name;
-    private int cod;
 
     private Forecast() {
     }
@@ -41,104 +39,56 @@ public class Forecast {
         return coord;
     }
 
-    public void setCoord(Coordinates coord) {
-        this.coord = coord;
-    }
-
     public WeatherCondition[] getWeather() {
         return weather;
     }
 
-    public void setWeather(WeatherCondition[] weather) {
-        this.weather = weather;
-    }
-
-    public String getBase() {
-        return base;
-    }
-
-    public void setBase(String base) {
-        this.base = base;
-    }
-
-    public MainForecastData getMain() {
+    public MainForecastData getForecastData() {
         return main;
     }
 
-    public void setMain(MainForecastData main) {
-        this.main = main;
-    }
-
+    /**
+     * @return the visibility in meter, max value is 10_000 m.
+     */
     public int getVisibility() {
         return visibility;
-    }
-
-    public void setVisibility(int visibility) {
-        this.visibility = visibility;
     }
 
     public Wind getWind() {
         return wind;
     }
 
-    public void setWind(Wind wind) {
-        this.wind = wind;
-    }
-
     public Clouds getClouds() {
         return clouds;
     }
 
-    public void setClouds(Clouds clouds) {
-        this.clouds = clouds;
+    /**
+     * @return the date-time of the data calculation.
+     */
+    public String getDataCalulationDateTime() {
+        return Timing.convertEpochMillisToFormattedDate(dt);    // TODO: test
     }
 
-    public long getDt() {
-        return dt;
-    }
-
-    public void setDt(long dt) {
-        this.dt = dt;
-    }
-
-    public Sys getSys() {
-        return sys;
-    }
-
-    public void setSys(Sys sys) {
-        this.sys = sys;
-    }
-
-    public int getTimezone() {
-        return timezone;
-    }
-
-    public void setTimezone(int timezone) {
-        this.timezone = timezone;
-    }
-
-    public long getId() {
+    public long getCityId() {
         return id;
     }
 
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getName() {
+    public String getCityName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    /**
+     * See {@link Sys#getSunriseUTCTimeInSecondsSinceEpoch()}.
+     */
+    public long getSunriseUTCTimeInSecondsSinceEpoch() {
+        return sys.getSunriseUTCTimeInSecondsSinceEpoch();
     }
 
-    public int getCode() {
-        return cod;
-    }
-
-    public void setCode(int code) {
-        this.cod = code;
+    /**
+     * See {@link Sys#getSunsetUTCTimeInSecondsSinceEpoch()}.
+     */
+    public long getSunsetUTCTimeInSecondsSinceEpoch() {
+        return sys.getSunsetUTCTimeInSecondsSinceEpoch();
     }
 
     @NonNull
@@ -147,7 +97,6 @@ public class Forecast {
         return "Forecast{"
                 + "coord=" + coord
                 + ", weather=" + Arrays.toString(weather)
-                + ", base=" + base
                 + ", main=" + main
                 + ", visibility=" + visibility
                 + ", wind=" + wind
@@ -157,7 +106,7 @@ public class Forecast {
                 + ", timezone=" + timezone
                 + ", id=" + id
                 + ", name=" + name
-                + ", cod=" + cod + '}';
+                + '}';
     }
 
 }

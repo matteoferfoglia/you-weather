@@ -88,6 +88,62 @@ public class NewReportFragment extends Fragment {
                                         @Override
                                         public void onItemSelected(AdapterView<?> parent, View view, int position, long cityIndex) {
                                             cityMatchingCurrentUserPosition = cities[(int) cityIndex];
+
+                                            // TODO: refactor needed
+
+                                            // TODO : set location name with view binding
+                                            // TODO : add fields to create a Forecast object (temperature, ...): only the location and the weather condition are mandatory, otherwise user cannot proceed with insertion
+
+                                            // Reference to the current selected weather condition
+                                            final AtomicReference<String> currentSelectedWeatherCondition = new AtomicReference<>(null);
+
+                                            // Weather icon setter
+                                            Thread weatherIconSetter = new Thread(() -> {
+                                                String currentSelectedWeatherConditionLocal = currentSelectedWeatherCondition.get();
+                                                try {
+                                                    if (currentSelectedWeatherConditionLocal != null) {
+                                                        InputStream iconIS = new URL(WeatherCondition
+                                                                .getIconUrlForDescription(currentSelectedWeatherConditionLocal, cityMatchingCurrentUserPosition))
+                                                                .openStream();
+                                                        Drawable weatherIcon = Drawable.createFromStream(iconIS, "weatherIcon");
+
+                                                        requireActivity().runOnUiThread(() ->
+                                                                viewBinding.weatherConditionIcon.setImageDrawable(weatherIcon));
+                                                    } else {
+                                                        throw new NullPointerException();
+                                                    }
+                                                } catch (NullPointerException | IOException e) {
+                                                    Log.e(TAG, "Error getting icon for weather condition \""
+                                                            + currentSelectedWeatherConditionLocal + "\"", e);
+                                                }
+                                            });
+
+                                            // Drop-down menu for choosing the weather condition
+                                            ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(
+                                                    requireActivity(), android.R.layout.simple_spinner_item, WeatherCondition.getWeatherDescriptions());
+                                            arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                                            final int spinnerPosition_sunny = arrayAdapter.getPosition(ActivityStaticResourceHandler.getResString(R.string.WEATHER800)); // clear sky
+                                            viewBinding.weatherConditionSpinner.setAdapter(arrayAdapter);
+                                            viewBinding.weatherConditionSpinner.setSelection(spinnerPosition_sunny);
+                                            viewBinding.weatherConditionSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {    // TODO
+                                                @Override
+                                                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                                                    currentSelectedWeatherCondition.set(arrayAdapter.getItem((int) id));
+                                                    weatherIconSetter.start();
+                                                }
+
+                                                @Override
+                                                public void onNothingSelected(AdapterView<?> parent) {
+                                                }
+                                            });
+
+
+                                            // Insertion button
+                                            viewBinding.insertNewReportButton.setOnClickListener(_view -> {
+                                                // TODO : insert action when click on button
+                                                Log.i(TAG, "Selected: " + currentSelectedWeatherCondition.get());
+                                            });
+
                                         }
 
                                         @Override
@@ -107,59 +163,6 @@ public class NewReportFragment extends Fragment {
             // TODO: do not allow to insert anything if missing permissions (hide the textview
             //       for location and coords and show error message in a text view)
         }
-
-
-        // TODO : set location name with view binding
-        // TODO : add fields to create a Forecast object (temperature, ...): only the location and the weather condition are mandatory, otherwise user cannot proceed with insertion
-
-        // Reference to the current selected weather condition
-        final AtomicReference<String> currentSelectedWeatherCondition = new AtomicReference<>(null);
-
-        // Weather icon setter
-        Thread weatherIconSetter = new Thread(() -> {
-            String currentSelectedWeatherConditionLocal = currentSelectedWeatherCondition.get();
-            try {
-                if (currentSelectedWeatherConditionLocal != null) {
-                    InputStream iconIS = new URL(WeatherCondition
-                            .getIconUrlForDescription(currentSelectedWeatherConditionLocal))
-                            .openStream();
-                    Drawable weatherIcon = Drawable.createFromStream(iconIS, "weatherIcon");
-                    requireActivity().runOnUiThread(() ->
-                            viewBinding.weatherConditionIcon.setImageDrawable(weatherIcon));
-                } else {
-                    throw new NullPointerException();
-                }
-            } catch (NullPointerException | IOException e) {
-                Log.e(TAG, "Error getting icon for weather condition \""
-                        + currentSelectedWeatherConditionLocal + "\"", e);
-            }
-        });
-
-        // Drop-down menu for choosing the weather condition
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(
-                requireActivity(), android.R.layout.simple_spinner_item, WeatherCondition.getWeatherDescriptions());
-        arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        final int spinnerPosition_sunny = arrayAdapter.getPosition(ActivityStaticResourceHandler.getResString(R.string.WEATHER800)); // clear sky
-        viewBinding.weatherConditionSpinner.setAdapter(arrayAdapter);
-        viewBinding.weatherConditionSpinner.setSelection(spinnerPosition_sunny);
-        viewBinding.weatherConditionSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {    // TODO
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                currentSelectedWeatherCondition.set(arrayAdapter.getItem((int) id));
-                weatherIconSetter.start();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
-        });
-
-
-        // Insertion button
-        viewBinding.insertNewReportButton.setOnClickListener(_view -> {
-            // TODO : insert action when click on button
-            Log.i(TAG, "Selected: " + currentSelectedWeatherCondition.get());
-        });
 
         return viewBinding.getRoot();
     }

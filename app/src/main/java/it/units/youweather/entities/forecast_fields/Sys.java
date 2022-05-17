@@ -16,61 +16,25 @@ public class Sys {
     private Sys() {
     }
 
-    public int getType() {
-        return type;
-    }
-
-    public void setType(int type) {
-        this.type = type;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public double getMessage() {
-        return message;
-    }
-
-    public void setMessage(double message) {
-        this.message = message;
-    }
-
     public String getCountry() {
         return country;
     }
 
-    public void setCountry(String country) {
-        this.country = country;
-    }
-
-    public long getSunrise() {
+    public long getSunriseUTCTimeInSecondsSinceEpoch() {
         return sunrise;
     }
 
-    public void setSunrise(long sunrise) {
-        this.sunrise = sunrise;
-    }
-
-    public long getSunset() {
+    public long getSunsetUTCTimeInSecondsSinceEpoch() {
         return sunset;
-    }
-
-    public void setSunset(long sunset) {
-        this.sunset = sunset;
     }
 
     @NonNull
     @Override
     public String toString() {
-        return "Sys{" + "type=" + type
+        return "Sys{"/* + "type=" + type
                 + ", id=" + id
                 + ", message=" + message
-                + ", country=" + country
+                + ","*/ + "country=" + country
                 + ", sunrise=" + Timing.convertEpochMillisToFormattedDate(sunrise)
                 + ", sunset=" + Timing.convertEpochMillisToFormattedDate(sunset)
                 + '}';

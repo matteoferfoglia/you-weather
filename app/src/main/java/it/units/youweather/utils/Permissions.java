@@ -67,6 +67,8 @@ public class Permissions {
     /**
      * Exception thrown if any permission is missing.
      */
+    @SuppressWarnings({"serial", "RedundantSuppression"})
+    // IDE says "serial" warning does not need to be suppressed but Lint disagrees
     public static class MissingPermissionsException extends Throwable {
         MissingPermissionsException() {
             super("Missing required permissions");
