@@ -6,25 +6,33 @@
     android:layout_height="match_parent"
     tools:context=".ui.logged_in_area.HomeFragment">
 
-    <TextView
-        android:id="@+id/home_text_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/search_location"
-        app:layout_constraintBottom_toTopOf="@id/search_bar"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <androidx.appcompat.widget.SearchView
         android:id="@+id/search_bar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="30dp"
+        android:queryHint="@string/search_location"
+        app:queryHint="@string/search_location"
+        app:defaultQueryHint="@string/search_location"
+        android:iconifiedByDefault="false"
+        app:iconifiedByDefault="false"
         app:layout_constraintBottom_toTopOf="@id/favourite_locations_header"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/home_text_view" />
+        app:layout_constraintTop_toTopOf="parent" />
+    <!-- Show query hint before clicking on searchView https://stackoverflow.com/a/52678158/17402378 -->
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/search_bar_results"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:foregroundGravity="center"
+        android:layout_marginHorizontal="35dp"
+        android:visibility="visible"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/favourite_locations_header"
+        app:layout_constraintTop_toBottomOf="@+id/search_bar" /><!--recycler view to display our data-->
 
     <TextView
         android:id="@+id/favourite_locations_header"
@@ -35,16 +43,28 @@
         app:layout_constraintBottom_toTopOf="@id/favourite_locations_list"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/search_bar" />
+        app:layout_constraintTop_toBottomOf="@id/search_bar_results" />
 
     <ListView
         android:id="@+id/favourite_locations_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@id/auth_button"
+        app:layout_constraintBottom_toTopOf="@id/use_current_position_button"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/favourite_locations_header" />
+        app:layout_constraintTop_toBottomOf="@id/favourite_locations_header">
+
+    </ListView>
+
+    <Button
+        android:id="@+id/use_current_position_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/favourite_locations_header"
+        app:layout_constraintBottom_toTopOf="@id/auth_button"
+        android:text="@string/use_current_position" /><!-- TODO: this button must be visible only if locations permissions are ok -->
 
     <Button
         android:id="@+id/auth_button"
@@ -57,6 +77,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/home_text_view" />
+        app:layout_constraintTop_toBottomOf="@id/use_current_position_button" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

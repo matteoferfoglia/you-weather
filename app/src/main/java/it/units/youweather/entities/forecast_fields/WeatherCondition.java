@@ -15,7 +15,7 @@ import java.util.Set;
 
 import it.units.youweather.R;
 import it.units.youweather.entities.City;
-import it.units.youweather.utils.ActivityStaticResourceHandler;
+import it.units.youweather.utils.ResourceHelper;
 import it.units.youweather.utils.Timing;
 
 public class WeatherCondition {
@@ -298,7 +298,7 @@ public class WeatherCondition {
             int id, @NonNull WeatherMain main, int descriptionId, @NonNull String iconId) {
         this.id = id;
         this.main = Objects.requireNonNull(main).getMainDescription();
-        this.description = ActivityStaticResourceHandler.getResString(descriptionId);
+        this.description = ResourceHelper.getResString(descriptionId);
 
         // icon ids must have 2 digits and a letter
         final int fixedNumOfDigitsForIconId = 3;

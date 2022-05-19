@@ -23,9 +23,9 @@ import it.units.youweather.databinding.FragmentNewReportBinding;
 import it.units.youweather.entities.City;
 import it.units.youweather.entities.forecast_fields.Coordinates;
 import it.units.youweather.entities.forecast_fields.WeatherCondition;
-import it.units.youweather.utils.ActivityStaticResourceHandler;
 import it.units.youweather.utils.LocationHelper;
 import it.units.youweather.utils.Permissions;
+import it.units.youweather.utils.ResourceHelper;
 
 /**
  * Fragment allowing the user to insert a new report
@@ -91,7 +91,7 @@ public class NewReportFragment extends Fragment {
 
                                             // TODO: refactor needed
 
-                                            // TODO : set location name with view binding
+                                            // TODO : what if coordinates do not map to any city?
                                             // TODO : add fields to create a Forecast object (temperature, ...): only the location and the weather condition are mandatory, otherwise user cannot proceed with insertion
 
                                             // Reference to the current selected weather condition
@@ -122,7 +122,7 @@ public class NewReportFragment extends Fragment {
                                             ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(
                                                     requireActivity(), android.R.layout.simple_spinner_item, WeatherCondition.getWeatherDescriptions());
                                             arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                                            final int spinnerPosition_sunny = arrayAdapter.getPosition(ActivityStaticResourceHandler.getResString(R.string.WEATHER800)); // clear sky
+                                            final int spinnerPosition_sunny = arrayAdapter.getPosition(ResourceHelper.getResString(R.string.WEATHER800)); // clear sky
                                             viewBinding.weatherConditionSpinner.setAdapter(arrayAdapter);
                                             viewBinding.weatherConditionSpinner.setSelection(spinnerPosition_sunny);
                                             viewBinding.weatherConditionSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {    // TODO

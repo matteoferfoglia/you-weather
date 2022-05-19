@@ -14,7 +14,7 @@ import java.util.Objects;
 
 import it.units.youweather.R;
 import it.units.youweather.databinding.ActivityMainBinding;
-import it.units.youweather.utils.ActivityStaticResourceHandler;
+import it.units.youweather.utils.ResourceHelper;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        ActivityStaticResourceHandler.initialize(this);
+        ResourceHelper.initialize(this);
 
         ActivityMainBinding viewBinding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(viewBinding.getRoot());

@@ -83,6 +83,7 @@
 
     <string name="weather_condition">Weather condition</string>
     <string name="weather_icon">Weather icon</string>
+    <string name="use_current_position">Use current position</string>
 
     <!-- TODO: missing translations -->
 </resources>

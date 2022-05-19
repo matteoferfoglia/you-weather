@@ -268,7 +268,7 @@ public class LocationHelper {
             openWeatherMapApiKeyTmp = new BufferedReader(
                     new InputStreamReader(
                             Objects.requireNonNull(
-                                    ActivityStaticResourceHandler.getAppContext().getResources()
+                                    ResourceHelper.getAppContext().getResources()
                                             .openRawResource(R.raw.openweathermap_apikey))))
                     .readLine();
         } catch (IOException e) {
@@ -277,6 +277,37 @@ public class LocationHelper {
         }
         OPEN_WEATHER_MAP_API_KEY = openWeatherMapApiKeyTmp;
     }
+
+    /**
+     * Given the name of a city (also a draft only) the system tries to retrieve
+     * all cities matching the given name.
+     * The execution of this method is non-blocking: operations are performed by
+     * a separate thread.
+     *
+     * @param cityName          The name of a {@link City}.
+     * @param cityArrayConsumer The consumer for the array of {@link City cities}
+     *                          matching the inserted string.
+     */
+    public static void getCitiesFromNameAndConsume(@NonNull String cityName,
+                                                   @NonNull Consumer<City[]> cityArrayConsumer) {
+        new Thread(() -> {
+            String requestString = "https://api.openweathermap.org/geo/1.0/direct?"
+                    + "q=" + Objects.requireNonNull(cityName)
+                    //+ "&limit=10"
+                    + "&appid=" + OPEN_WEATHER_MAP_API_KEY;
+
+            City[] cities;
+            try {
+                HTTPRequest req = new HTTPRequest(requestString);
+                String responseString = new HTTPResponse(req).getResponse();
+                cities = new Gson().fromJson(responseString, City[].class);
+            } catch (IOException e) {
+                cities = new City[0];
+            }
+            cityArrayConsumer.accept(cities);
+        }).start();
+    }
+
 
     /**
      * This method performs a HTTP request to the server in charge of resolving

@@ -17,7 +17,7 @@ import java.util.Objects;
  * If you want to use this class in an activity, this class must be initialized
  * (by invoking method {@link #initialize(Context)}) fro that class.
  */
-public abstract class ActivityStaticResourceHandler {
+public abstract class ResourceHelper {
     @SuppressLint("StaticFieldLeak") // Saves the Application Context
     private volatile static Context _context;
 
@@ -38,7 +38,7 @@ public abstract class ActivityStaticResourceHandler {
     public static Context getAppContext() {
         try {
             return Objects.requireNonNull(_context, "Method "
-                    + ActivityStaticResourceHandler.class.getMethod("initialize", Context.class)
+                    + ResourceHelper.class.getMethod("initialize", Context.class)
                     + " was not invoked by the current activity.");
         } catch (NoSuchMethodException e) {
             throw new NullPointerException();
