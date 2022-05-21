@@ -6,6 +6,9 @@ import androidx.annotation.NonNull;
 
 import java.io.Serializable;
 
+/**
+ * @author Matteo Ferfoglia
+ */
 public class Coordinates implements Serializable {
 
     private static final String TAG = Coordinates.class.getSimpleName();

@@ -6,20 +6,24 @@
     android:layout_height="match_parent"
     tools:context=".ui.logged_in_area.HomeFragment">
 
+    <!-- TODO : add app name ? -->
+    <!-- TODO : dimensions (search for "dp") should be moved to resources -->
+
     <androidx.appcompat.widget.SearchView
         android:id="@+id/search_bar"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="48dp"
         android:layout_marginHorizontal="30dp"
-        android:queryHint="@string/search_location"
-        app:queryHint="@string/search_location"
-        app:defaultQueryHint="@string/search_location"
         android:iconifiedByDefault="false"
+        android:queryHint="@string/search_location"
+        app:defaultQueryHint="@string/search_location"
         app:iconifiedByDefault="false"
         app:layout_constraintBottom_toTopOf="@id/favourite_locations_header"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.1"
+        app:queryHint="@string/search_location" />
     <!-- Show query hint before clicking on searchView https://stackoverflow.com/a/52678158/17402378 -->
 
     <androidx.recyclerview.widget.RecyclerView
@@ -38,7 +42,7 @@
         android:id="@+id/fragment_weather_viewer"
         android:name="it.units.youweather.ui.logged_in_area.WeatherViewerFragment"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@+id/favourite_locations_header"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -68,11 +72,11 @@
         android:id="@+id/use_current_position_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="@string/use_current_position"
+        app:layout_constraintBottom_toTopOf="@id/auth_button"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/favourite_locations_header"
-        app:layout_constraintBottom_toTopOf="@id/auth_button"
-        android:text="@string/use_current_position" /><!-- TODO: this button must be visible only if locations permissions are ok -->
+        app:layout_constraintTop_toBottomOf="@id/favourite_locations_header" /><!-- TODO: this button must be visible only if locations permissions are ok --><!-- TODO: set the action for this button -->
 
     <Button
         android:id="@+id/auth_button"

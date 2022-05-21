@@ -4,10 +4,10 @@ import java.io.Serializable;
 
 public class MainForecastData implements Serializable {
 
-    private double temp;
+    private double temp;        // in Kelvin
     private double feels_like;
-    private double temp_min;
-    private double temp_max;
+    private double temp_min;    // in Kelvin
+    private double temp_max;    // in Kelvin
     private double pressure;
     private double humidity;
 

@@ -27,6 +27,7 @@ import it.units.youweather.databinding.FragmentHomeBinding;
 import it.units.youweather.entities.City;
 import it.units.youweather.ui.LoginActivity;
 import it.units.youweather.utils.LocationHelper;
+import it.units.youweather.utils.ResourceHelper;
 import it.units.youweather.utils.auth.Authentication;
 
 /**
@@ -74,23 +75,26 @@ public class HomeFragment extends Fragment {
                 LocationHelper.getCitiesFromNameAndConsume(
                         query,
                         cities -> {
-                            LocationNamesAdapter cityNamesArrayAdapter = new LocationNamesAdapter(cities);
+                            LocationsAdapter cityNamesArrayAdapter = new LocationsAdapter(cities, viewBinding.searchBarResults, viewBinding.searchBar);
                             requireActivity().runOnUiThread(() ->
                                     viewBinding.searchBarResults.setAdapter(cityNamesArrayAdapter));
-                            Log.d(TAG, "Consumed cities: " + Arrays.toString(cities));
+                            Log.d(TAG, "Cities matching the query: " + Arrays.toString(cities));
+
+                            if (cities.length == 0) {
+                                final String errorMsg = ResourceHelper.getResString(R.string.no_results);
+                                requireActivity()
+                                        .runOnUiThread(() ->
+                                                Toast.makeText(requireContext(), errorMsg, Toast.LENGTH_LONG)
+                                                        .show());
+                            }
 
                             recyclerView.addOnItemTouchListener(
                                     new RecyclerView.OnItemTouchListener() {
                                         @Override
                                         public boolean onInterceptTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
-                                            if (e.getAction() == MotionEvent.ACTION_UP) {
-                                                Log.d(TAG, "onInterceptTouchEvent: " + Arrays.toString(cities));
-                                                // TODO: see logcat: why multiple prints??
-                                                // TODO: when an item of the search bar results is clicked,
-                                                //  ask to the server for the weather forecast at the
-                                                //  given place and show them in a small below here below.
-                                                //  Add a small star icon to add the view to the favourite locations
-                                            }
+                                            // TODO: see logcat: why multiple prints??
+                                            // TODO: add a small star icon to add the view to the favourite locations (it should appear in the weather viewer fragment)
+                                            // TODO: solve warnings (see them by cleaning [clean] the build and then re-build)
                                             return false;
                                         }
 
@@ -120,12 +124,22 @@ public class HomeFragment extends Fragment {
      * Adapted from <a href="https://developer.android.com/guide/topics/ui/layout/recyclerview">here</a>
      * and <a href="https://stackoverflow.com/a/24471410/17402378">here</a>.
      */
-    private static class LocationNamesAdapter extends RecyclerView.Adapter<LocationNamesAdapter.ViewHolder> {
+    private static class LocationsAdapter extends RecyclerView.Adapter<LocationsAdapter.ViewHolder> {
 
         /**
          * Data for the adapter.
          */
         private final City[] localDataset;
+
+        /**
+         * The {@link RecyclerView} for which this adapter is created.
+         */
+        private final RecyclerView searchBarResults;
+
+        /**
+         * The {@link SearchView searchbar}.
+         */
+        private final SearchView searchBar;
 
         /**
          * Provide a reference to the type of views that you are using
@@ -147,17 +161,18 @@ public class HomeFragment extends Fragment {
         /**
          * Initialize the dataset of the Adapter.
          *
-         * @param dataSet {@link String[]} containing the data to populate views to be used
-         *                by RecyclerView.
+         * @param dataSet          {@link City}[] containing the data to populate views to be used
+         *                         by RecyclerView.
+         * @param searchBarResults The {@link RecyclerView} for which this adapter is created.
+         * @param searchBar        The {@link SearchView searchbar}.
          */
-        public LocationNamesAdapter(@NonNull City[] dataSet) {
-            localDataset = Objects.requireNonNull(dataSet);
+        public LocationsAdapter(@NonNull City[] dataSet,
+                                @NonNull RecyclerView searchBarResults,
+                                @NonNull SearchView searchBar) {
+            this.localDataset = Objects.requireNonNull(dataSet);
+            this.searchBarResults = Objects.requireNonNull(searchBarResults);
+            this.searchBar = Objects.requireNonNull(searchBar);
         }
-
-        /**
-         * The {@link RecyclerView} for this instance.
-         */
-        private final RecyclerView recyclerView = null;
 
         /**
          * Create new views (invoked by the layout manager)
@@ -188,7 +203,6 @@ public class HomeFragment extends Fragment {
                     throw new IllegalStateException("Impossible to get an item out of bounds");
                 }
                 City clickedCity = localDataset[itemPosition];
-                Toast.makeText(view_.getContext(), clickedCity.toString(), Toast.LENGTH_LONG).show(); // TODO: remove
 
                 Bundle selectedLocationForWeatherViewerFragment_bundle = new Bundle();
                 selectedLocationForWeatherViewerFragment_bundle
@@ -200,6 +214,10 @@ public class HomeFragment extends Fragment {
                         .setFragmentResult(
                                 WeatherViewerFragment.CITY_TO_BE_SHOWED_REQUEST_KEY,
                                 selectedLocationForWeatherViewerFragment_bundle);
+
+                // Clear the old query from the search bar
+                searchBar.setQuery("", false);  // remove the old query
+                searchBarResults.setAdapter(new LocationsAdapter(new City[0], searchBarResults, searchBar));   // Replace the adapter with a new one (clear previous results)
             });
             return new ViewHolder(view);
         }

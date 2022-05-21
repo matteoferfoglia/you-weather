@@ -75,7 +75,7 @@ public class Forecast implements Serializable {
     }
 
     public String getCityName() {
-        return name;
+        return name; // TODO: translate in the correct language
     }
 
     /**

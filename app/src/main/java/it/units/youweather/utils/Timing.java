@@ -5,7 +5,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
-public class Timing {
+public abstract class Timing {
     /**
      * Constant value used to recognized invalid fields (e.g., uninitialized)
      * containing date time in milliseconds from epoch, UTC time.

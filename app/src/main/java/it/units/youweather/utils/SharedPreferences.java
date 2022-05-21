@@ -17,7 +17,7 @@ import java.util.Objects;
  * This utility class provides an uniform interface to use
  * {@link android.content.SharedPreferences}
  */
-public class SharedPreferences {
+public abstract class SharedPreferences {
 
     private static final String TAG = SharedPreferences.class.getSimpleName();
 

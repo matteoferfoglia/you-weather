@@ -1,16 +1,29 @@
 package it.units.youweather.ui.logged_in_area;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentContainerView;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.Objects;
+
 import it.units.youweather.R;
+import it.units.youweather.databinding.FragmentWeatherViewerBinding;
 import it.units.youweather.entities.City;
+import it.units.youweather.entities.Temperature;
+import it.units.youweather.entities.forecast_fields.Coordinates;
+import it.units.youweather.entities.forecast_fields.MainForecastData;
+import it.units.youweather.entities.forecast_fields.WeatherCondition;
+import it.units.youweather.utils.LocationHelper;
 
 /**
  * Fragment used to show the weather for a specific location.
@@ -53,14 +66,16 @@ public class WeatherViewerFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_weather_viewer, container, false);
+        FragmentWeatherViewerBinding viewBinding = FragmentWeatherViewerBinding.inflate(getLayoutInflater());
+        View view = viewBinding.getRoot();
 
-        Fragment fragmentContainer = ((FragmentContainerView) container.getRootView()
-                .findViewById(R.id.nav_host_fragment_container_activity_main))
-                .getFragment();
+        Fragment fragmentContainer =
+                ((FragmentContainerView) Objects.requireNonNull(container).getRootView()
+                        .findViewById(R.id.nav_host_fragment_container_activity_main))
+                        .getFragment();
         fragmentContainer.getParentFragmentManager()
                 .setFragmentResultListener(CITY_TO_BE_SHOWED_REQUEST_KEY, this,
                         (requestKey, bundle) -> {
@@ -68,6 +83,53 @@ public class WeatherViewerFragment extends Fragment {
                             if (dataFromOtherFragment instanceof City) {
                                 City cityToSearchForTheWeather = (City) dataFromOtherFragment;
                                 Log.d(TAG, "Received: " + cityToSearchForTheWeather);
+
+                                LocationHelper.getForecastForCoordinates(
+                                        new Coordinates(cityToSearchForTheWeather.getLat(), cityToSearchForTheWeather.getLon()),
+                                        forecast -> {
+                                            WeatherCondition[] weatherConditions = forecast.getWeather();
+                                            String weatherDescription_tmp = "";
+                                            Drawable weatherIcon_tmp = null;
+                                            if (weatherConditions.length > 0) {
+                                                weatherDescription_tmp = weatherConditions[0].getDescription();
+                                                try (InputStream iconIS =
+                                                             new URL(weatherConditions[0].getIconUrl()).openStream()) {
+                                                    weatherIcon_tmp = Drawable.createFromStream(iconIS, "weatherIcon");
+                                                } catch (IOException exception) {
+                                                    Log.e(TAG, "Weather icon not showed due to an exception", exception);
+                                                }
+                                            }
+
+                                            MainForecastData mainForecastData = forecast.getForecastData();
+
+                                            // Need to copy variables to make them effectively final before using in another thread
+                                            final Drawable weatherIcon = weatherIcon_tmp;
+                                            final String weatherDescription = weatherDescription_tmp;
+
+                                            // Temperature conversions
+                                            final String actualTemperature = new Temperature(mainForecastData.getTemp()).getTemperatureWithMeasureUnit();
+                                            final String minTemperature = new Temperature(mainForecastData.getTemp_min()).getTemperatureWithMeasureUnit();
+                                            final String maxTemperature = new Temperature(mainForecastData.getTemp_max()).getTemperatureWithMeasureUnit();
+
+                                            requireActivity().runOnUiThread(() -> {
+
+                                                if (weatherIcon != null) {
+                                                    viewBinding.weatherConditionIcon.setImageDrawable(weatherIcon);
+                                                }
+                                                viewBinding.cityName.setText(forecast.getCityName());
+                                                viewBinding.weatherDescription.setText(weatherDescription);
+                                                viewBinding.actualTemperature.setText(actualTemperature);
+                                                viewBinding.minTemperature.setText(minTemperature);
+                                                viewBinding.maxTemperature.setText(maxTemperature);
+
+                                                getParentFragmentManager()
+                                                        .beginTransaction()
+                                                        .show(this)
+                                                        .commitNow();
+                                            });
+                                        },
+                                        exception -> Log.e(TAG, "Error while getting forecast", exception))
+                                ;
                             }
                         });
 

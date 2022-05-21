@@ -1,5 +1,7 @@
 package it.units.youweather;
 
+import it.units.youweather.entities.Temperature;
+
 /**
  * Class containing "environment variables" for the application.
  *
@@ -26,4 +28,10 @@ public class EnvironmentVariables {
      * TCP port for the Firebase Realtime Database service emulator.
      */
     public static final int FIREBASE_EMULATOR_REALTIME_DB_PORT = 9000;
+
+    /**
+     * Temperature measure unit.
+     */
+    public static final Temperature.TEMPERATURE_MEASURE_UNIT TEMPERATURE_MEASURE_UNIT
+            = Temperature.TEMPERATURE_MEASURE_UNIT.CELSIUS; // TODO: should be customizable (e.g., settable user preference)
 }

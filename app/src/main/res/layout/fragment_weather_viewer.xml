@@ -1,14 +1,85 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/weather_condition_icon_and_actual_temp"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="50dp"
+    android:layout_marginVertical="30dp"
+    android:orientation="horizontal"
+    android:weightSum="2"
     tools:context=".ui.logged_in_area.WeatherViewerFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+    <ImageView
+        android:id="@+id/weather_condition_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="150dp"
+        android:layout_weight="1"
+        android:layout_gravity="center"
+        android:contentDescription="@string/weather_icon"
+        android:gravity="center" />
 
-</FrameLayout>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1">
+
+        <TextView
+            android:id="@+id/city_name"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:gravity="center"
+            app:layout_constraintBottom_toTopOf="@+id/actual_temperature"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/actual_temperature"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:gravity="center"
+            android:textAlignment="center"
+            app:layout_constraintBottom_toTopOf="@+id/weather_description"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/city_name" /><!-- TODO: correct case and handle translation -->
+
+        <TextView
+            android:id="@+id/weather_description"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:gravity="center"
+            app:layout_constraintBottom_toTopOf="@+id/max_temperature"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/actual_temperature" />
+
+        <TextView
+            android:id="@+id/min_temperature"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:gravity="center"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@+id/max_temperature"
+            app:layout_constraintTop_toBottomOf="@+id/weather_description" />
+
+        <!-- TODO: add labels for max and min -->
+
+        <!-- TODO: fix spaces between components in layout -->
+
+        <TextView
+            android:id="@+id/max_temperature"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:gravity="center"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toRightOf="@+id/min_temperature"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/weather_description" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</LinearLayout><!-- TODO: move sizes into resources -->

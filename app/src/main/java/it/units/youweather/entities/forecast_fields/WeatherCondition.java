@@ -19,6 +19,9 @@ import it.units.youweather.entities.City;
 import it.units.youweather.utils.ResourceHelper;
 import it.units.youweather.utils.Timing;
 
+/**
+ * @author Matteo Ferfoglia
+ */
 public class WeatherCondition implements Serializable {
 
     // See https://openweathermap.org/weather-conditions for description

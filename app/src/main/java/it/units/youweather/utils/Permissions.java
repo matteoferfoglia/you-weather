@@ -15,7 +15,7 @@ import java.util.Objects;
  *
  * @author Matteo Ferfoglia
  */
-public class Permissions {
+public abstract class Permissions {
     /**
      * If the input array is non-empty, this method requests the
      * necessary permissions.
