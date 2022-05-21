@@ -1,14 +1,14 @@
 package it.units.youweather.entities.forecast_fields;
 
-public class Wind {
+import java.io.Serializable;
+
+public class Wind implements Serializable {
 
     private double speed;
     private int deg;
 
     private Wind() {
     }
-
-    ;
 
     public double getSpeed() {
         return speed;

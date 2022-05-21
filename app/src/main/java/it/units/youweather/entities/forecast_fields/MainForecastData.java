@@ -1,6 +1,8 @@
 package it.units.youweather.entities.forecast_fields;
 
-public class MainForecastData {
+import java.io.Serializable;
+
+public class MainForecastData implements Serializable {
 
     private double temp;
     private double feels_like;

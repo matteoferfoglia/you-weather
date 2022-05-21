@@ -2,6 +2,7 @@ package it.units.youweather.entities.forecast_fields;
 
 import androidx.annotation.NonNull;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -18,7 +19,7 @@ import it.units.youweather.entities.City;
 import it.units.youweather.utils.ResourceHelper;
 import it.units.youweather.utils.Timing;
 
-public class WeatherCondition {
+public class WeatherCondition implements Serializable {
 
     // See https://openweathermap.org/weather-conditions for description
 

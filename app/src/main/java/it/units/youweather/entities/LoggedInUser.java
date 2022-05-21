@@ -5,6 +5,7 @@ import android.net.Uri;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 /**
@@ -12,7 +13,7 @@ import java.util.Objects;
  *
  * @author Matteo Ferfoglia
  */
-public class LoggedInUser {
+public class LoggedInUser implements Serializable {
 
     /**
      * The identifier for the user.

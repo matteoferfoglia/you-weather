@@ -4,6 +4,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Map;
 import java.util.concurrent.Executors;
@@ -22,7 +23,7 @@ import it.units.youweather.utils.Timing;
  * @author Matteo Ferfoglia
  */
 @SuppressWarnings("unused") // used for de/serialization
-public class City {
+public class City implements Serializable {
     private static final String TAG = City.class.getSimpleName();
 
     private String name;

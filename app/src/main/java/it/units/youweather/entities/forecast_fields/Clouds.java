@@ -1,6 +1,8 @@
 package it.units.youweather.entities.forecast_fields;
 
-public class Clouds {
+import java.io.Serializable;
+
+public class Clouds implements Serializable {
 
     private int all;
 

@@ -2,6 +2,7 @@ package it.units.youweather.entities;
 
 import androidx.annotation.NonNull;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
 import it.units.youweather.entities.forecast_fields.Clouds;
@@ -19,7 +20,7 @@ import it.units.youweather.utils.Timing;
  * @author Matteo Ferfoglia
  */
 @SuppressWarnings("unused") // used for de/serialization
-public class Forecast {
+public class Forecast implements Serializable {
     private Coordinates coord;
     private WeatherCondition[] weather;
     private MainForecastData main;

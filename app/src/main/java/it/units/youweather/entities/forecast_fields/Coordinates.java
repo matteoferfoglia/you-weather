@@ -4,7 +4,9 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-public class Coordinates {
+import java.io.Serializable;
+
+public class Coordinates implements Serializable {
 
     private static final String TAG = Coordinates.class.getSimpleName();
 

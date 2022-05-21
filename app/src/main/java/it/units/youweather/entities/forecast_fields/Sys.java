@@ -2,9 +2,11 @@ package it.units.youweather.entities.forecast_fields;
 
 import androidx.annotation.NonNull;
 
+import java.io.Serializable;
+
 import it.units.youweather.utils.Timing;
 
-public class Sys {
+public class Sys implements Serializable {
 
     private int type;
     private int id;
