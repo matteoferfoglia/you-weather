@@ -26,13 +26,23 @@
         android:id="@+id/search_bar_results"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:foregroundGravity="center"
         android:layout_marginHorizontal="35dp"
+        android:foregroundGravity="center"
         android:visibility="visible"
-        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/fragment_weather_viewer"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/favourite_locations_header"
+        app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/search_bar" /><!--recycler view to display our data-->
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/fragment_weather_viewer"
+        android:name="it.units.youweather.ui.logged_in_area.WeatherViewerFragment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@+id/favourite_locations_header"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/search_bar_results" /><!-- TODO: show only after the location for which the weather has to be shown was selected -->
 
     <TextView
         android:id="@+id/favourite_locations_header"
@@ -43,7 +53,7 @@
         app:layout_constraintBottom_toTopOf="@id/favourite_locations_list"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/search_bar_results" />
+        app:layout_constraintTop_toBottomOf="@id/fragment_weather_viewer" /><!-- TODO: to be showed only if at least one favourite location is set -->
 
     <ListView
         android:id="@+id/favourite_locations_list"
@@ -52,9 +62,7 @@
         app:layout_constraintBottom_toTopOf="@id/use_current_position_button"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/favourite_locations_header">
-
-    </ListView>
+        app:layout_constraintTop_toBottomOf="@id/favourite_locations_header" />
 
     <Button
         android:id="@+id/use_current_position_button"
@@ -77,6 +85,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/use_current_position_button" />
+        app:layout_constraintTop_toBottomOf="@id/use_current_position_button" /><!-- TODO: move somewhere else ? -->
 
 </androidx.constraintlayout.widget.ConstraintLayout>
