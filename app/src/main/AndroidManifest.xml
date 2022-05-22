@@ -14,6 +14,11 @@
     <!-- End permissions for osmdroid (maps) and geo-location -->
 
     <!-- Permissions for camera -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.MAIN" /><!-- for method resolveActivity to search for an handler for the intent-->
+        </intent>
+    </queries>
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-feature
         android:name="android.hardware.camera"

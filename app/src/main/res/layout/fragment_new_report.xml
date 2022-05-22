@@ -68,7 +68,7 @@
         <ImageView
             android:id="@+id/weather_condition_icon"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
+            android:layout_height="150dp"
             android:contentDescription="@string/weather_icon" />
     </LinearLayout>
 
