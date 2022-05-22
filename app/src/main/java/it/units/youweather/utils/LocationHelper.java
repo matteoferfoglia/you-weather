@@ -14,8 +14,6 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.google.gson.Gson;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -300,7 +298,7 @@ public class LocationHelper {
             try {
                 HTTPRequest req = new HTTPRequest(requestString);
                 String responseString = new HTTPResponse(req).getResponse();
-                cities = new Gson().fromJson(responseString, City[].class);
+                cities = JsonHelper.fromJson(responseString, City[].class);
             } catch (IOException e) {
                 cities = new City[0];
             }
@@ -334,7 +332,7 @@ public class LocationHelper {
         try {
             HTTPRequest req = new HTTPRequest(requestString);
             final String responseString = new HTTPResponse(req).getResponse();
-            resolvedCities = new Gson().fromJson(responseString, City[].class);
+            resolvedCities = JsonHelper.fromJson(responseString, City[].class);
         } catch (IOException e) {
             Log.e(TAG, "Unable to open HTTP connection", e);
             resolvedCities = new City[0];
@@ -393,7 +391,7 @@ public class LocationHelper {
                 HTTPRequest req = new HTTPRequest(requestString);
                 String responseString = new HTTPResponse(req).getResponse();
                 Objects.requireNonNull(consumer)
-                        .accept(new Gson().fromJson(responseString, Forecast.class));
+                        .accept(JsonHelper.fromJson(responseString, Forecast.class));
             } catch (IOException e) {
                 Objects.requireNonNull(exceptionHandler).accept(e);
             }

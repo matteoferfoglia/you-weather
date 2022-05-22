@@ -6,8 +6,6 @@ import android.util.Pair;
 
 import androidx.annotation.NonNull;
 
-import com.google.gson.Gson;
-
 import java.lang.reflect.Type;
 import java.util.Objects;
 
@@ -20,8 +18,6 @@ import java.util.Objects;
 public abstract class SharedPreferences {
 
     private static final String TAG = SharedPreferences.class.getSimpleName();
-
-    private static final Gson gson = new Gson();
 
     private static final String SHARED_PREFERENCES_NAME =
             SharedPreferences.class.getCanonicalName(); // name that's uniquely identifiable to this app
@@ -54,10 +50,10 @@ public abstract class SharedPreferences {
 
             @SuppressWarnings("unchecked")
             Pair<String, String> preferenceValue_class_value = (Pair<String, String>)
-                    gson.fromJson(preferenceValueAsJson, Pair.class);
+                    JsonHelper.fromJson(preferenceValueAsJson, Pair.class);
             try {
                 Class<?> clazz = Class.forName(preferenceValue_class_value.first);
-                return gson.fromJson(preferenceValue_class_value.second, (Type) clazz);
+                return JsonHelper.fromJson(preferenceValue_class_value.second, (Type) clazz);
             } catch (ClassNotFoundException e) {
                 Log.e(TAG, "Error in class detection", e);
                 return null;
@@ -85,7 +81,7 @@ public abstract class SharedPreferences {
                 .edit()
                 .putString(
                         sharedPreferenceName.name(),
-                        gson.toJson(new Pair<>(classCanonicalName, gson.toJson(preferenceValue))))
+                        JsonHelper.toJson(new Pair<>(classCanonicalName, JsonHelper.toJson(preferenceValue))))
                 .apply(); // asynchronous save, use commit() for blocking operation
     }
 
