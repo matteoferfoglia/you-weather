@@ -8,6 +8,7 @@ import java.util.Objects;
 
 import it.units.youweather.EnvironmentVariables;
 import it.units.youweather.utils.Conversions;
+import it.units.youweather.utils.MathHelper;
 
 /**
  * @author Matteo Ferfoglia
@@ -62,9 +63,7 @@ public class Temperature {
                 throw new IllegalStateException("Unknown temperature measure unit");
         }
 
-        // round and return
-        final double ROUNDING_FACTOR = Math.pow(10, NUM_OF_DECIMAL);
-        return Math.round(ROUNDING_FACTOR * convertedValue) / ROUNDING_FACTOR;
+        return MathHelper.roundToFixedNumOfDecimals(convertedValue, NUM_OF_DECIMAL);
     }
 
     public String getTemperatureWithMeasureUnit() {
