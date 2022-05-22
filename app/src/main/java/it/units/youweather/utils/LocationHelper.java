@@ -105,22 +105,22 @@ public class LocationHelper {
      * @param activity The activity for which this instance will work.
      */
     @SuppressLint("MissingPermission")  // checked in if-statement
-    public LocationHelper(@NonNull Activity activity) throws Permissions.MissingPermissionsException {
+    public LocationHelper(@NonNull Activity activity) throws PermissionsHelper.MissingPermissionsException {
 
         String[] neededPermissions = new String[]{   // array of needed permissions
                 Manifest.permission.ACCESS_FINE_LOCATION,   // for getting user's current position
                 Manifest.permission.WRITE_EXTERNAL_STORAGE  // for showing the map
         };
-        Permissions.requestPermissionsForActivityIfNecessary(
+        PermissionsHelper.requestPermissionsForActivityIfNecessary(
                 neededPermissions, Objects.requireNonNull(activity));
 
         // Set the LocationManager to updates (asynchronously) the user location
-        if (Permissions.arePermissionsGrantedForActivity(neededPermissions, activity)) {
+        if (PermissionsHelper.arePermissionsGrantedForActivity(neededPermissions, activity)) {
             ((LocationManager) activity.getSystemService(LOCATION_SERVICE))
                     .requestLocationUpdates(LocationManager.GPS_PROVIDER,
                             LOCATION_REFRESH_TIME, LOCATION_REFRESH_DISTANCE, locationListener);
         } else {
-            throw new Permissions.MissingPermissionsException();
+            throw new PermissionsHelper.MissingPermissionsException();
         }
 
     }

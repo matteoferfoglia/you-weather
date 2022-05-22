@@ -25,7 +25,7 @@ import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
 import it.units.youweather.databinding.FragmentMapWithReportHistoryBinding;
 import it.units.youweather.ui.MainActivity;
-import it.units.youweather.utils.Permissions;
+import it.units.youweather.utils.PermissionsHelper;
 
 /**
  * Fragment containing the map on which the history of the user's reports
@@ -100,7 +100,7 @@ public class MapWithReportHistoryFragment extends Fragment {
         mapView.getOverlays().add(mRotationGestureOverlay);
 
         // request permission if necessary
-        Permissions.requestPermissionsForActivityIfNecessary(new String[]{
+        PermissionsHelper.requestPermissionsForActivityIfNecessary(new String[]{
                 Manifest.permission.WRITE_EXTERNAL_STORAGE // required to show the map
         }, requireActivity());
 

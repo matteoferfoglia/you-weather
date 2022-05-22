@@ -24,7 +24,7 @@ import it.units.youweather.entities.City;
 import it.units.youweather.entities.forecast_fields.Coordinates;
 import it.units.youweather.entities.forecast_fields.WeatherCondition;
 import it.units.youweather.utils.LocationHelper;
-import it.units.youweather.utils.Permissions;
+import it.units.youweather.utils.PermissionsHelper;
 import it.units.youweather.utils.ResourceHelper;
 
 /**
@@ -158,7 +158,7 @@ public class NewReportFragment extends Fragment {
                             });
                 }
             });
-        } catch (Permissions.MissingPermissionsException e) {
+        } catch (PermissionsHelper.MissingPermissionsException e) {
             Log.i(TAG, "Missing permissions for location.");
             // TODO: do not allow to insert anything if missing permissions (hide the textview
             //       for location and coords and show error message in a text view)
