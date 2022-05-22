@@ -2,70 +2,94 @@
 
 <!-- TODO: this fragment must be inhibited if user's position is not available, and notify it to the user (e.g., a message "Please enable your position") -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:weightSum="2"
     tools:context=".ui.logged_in_area.NewReportFragment">
 
-    <TextView
+    <LinearLayout
+        android:id="@+id/newReportMainLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/insert_new_report" />
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@id/insertPhotoFragmentContainerView"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-    <TextView
-        android:id="@+id/location_heading"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/location_name" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/insert_new_report" />
 
-    <Spinner
-        android:id="@+id/location_name"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:prompt="@string/location_name"
-        android:spinnerMode="dialog">
-        <!-- To be populated programmatically according to user's position -->
-    </Spinner>
+        <TextView
+            android:id="@+id/location_heading"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/location_name" />
 
-    <TextView
-        android:id="@+id/location_latitude"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        <Spinner
+            android:id="@+id/location_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:prompt="@string/location_name"
+            android:spinnerMode="dialog">
+            <!-- To be populated programmatically according to user's position -->
+        </Spinner>
 
-    <TextView
-        android:id="@+id/location_longitude"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/location_latitude"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
-    <TextView
-        android:id="@+id/weather_condition_heading"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/weather_condition" />
+        <TextView
+            android:id="@+id/location_longitude"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
-    <Spinner
-        android:id="@+id/weather_condition_spinner"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:prompt="@string/weather_condition"
-        android:spinnerMode="dialog">
-        <!-- To be populated programmatically -->
-    </Spinner>
+        <TextView
+            android:id="@+id/weather_condition_heading"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/weather_condition" />
 
-    <ImageView
-        android:id="@+id/weather_condition_icon"
+        <Spinner
+            android:id="@+id/weather_condition_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:prompt="@string/weather_condition"
+            android:spinnerMode="dialog">
+            <!-- To be populated programmatically -->
+        </Spinner>
+
+        <ImageView
+            android:id="@+id/weather_condition_icon"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:contentDescription="@string/weather_icon" />
+    </LinearLayout>
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/insertPhotoFragmentContainerView"
+        android:name="it.units.youweather.ui.logged_in_area.TakeAPhotoFragment"
         android:layout_width="match_parent"
-        android:layout_height="300dp"
-        android:contentDescription="@string/weather_icon" />
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/insert_new_report_button"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/newReportMainLayout" />
 
     <Button
         android:id="@+id/insert_new_report_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/insertPhotoFragmentContainerView"
         android:text="@string/insert" />
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

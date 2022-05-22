@@ -59,7 +59,7 @@ public abstract class Authentication {
                 .setIsSmartLockEnabled(!BuildConfig.DEBUG)
                 .setAvailableProviders(                 // list of available providers here
                         Collections.singletonList(new AuthUI.IdpConfig.EmailBuilder().build())) // only email provider
-                .setLogo(R.mipmap.ic_launcher)
+                .setLogo(R.mipmap.ic_launcher)  // TODO
                 .build();
     }
 

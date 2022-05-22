@@ -85,6 +85,9 @@
     <string name="weather_icon">Weather icon</string>
     <string name="use_current_position">Use current position</string>
     <string name="no_results">No results</string>
+    <string name="take_a_photo">Take a photo</string>
+    <string name="photo_from_the_user_for_report">Photo taken by the user for the insertion report</string>
+    <string name="take_another_photo">Take another photo and replace</string>
 
     <!-- TODO: missing translations -->
 </resources>
