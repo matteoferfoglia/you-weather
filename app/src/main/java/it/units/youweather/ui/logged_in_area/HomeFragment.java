@@ -117,6 +117,27 @@ public class HomeFragment extends Fragment {
             }
         });
         viewBinding.authButton.setOnClickListener(_view -> signOut());
+
+        collapseKeyboardForSearchBox();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        collapseKeyboardForSearchBox();
+    }
+
+    /**
+     * Avoid the keyboard to show up by default for text insertion
+     * in the search box. This method should be invoked in {@link #onViewCreated(View, Bundle)}
+     * and in {@link #onResume()} to avoid the keyboard to automatic show up.
+     * The desired behaviour is that the keyboard shows up only after the user
+     * clicked on the search box.
+     */
+    private void collapseKeyboardForSearchBox() {
+        viewBinding.searchBar.clearFocus();
+        requireView().getRootView().requestFocus();
+        viewBinding.searchBar.onActionViewCollapsed();
     }
 
     /**

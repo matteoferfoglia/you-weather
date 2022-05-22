@@ -34,11 +34,10 @@
         </activity>
         <activity
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustPan"
+            android:windowSoftInputMode="stateHidden|adjustPan"
             android:name=".ui.MainActivity"
             android:exported="false"
             tools:ignore="LockedOrientationActivity" /> <!-- adjustPan avoid the navigation bar to move up when the keyboard appears -->
-        <!-- TODO: avoid soft keyboard to show on startup -->
     </application>
 
 </manifest>
