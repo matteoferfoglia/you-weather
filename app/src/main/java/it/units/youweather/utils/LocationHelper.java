@@ -289,7 +289,7 @@ public class LocationHelper {
     public static void getCitiesFromNameAndConsume(@NonNull String cityName,
                                                    @NonNull Consumer<City[]> cityArrayConsumer) {
         new Thread(() -> {
-            String requestString = "https://api.openweathermap.org/geo/1.0/direct?"
+            String requestString = "http://api.openweathermap.org/geo/1.0/direct?"
                     + "q=" + Objects.requireNonNull(cityName)
                     //+ "&limit=10"
                     + "&appid=" + OPEN_WEATHER_MAP_API_KEY;
@@ -324,7 +324,7 @@ public class LocationHelper {
 
         // Reverse Geocoding API to resolve coordinates into cities
 
-        final String requestString = "https://api.openweathermap.org/geo/1.0/reverse?"
+        final String requestString = "http://api.openweathermap.org/geo/1.0/reverse?"
                 + "lat=" + Objects.requireNonNull(coordinates).getLat()
                 + "&lon=" + coordinates.getLon()
                 + "&appid=" + OPEN_WEATHER_MAP_API_KEY;
@@ -334,7 +334,7 @@ public class LocationHelper {
             final String responseString = new HTTPResponse(req).getResponse();
             resolvedCities = JsonHelper.fromJson(responseString, City[].class);
         } catch (IOException e) {
-            Log.e(TAG, "Unable to open HTTP connection", e);
+            Log.e(TAG, "Unable to open HTTP connection. Error is: " + e.getMessage(), e);
             resolvedCities = new City[0];
         }
 
@@ -383,7 +383,7 @@ public class LocationHelper {
             @NonNull Consumer<Forecast> consumer,
             @NonNull Consumer<IOException> exceptionHandler) {
         new Thread(() -> {
-            String requestString = "https://api.openweathermap.org/data/2.5/weather?"
+            String requestString = "http://api.openweathermap.org/data/2.5/weather?"
                     + "lat=" + Objects.requireNonNull(coordinates).getLat()
                     + "&lon=" + coordinates.getLon()
                     + "&appid=" + OPEN_WEATHER_MAP_API_KEY;

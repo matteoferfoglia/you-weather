@@ -279,8 +279,8 @@ public class WeatherCondition implements Serializable {
                 millisFromEpochTo8pm = eightPMOfToday.getTimeInMillis();
             }
 
-            sunriseAtCityInSecondsSinceEpoch = millisFromEpochTo8am;
-            sunsetAtCityInSecondsSinceEpoch = millisFromEpochTo8pm;
+            sunriseAtCityInSecondsSinceEpoch = millisFromEpochTo8am / SECONDS_TO_MILLIS_FACTOR;
+            sunsetAtCityInSecondsSinceEpoch = millisFromEpochTo8pm / SECONDS_TO_MILLIS_FACTOR;
 
         }
 

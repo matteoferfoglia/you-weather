@@ -98,7 +98,7 @@ public class NewReportFragment extends Fragment {
                                             final AtomicReference<String> currentSelectedWeatherCondition = new AtomicReference<>(null);
 
                                             // Weather icon setter
-                                            Thread weatherIconSetter = new Thread(() -> {
+                                            final Runnable weatherIconSetter = () -> {
                                                 String currentSelectedWeatherConditionLocal = currentSelectedWeatherCondition.get();
                                                 try {
                                                     if (currentSelectedWeatherConditionLocal != null) {
@@ -116,7 +116,8 @@ public class NewReportFragment extends Fragment {
                                                     Log.e(TAG, "Error getting icon for weather condition \""
                                                             + currentSelectedWeatherConditionLocal + "\"", e);
                                                 }
-                                            });
+                                            };
+                                            new Thread(weatherIconSetter).start();
 
                                             // Drop-down menu for choosing the weather condition
                                             ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(
@@ -129,7 +130,7 @@ public class NewReportFragment extends Fragment {
                                                 @Override
                                                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                                                     currentSelectedWeatherCondition.set(arrayAdapter.getItem((int) id));
-                                                    weatherIconSetter.start();
+                                                    new Thread(weatherIconSetter).start();
                                                 }
 
                                                 @Override
