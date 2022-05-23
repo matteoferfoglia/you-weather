@@ -140,7 +140,7 @@ public class LocationHelper {
      */
     @SuppressWarnings({"serial", "RedundantSuppression"})
     // "serial": helper class, not to be serialized; "RedundantSuppression": IDE says redundant suppression for "serial", Xlint instead warns
-    private static class UnavailablePositionException extends Throwable {
+    public static class UnavailablePositionException extends Throwable {
         UnavailablePositionException() {
             super();
         }

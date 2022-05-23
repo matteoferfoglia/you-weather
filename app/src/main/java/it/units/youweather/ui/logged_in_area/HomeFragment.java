@@ -1,6 +1,8 @@
 package it.units.youweather.ui.logged_in_area;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -25,8 +27,10 @@ import java.util.Objects;
 import it.units.youweather.R;
 import it.units.youweather.databinding.FragmentHomeBinding;
 import it.units.youweather.entities.City;
+import it.units.youweather.entities.forecast_fields.Coordinates;
 import it.units.youweather.ui.LoginActivity;
 import it.units.youweather.utils.LocationHelper;
+import it.units.youweather.utils.PermissionsHelper;
 import it.units.youweather.utils.ResourceHelper;
 import it.units.youweather.utils.auth.Authentication;
 
@@ -40,6 +44,11 @@ public class HomeFragment extends Fragment {
      */
     private final static String TAG = HomeFragment.class.getSimpleName();
     private FragmentHomeBinding viewBinding;
+
+    /**
+     * Cache for the current user's location.
+     */
+    private Location userLocation = null;
 
     /**
      * Signs the user out.
@@ -115,6 +124,33 @@ public class HomeFragment extends Fragment {
             public boolean onQueryTextChange(String newText) {
                 return false;
             }
+        });
+
+        try {
+            new LocationHelper(requireActivity()).addPositionChangeListener(location -> {
+                if (location != null) {
+                    this.userLocation = location;
+                }
+            });
+        } catch (PermissionsHelper.MissingPermissionsException e) {
+            Log.e(TAG, "Error getting user's location", e);
+        }
+
+        viewBinding.useCurrentPositionButton.setOnClickListener(view_ -> {
+            new Thread(() -> {
+                City[] citiesForCurrentUserPosition = userLocation == null
+                        ? new City[0]
+                        : LocationHelper.getCitiesFromCoordinates(
+                        new Coordinates(
+                                userLocation.getLatitude(),
+                                userLocation.getLongitude()));
+                if (citiesForCurrentUserPosition.length > 0) {
+                    showWeatherForCity(getFragmentManager(requireView()), citiesForCurrentUserPosition[0]);
+                } else {
+                    Toast.makeText(requireContext(), R.string.Not_found_city_for_user_position, Toast.LENGTH_LONG)
+                            .show();
+                }
+            }).start();
         });
         viewBinding.authButton.setOnClickListener(_view -> signOut());
 
@@ -204,12 +240,7 @@ public class HomeFragment extends Fragment {
             View view = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.text_row_item_in_dropdown, parent, false);
 
-            FragmentContainerView navHostFragmentContainer = parent.getRootView()
-                    .findViewById(R.id.nav_host_fragment_container_activity_main);
-
-            // The parent fragment manager needed for data exchanging with other fragments
-            FragmentManager parentFragmentManager = navHostFragmentContainer
-                    .getFragment().getParentFragmentManager();
+            FragmentManager parentFragmentManager = HomeFragment.getFragmentManager(parent.getRootView());
 
             view.setOnClickListener(view_ -> {  // define onClickListener for items
 
@@ -225,16 +256,7 @@ public class HomeFragment extends Fragment {
                 }
                 City clickedCity = localDataset[itemPosition];
 
-                Bundle selectedLocationForWeatherViewerFragment_bundle = new Bundle();
-                selectedLocationForWeatherViewerFragment_bundle
-                        .putSerializable(
-                                WeatherViewerFragment.CITY_TO_BE_SHOWED_BUNDLE_KEY,
-                                clickedCity);
-
-                parentFragmentManager
-                        .setFragmentResult(
-                                WeatherViewerFragment.CITY_TO_BE_SHOWED_REQUEST_KEY,
-                                selectedLocationForWeatherViewerFragment_bundle);
+                showWeatherForCity(parentFragmentManager, clickedCity);
 
                 // Clear the old query from the search bar
                 searchBar.setQuery("", false);  // remove the old query
@@ -258,6 +280,44 @@ public class HomeFragment extends Fragment {
             return localDataset.length;
         }
 
+    }
+
+    /**
+     * @param view Th {@link View}
+     * @return The {@link FragmentManager} for the given {@link View}.
+     */
+    @NonNull
+    private static FragmentManager getFragmentManager(@NonNull View view) {
+
+        @SuppressLint("UseRequireInsteadOfGet") // cannot be replaced with require in this case
+        FragmentContainerView navHostFragmentContainer = Objects.requireNonNull(view)
+                .getRootView()
+                .findViewById(R.id.nav_host_fragment_container_activity_main);
+
+        // The parent fragment manager needed for data exchanging with other fragments
+        return navHostFragmentContainer.getFragment().getParentFragmentManager();
+    }
+
+    /**
+     * Pass the city for which the weather must be showed to {@link WeatherViewerFragment}
+     * and show the weather.
+     *
+     * @param parentFragmentManager The parent fragment manager to handle
+     *                              fragments.
+     * @param city                  The {@link City} for which the weather forecast
+     *                              must be showed.
+     */
+    private static void showWeatherForCity(@NonNull FragmentManager parentFragmentManager,
+                                           @NonNull City city) {
+        Bundle selectedLocationForWeatherViewerFragment_bundle = new Bundle();
+        selectedLocationForWeatherViewerFragment_bundle
+                .putSerializable(
+                        WeatherViewerFragment.CITY_TO_BE_SHOWED_BUNDLE_KEY,
+                        Objects.requireNonNull(city));
+        Objects.requireNonNull(parentFragmentManager)
+                .setFragmentResult(
+                        WeatherViewerFragment.CITY_TO_BE_SHOWED_REQUEST_KEY,
+                        Objects.requireNonNull(selectedLocationForWeatherViewerFragment_bundle));
     }
 
 }

@@ -89,6 +89,7 @@
     <string name="photo_from_the_user_for_report">Photo taken by the user for the insertion report</string>
     <string name="take_another_photo">Take another photo and replace</string>
     <string name="no_app_for_action">There is no app that support this action</string>
+    <string name="Not_found_city_for_user_position">No city found for your position</string>
 
     <!-- TODO: missing translations -->
 </resources>

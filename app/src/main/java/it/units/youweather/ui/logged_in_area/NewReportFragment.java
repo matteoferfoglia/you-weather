@@ -49,6 +49,7 @@ public class NewReportFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        // TODO : problems with daily/nightly icons
         // Inflate the layout for this fragment
         FragmentNewReportBinding viewBinding = FragmentNewReportBinding.inflate(getLayoutInflater());
 
