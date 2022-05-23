@@ -33,6 +33,8 @@ import it.units.youweather.utils.ResourceHelper;
  */
 public class NewReportFragment extends Fragment {
 
+    // TODO: this fragment is very slow to load
+
     /**
      * TAG for the logger.
      */
@@ -82,80 +84,80 @@ public class NewReportFragment extends Fragment {
                                         requireActivity(), android.R.layout.simple_spinner_item, locationNames);
                                 arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-                                requireActivity().runOnUiThread(() -> {
-                                    viewBinding.locationName.setAdapter(arrayAdapter);
-                                    viewBinding.locationName.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                                        @Override
-                                        public void onItemSelected(AdapterView<?> parent, View view, int position, long cityIndex) {
-                                            cityMatchingCurrentUserPosition = cities[(int) cityIndex];
+                                requireActivity().runOnUiThread(() ->
+                                        viewBinding.locationName.setAdapter(arrayAdapter));
+                                viewBinding.locationName.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                                    @Override
+                                    public void onItemSelected(AdapterView<?> parent, View view, int position, long cityIndex) {
+                                        cityMatchingCurrentUserPosition = cities[(int) cityIndex];
 
-                                            // TODO: refactor needed
+                                        // TODO: refactor needed
 
-                                            // TODO : what if coordinates do not map to any city?
-                                            // TODO : add fields to create a Forecast object (temperature, ...): only the location and the weather condition are mandatory, otherwise user cannot proceed with insertion
+                                        // TODO : what if coordinates do not map to any city?
+                                        // TODO : add fields to create a Forecast object (temperature, ...): only the location and the weather condition are mandatory, otherwise user cannot proceed with insertion
 
-                                            // Reference to the current selected weather condition
-                                            final AtomicReference<String> currentSelectedWeatherCondition = new AtomicReference<>(null);
+                                        // Reference to the current selected weather condition
+                                        final AtomicReference<String> currentSelectedWeatherCondition = new AtomicReference<>(null);
 
-                                            // Weather icon setter
-                                            final Runnable weatherIconSetter = () -> {
+                                        // Weather icon setter
+                                        final Runnable weatherIconSetter = () -> {
+                                            new Thread(() -> {
                                                 String currentSelectedWeatherConditionLocal = currentSelectedWeatherCondition.get();
                                                 try {
-                                                    if (currentSelectedWeatherConditionLocal != null) {
-                                                        InputStream iconIS = new URL(WeatherCondition
-                                                                .getIconUrlForDescription(currentSelectedWeatherConditionLocal, cityMatchingCurrentUserPosition))
-                                                                .openStream();
-                                                        Drawable weatherIcon = Drawable.createFromStream(iconIS, "weatherIcon");
-
-                                                        requireActivity().runOnUiThread(() ->
-                                                                viewBinding.weatherConditionIcon.setImageDrawable(weatherIcon));
-                                                    } else {
-                                                        throw new NullPointerException();
+                                                    if (currentSelectedWeatherConditionLocal == null) {
+                                                        currentSelectedWeatherConditionLocal = ResourceHelper.getResString(R.string.WEATHER800);
                                                     }
+                                                    InputStream iconIS = new URL(WeatherCondition
+                                                            .getIconUrlForDescription(currentSelectedWeatherConditionLocal, cityMatchingCurrentUserPosition))
+                                                            .openStream();
+                                                    Drawable weatherIcon = Drawable.createFromStream(iconIS, "weatherIcon");
+
+                                                    requireActivity().runOnUiThread(() ->
+                                                            viewBinding.weatherConditionIcon.setImageDrawable(weatherIcon));
                                                 } catch (NullPointerException | IOException e) {
                                                     Log.e(TAG, "Error getting icon for weather condition \""
                                                             + currentSelectedWeatherConditionLocal + "\"", e);
                                                 }
-                                            };
-                                            new Thread(weatherIconSetter).start();
+                                            }).start();
+                                        };
+                                        weatherIconSetter.run();
 
-                                            // Drop-down menu for choosing the weather condition
-                                            ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(
-                                                    requireActivity(), android.R.layout.simple_spinner_item, WeatherCondition.getWeatherDescriptions());
-                                            arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                                            final int spinnerPosition_sunny = arrayAdapter.getPosition(ResourceHelper.getResString(R.string.WEATHER800)); // clear sky
-                                            viewBinding.weatherConditionSpinner.setAdapter(arrayAdapter);
-                                            viewBinding.weatherConditionSpinner.setSelection(spinnerPosition_sunny);
-                                            viewBinding.weatherConditionSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {    // TODO
-                                                @Override
-                                                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                                                    currentSelectedWeatherCondition.set(arrayAdapter.getItem((int) id));
-                                                    new Thread(weatherIconSetter).start();
-                                                }
-
-                                                @Override
-                                                public void onNothingSelected(AdapterView<?> parent) {
-                                                }
-                                            });
-
-
-                                            // Insertion button
-                                            viewBinding.insertNewReportButton.setOnClickListener(_view -> {
-                                                // TODO : insert action when click on button
-                                                Log.i(TAG, "Selected: " + currentSelectedWeatherCondition.get());
-                                            });
-
-                                        }
-
-                                        @Override
-                                        public void onNothingSelected(AdapterView<?> parent) {
-                                            if (cities.length > 0) {
-                                                cityMatchingCurrentUserPosition = cities[0];
+                                        // Drop-down menu for choosing the weather condition
+                                        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(
+                                                requireActivity(), android.R.layout.simple_spinner_item, WeatherCondition.getWeatherDescriptions());
+                                        arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                                        final int spinnerPosition_sunny = arrayAdapter.getPosition(ResourceHelper.getResString(R.string.WEATHER800)); // clear sky
+                                        viewBinding.weatherConditionSpinner.setAdapter(arrayAdapter);
+                                        viewBinding.weatherConditionSpinner.setSelection(spinnerPosition_sunny);
+                                        viewBinding.weatherConditionSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {    // TODO
+                                            @Override
+                                            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                                                currentSelectedWeatherCondition.set(arrayAdapter.getItem((int) id));
+                                                weatherIconSetter.run();
                                             }
-                                        }
-                                    });
-                                });
 
+                                            @Override
+                                            public void onNothingSelected(AdapterView<?> parent) {
+                                                weatherIconSetter.run();
+                                            }
+                                        });
+
+
+                                        // Insertion button
+                                        viewBinding.insertNewReportButton.setOnClickListener(_view -> {
+                                            // TODO : insert action when click on button
+                                            Log.i(TAG, "Selected: " + currentSelectedWeatherCondition.get());
+                                        });
+
+                                    }
+
+                                    @Override
+                                    public void onNothingSelected(AdapterView<?> parent) {
+                                        if (cities.length > 0) {
+                                            cityMatchingCurrentUserPosition = cities[0];
+                                        }
+                                    }
+                                });
                             });
                 }
             });
