@@ -39,6 +39,10 @@ import it.units.youweather.utils.auth.Authentication;
  */
 public class HomeFragment extends Fragment {
 
+    // TODO: on a new device, when the user has not granted the permission to use the location
+    //       an error is printed in Logcat and the view does not update even after granting.
+    // TODO: the same happens fot Take A Photo (which does not appear) in the NewReportFragment
+
     /**
      * TAG for logger.
      */

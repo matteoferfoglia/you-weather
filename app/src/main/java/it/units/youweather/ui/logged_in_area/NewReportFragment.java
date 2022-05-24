@@ -36,7 +36,11 @@ import it.units.youweather.utils.storage.helpers.DBHelper;
  */
 public class NewReportFragment extends Fragment {
 
-    // TODO: this fragment is very slow to load
+    // TODO: this fragment is very slow to load on real devices (the problem is with the location)
+
+    // TODO: on a new device, when the user has not granted the permission to use the location
+    //       an error is printed in Logcat and the view does not update even after granting.
+    // TODO: the same happens fot Take A Photo (which does not appear) in the NewReportFragment
 
     /**
      * TAG for the logger.
@@ -184,6 +188,7 @@ public class NewReportFragment extends Fragment {
                             Toast.makeText(requireContext(), R.string.cannot_insert_without_location, Toast.LENGTH_LONG)
                                     .show());
                 }
+                // TODO: clear the fragment after having saved the data into the DB
             }).start();
         });
 
