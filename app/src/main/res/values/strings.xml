@@ -90,6 +90,7 @@
     <string name="take_another_photo">Take another photo and replace</string>
     <string name="no_app_for_action">There is no app that support this action</string>
     <string name="Not_found_city_for_user_position">No city found for your position</string>
+    <string name="cannot_insert_without_location">Cannot insert without a location</string>
 
     <!-- TODO: missing translations -->
 </resources>

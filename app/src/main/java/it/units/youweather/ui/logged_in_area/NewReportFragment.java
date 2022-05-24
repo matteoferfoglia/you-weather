@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -23,9 +24,11 @@ import it.units.youweather.databinding.FragmentNewReportBinding;
 import it.units.youweather.entities.City;
 import it.units.youweather.entities.forecast_fields.Coordinates;
 import it.units.youweather.entities.forecast_fields.WeatherCondition;
+import it.units.youweather.entities.storage.WeatherReport;
 import it.units.youweather.utils.LocationHelper;
 import it.units.youweather.utils.PermissionsHelper;
 import it.units.youweather.utils.ResourceHelper;
+import it.units.youweather.utils.storage.helpers.DBHelper;
 
 /**
  * Fragment allowing the user to insert a new report
@@ -143,13 +146,6 @@ public class NewReportFragment extends Fragment {
                                             }
                                         });
 
-
-                                        // Insertion button
-                                        viewBinding.insertNewReportButton.setOnClickListener(_view -> {
-                                            // TODO : insert action when click on button
-                                            Log.i(TAG, "Selected: " + currentSelectedWeatherCondition.get());
-                                        });
-
                                     }
 
                                     @Override
@@ -165,8 +161,30 @@ public class NewReportFragment extends Fragment {
         } catch (PermissionsHelper.MissingPermissionsException e) {
             Log.i(TAG, "Missing permissions for location.");
             // TODO: do not allow to insert anything if missing permissions (hide the textview
-            //       for location and coords and show error message in a text view)
+            //       for location and cords and show error message in a text view)
         }
+
+        // Insertion button
+        viewBinding.insertNewReportButton.setOnClickListener(view_ -> {
+            new Thread(() -> {
+                if (cityMatchingCurrentUserPosition != null) {
+                    double latitude = Double.parseDouble(viewBinding.locationLatitude.getText().toString());
+                    double longitude = Double.parseDouble(viewBinding.locationLongitude.getText().toString());
+                    WeatherReport weatherReport = new WeatherReport(
+                            cityMatchingCurrentUserPosition,
+                            new Coordinates(latitude, longitude),
+                            WeatherCondition.getInstancesForDescription((String) viewBinding.weatherConditionSpinner.getSelectedItem())[0/* TODO: create the real WeatherCondition instance, with the correct icon, and save it */],
+                            null/* Pass picture from child fragment */);
+                    DBHelper.push(
+                            weatherReport,
+                            () -> Log.d(TAG, "Pushed to DB " + weatherReport),
+                            () -> Log.e(TAG, "Unable to push to DB " + weatherReport));
+                } else {
+                    Toast.makeText(requireContext(), R.string.cannot_insert_without_location, Toast.LENGTH_LONG)
+                            .show();
+                }
+            }).start();
+        });
 
         return viewBinding.getRoot();
     }
