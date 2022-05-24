@@ -180,8 +180,9 @@ public class NewReportFragment extends Fragment {
                             () -> Log.d(TAG, "Pushed to DB " + weatherReport),
                             () -> Log.e(TAG, "Unable to push to DB " + weatherReport));
                 } else {
-                    Toast.makeText(requireContext(), R.string.cannot_insert_without_location, Toast.LENGTH_LONG)
-                            .show();
+                    requireActivity().runOnUiThread(() ->
+                            Toast.makeText(requireContext(), R.string.cannot_insert_without_location, Toast.LENGTH_LONG)
+                                    .show());
                 }
             }).start();
         });

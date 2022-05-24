@@ -284,7 +284,7 @@ public class WeatherCondition implements Serializable {
 
         }
 
-        boolean isDay =
+        boolean isDay = // TODO: fix this: showed icons are wrong
                 sunriseAtCityInSecondsSinceEpoch <= currentSecondsSinceEpoch
                         && currentSecondsSinceEpoch <= sunsetAtCityInSecondsSinceEpoch;
 

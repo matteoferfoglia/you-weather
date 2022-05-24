@@ -25,7 +25,7 @@ import it.units.youweather.utils.PermissionsHelper;
 import it.units.youweather.utils.PicturesHelper;
 import it.units.youweather.utils.ResourceHelper;
 
-public class TakeAPhotoFragment extends Fragment {
+public class TakeAPhotoFragment extends Fragment {  // TODO: check if photos are saved in the gallery
 
     /**
      * TAG for logger.

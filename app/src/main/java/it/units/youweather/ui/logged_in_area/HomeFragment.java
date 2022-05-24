@@ -147,8 +147,9 @@ public class HomeFragment extends Fragment {
                 if (citiesForCurrentUserPosition.length > 0) {
                     showWeatherForCity(getFragmentManager(requireView()), citiesForCurrentUserPosition[0]);
                 } else {
-                    Toast.makeText(requireContext(), R.string.Not_found_city_for_user_position, Toast.LENGTH_LONG)
-                            .show();
+                    requireActivity().runOnUiThread(() ->
+                            Toast.makeText(requireContext(), R.string.Not_found_city_for_user_position, Toast.LENGTH_LONG)
+                                    .show());
                 }
             }).start();
         });

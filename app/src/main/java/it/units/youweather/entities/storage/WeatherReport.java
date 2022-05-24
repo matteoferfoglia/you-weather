@@ -36,6 +36,12 @@ public class WeatherReport extends DBEntity implements Serializable {
     private volatile WeatherCondition weatherCondition;
 
     /**
+     * The milliseconds elapsed since Epoch to the instant
+     * in which the instance has been created.
+     */
+    private volatile long millisecondsSinceEpoch;
+
+    /**
      * The {@link Bitmap photo} taken by the user for this report.
      */
     private volatile Bitmap picture;
@@ -47,6 +53,7 @@ public class WeatherReport extends DBEntity implements Serializable {
         this.coordinates = Objects.requireNonNull(coordinates);
         this.weatherCondition = Objects.requireNonNull(weatherCondition);
         this.picture = picture;
+        this.millisecondsSinceEpoch = System.currentTimeMillis();
     }
 
     public WeatherReport(City city, Coordinates coordinates, WeatherCondition weatherCondition) {
@@ -87,6 +94,25 @@ public class WeatherReport extends DBEntity implements Serializable {
 
     public void setPicture(@NonNull Bitmap picture) {
         this.picture = Objects.requireNonNull(picture);
+    }
+
+    public long getMillisecondsSinceEpoch() {
+        return millisecondsSinceEpoch;
+    }
+
+    public void setMillisecondsSinceEpoch(long millisecondsSinceEpoch) {
+        this.millisecondsSinceEpoch = millisecondsSinceEpoch;
+    }
+
+    @Override
+    public String toString() {
+        return "WeatherReport{" +
+                "city=" + city +
+                ", coordinates=" + coordinates +
+                ", weatherCondition=" + weatherCondition +
+                ", millisecondsSinceEpoch=" + millisecondsSinceEpoch +
+                ", picture=" + picture +
+                '}';
     }
 
     @Override
