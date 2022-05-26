@@ -73,8 +73,8 @@ public class City implements Serializable {
             nextMidnight.add(Calendar.DATE, 1);
 
             final int SECONDS_TO_MILLISECONDS_CONVERSION_FACTOR = 1_000;
-            final long secondsSinceMidnight = (System.currentTimeMillis() - lastMidnight.getTimeInMillis()) / SECONDS_TO_MILLISECONDS_CONVERSION_FACTOR;
-            final long secondsToMidnight = (nextMidnight.getTimeInMillis() - System.currentTimeMillis()) / SECONDS_TO_MILLISECONDS_CONVERSION_FACTOR;
+            final long secondsSinceMidnight = (Timing.getMillisSinceEpoch() - lastMidnight.getTimeInMillis()) / SECONDS_TO_MILLISECONDS_CONVERSION_FACTOR;
+            final long secondsToMidnight = (nextMidnight.getTimeInMillis() - Timing.getMillisSinceEpoch()) / SECONDS_TO_MILLISECONDS_CONVERSION_FACTOR;
             final long SECONDS_IN_A_DAY = 3600 * 24;
 
             Log.d(TAG, "Since midnight: " + secondsSinceMidnight

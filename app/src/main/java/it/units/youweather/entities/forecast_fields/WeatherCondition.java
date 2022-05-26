@@ -254,7 +254,7 @@ public class WeatherCondition implements Serializable {
             @NonNull String weatherDescription, @NonNull City city) {
 
         final int SECONDS_TO_MILLIS_FACTOR = 1_000;
-        final long currentSecondsSinceEpoch = System.currentTimeMillis() / SECONDS_TO_MILLIS_FACTOR;
+        final long currentSecondsSinceEpoch = Timing.getMillisSinceEpoch() / SECONDS_TO_MILLIS_FACTOR;
         long sunriseAtCityInSecondsSinceEpoch = city.getSunriseUTCTimeInSecondsSinceEpochOrInvalidInitialization();
         long sunsetAtCityInSecondsSinceEpoch = city.getSunriseUTCTimeInSecondsSinceEpochOrInvalidInitialization();
 

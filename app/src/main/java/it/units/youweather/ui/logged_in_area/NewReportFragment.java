@@ -28,6 +28,7 @@ import it.units.youweather.entities.storage.WeatherReport;
 import it.units.youweather.utils.LocationHelper;
 import it.units.youweather.utils.PermissionsHelper;
 import it.units.youweather.utils.ResourceHelper;
+import it.units.youweather.utils.auth.Authentication;
 import it.units.youweather.utils.storage.helpers.DBHelper;
 
 /**
@@ -175,6 +176,7 @@ public class NewReportFragment extends Fragment {
                     double latitude = Double.parseDouble(viewBinding.locationLatitude.getText().toString());
                     double longitude = Double.parseDouble(viewBinding.locationLongitude.getText().toString());
                     WeatherReport weatherReport = new WeatherReport(
+                            Authentication.getCurrentlySignedInUserOrNull(requireContext()),
                             cityMatchingCurrentUserPosition,
                             new Coordinates(latitude, longitude),
                             WeatherCondition.getInstancesForDescription((String) viewBinding.weatherConditionSpinner.getSelectedItem())[0/* TODO: create the real WeatherCondition instance, with the correct icon, and save it */],

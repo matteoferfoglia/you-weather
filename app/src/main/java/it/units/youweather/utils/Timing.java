@@ -24,6 +24,13 @@ public abstract class Timing {
     }
 
     /**
+     * @return the value of {@link Date#getTime()}.
+     */
+    public static long getMillisSinceEpoch() {
+        return new Date().getTime();
+    }
+
+    /**
      * @param millisSinceEpoch Milliseconds elapsed since Epoch.
      * @return The locale date-time (as {@link String}) obtained from the conversion
      * of the given parameter (milliseconds since epoch).
@@ -36,6 +43,6 @@ public abstract class Timing {
      * @return The locale date-time (as {@link String}) at the current instant.
      */
     public static String getCurrentLocaleDateTime() {
-        return SimpleDateFormat.getDateTimeInstance().format(new Date(System.currentTimeMillis()));
+        return convertMillisSinceEpochToLocale(Timing.getMillisSinceEpoch());
     }
 }

@@ -9,8 +9,10 @@ import java.io.Serializable;
 import java.util.Objects;
 
 import it.units.youweather.entities.City;
+import it.units.youweather.entities.LoggedInUser;
 import it.units.youweather.entities.forecast_fields.Coordinates;
 import it.units.youweather.entities.forecast_fields.WeatherCondition;
+import it.units.youweather.utils.Timing;
 import it.units.youweather.utils.storage.entities.DBEntity;
 
 /**
@@ -46,18 +48,38 @@ public class WeatherReport extends DBEntity implements Serializable {
      */
     private volatile Bitmap picture;
 
-    public WeatherReport(@NonNull City city, @NonNull Coordinates coordinates,
+    /**
+     * The {@link it.units.youweather.entities.LoggedInUser} who reported this instance.
+     */
+    private volatile LoggedInUser reporter;
+
+
+    /**
+     * Creates a new instance of this class.
+     *
+     * @param reporter         The {@link LoggedInUser} that made this report.
+     * @param city             The {@link City} to which this instance refers to.
+     * @param coordinates      The {@link Coordinates} (more precise than the
+     *                         {@link City}) to which this instance refers to.
+     * @param weatherCondition The {@link WeatherCondition} for this instance.
+     * @param picture          The {@link Bitmap photo} for this instance.
+     */
+    public WeatherReport(@NonNull LoggedInUser reporter,
+                         @NonNull City city, @NonNull Coordinates coordinates,
                          @NonNull WeatherCondition weatherCondition, @Nullable Bitmap picture) {
         this();
+        this.reporter = Objects.requireNonNull(reporter);
         this.city = Objects.requireNonNull(city);
         this.coordinates = Objects.requireNonNull(coordinates);
         this.weatherCondition = Objects.requireNonNull(weatherCondition);
         this.picture = picture;
-        this.millisecondsSinceEpoch = System.currentTimeMillis();
+        this.millisecondsSinceEpoch = Timing.getMillisSinceEpoch();
     }
 
-    public WeatherReport(City city, Coordinates coordinates, WeatherCondition weatherCondition) {
-        this(city, coordinates, weatherCondition, null);
+    public WeatherReport(@NonNull LoggedInUser reporter,
+                         @NonNull City city, @NonNull Coordinates coordinates,
+                         @NonNull WeatherCondition weatherCondition) {
+        this(reporter, city, coordinates, weatherCondition, null);
     }
 
     private WeatherReport() {
