@@ -91,20 +91,24 @@
 
             <TextView
                 android:id="@+id/history_table_date_time"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_weight="1"
                 android:text="@string/date_time" />
 
             <TextView
                 android:id="@+id/history_table_location"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:text="@string/location" />
 
             <TextView
                 android:id="@+id/history_table_date_time_weather"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:text="@string/weather" />
         </TableRow>
 

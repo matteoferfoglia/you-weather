@@ -1,6 +1,7 @@
 package it.units.youweather.entities.storage;
 
 import android.graphics.Bitmap;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -14,6 +15,7 @@ import it.units.youweather.entities.forecast_fields.Coordinates;
 import it.units.youweather.entities.forecast_fields.WeatherCondition;
 import it.units.youweather.utils.Timing;
 import it.units.youweather.utils.storage.entities.DBEntity;
+import it.units.youweather.utils.storage.helpers.DBHelper;
 
 /**
  * This class is a weather report that can be created by the user.
@@ -53,6 +55,23 @@ public class WeatherReport extends DBEntity implements Serializable {
      */
     private volatile LoggedInUser reporter;
 
+    /**
+     * TAG for Logger.
+     */
+    private static final String TAG = WeatherReport.class.getSimpleName();
+
+    /**
+     * Register this class to be used with the database.
+     */
+    public static void registerThisClassForDB() {
+        if (!registeredClasses.contains(WeatherReport.class)) {
+            DBHelper.registerEntityClass(WeatherReport.class,
+                    createdEntity -> Log.d(TAG, "CREATED " + createdEntity),
+                    removedEntity -> Log.d(TAG, "REMOVED " + removedEntity),
+                    updatedEntity -> Log.d(TAG, "UPDATED " + updatedEntity));
+            registeredClasses.add(WeatherReport.class);
+        }
+    }
 
     /**
      * Creates a new instance of this class.

@@ -1,5 +1,9 @@
 package it.units.youweather.utils.storage.helpers;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+import java.util.Collection;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -16,7 +20,6 @@ import it.units.youweather.utils.storage.helpers.firebase_rtdb.FirebaseRTDBEntit
  * @author Matteo Ferfoglia
  */
 public class DBHelper {
-
     /**
      * {@link ConcurrentMap} containing all the tables of the database.
      */
@@ -71,6 +74,15 @@ public class DBHelper {
      */
     public static void push(DBEntity newTuple) {
         getInstance(Objects.requireNonNull(newTuple).getClass()).push(newTuple);
+    }
+
+    /**
+     * See {@link DBEntityHelper#push(DBEntity, Runnable, Runnable)}.
+     */
+    public static <T extends DBEntity> void pull(Class<T> entityClass,
+                                                 @NonNull Consumer<Collection<T>> onSuccess,
+                                                 @Nullable Runnable onError) {
+        getInstance(Objects.requireNonNull(entityClass)).pull(onSuccess, onError);
     }
 
     /**

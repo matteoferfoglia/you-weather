@@ -1,5 +1,10 @@
 package it.units.youweather.utils.storage.helpers;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+import java.util.Collection;
+
 import it.units.youweather.utils.functionals.Consumer;
 import it.units.youweather.utils.storage.entities.DBEntity;
 
@@ -13,7 +18,7 @@ import it.units.youweather.utils.storage.entities.DBEntity;
 interface DBEntityHelper<T extends DBEntity> {
 
     /**
-     * Add new instance for the entity associated with the generic to be added
+     * Add new instance for the entity associated with the {@link DBEntity} to be added
      * to the database.
      * The method assigns an unique identifier to the entity after it has been added.
      * The method also starts to observe the object if it is updated by the application
@@ -38,6 +43,19 @@ interface DBEntityHelper<T extends DBEntity> {
     default void push(DBEntity newTuple) {
         push(newTuple, null, null);
     }
+
+
+    /**
+     * Retrieve all {@link DBEntity tuples} for this entity.
+     * The method assigns an unique identifier to each entity after it has been retrieved.
+     * The method also starts to observe each object if it is updated by the application
+     * and, if changes are observed, they are propagated to the database.
+     *
+     * @param onSuccess The {@link Consumer} that will accept all the retrieved entities
+     *                  in case of success.
+     * @param onError   The {@link Runnable} to be run in case of error.
+     */
+    void pull(@NonNull Consumer<Collection<T>> onSuccess, @Nullable Runnable onError);
 
     /**
      * This method makes the instance to start to observe the entity associated
@@ -66,6 +84,5 @@ interface DBEntityHelper<T extends DBEntity> {
      * @param tuple The tuple to be removed from the database.
      */
     void remove(DBEntity tuple);
-
 
 }

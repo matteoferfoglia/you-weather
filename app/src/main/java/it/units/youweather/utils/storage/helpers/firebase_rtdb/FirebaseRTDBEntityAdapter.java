@@ -10,8 +10,14 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.gson.Gson;
 
+import java.lang.reflect.Type;
+import java.util.Collection;
+import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 
 import it.units.youweather.EnvironmentVariables;
 import it.units.youweather.utils.functionals.Consumer;
@@ -19,6 +25,7 @@ import it.units.youweather.utils.storage.entities.DBEntity;
 import it.units.youweather.utils.storage.helpers.DBEntityAdapter;
 
 public class FirebaseRTDBEntityAdapter<T extends DBEntity> extends DBEntityAdapter<T> {
+
 
     /**
      * TAG for the logger for this class.
@@ -58,7 +65,8 @@ public class FirebaseRTDBEntityAdapter<T extends DBEntity> extends DBEntityAdapt
                 Objects.requireNonNull(
                         Objects.requireNonNull(entityClass)
                                 .getCanonicalName())
-                        .replaceAll("\\.", "_"));
+                        .replaceAll("\\.",
+                                "_"));
 
         assert tableListener != null;
         dbRef.addChildEventListener(tableListener);
@@ -90,6 +98,42 @@ public class FirebaseRTDBEntityAdapter<T extends DBEntity> extends DBEntityAdapt
                 });
         Log.d(FIREBASE_RT_DB_TAG, "push method execution terminated");
     }
+
+    @Override
+    public void pull(@NonNull Consumer<Collection<T>> onSuccess, @Nullable Runnable onError) {
+        Log.d(FIREBASE_RT_DB_TAG, "pull method execution started");
+
+        dbRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                Map<String, Object> content = (Map<String, Object>) snapshot.getValue();
+                if (content == null) {
+                    content = new ConcurrentHashMap<>(0);
+                }
+
+                // De-serialization of the object
+                Map<String, T> deserializedContent = new ConcurrentHashMap<>(); // data form DB
+                Gson gson = new Gson();
+                for (Map.Entry<String, Object> aTuple : content.entrySet()) {
+                    String json = gson.toJson(aTuple.getValue());
+                    deserializedContent.put(aTuple.getKey(), gson.fromJson(json, (Type) getDbEntityClass()));
+                }
+
+                Objects.requireNonNull(onSuccess).accept(deserializedContent.values());
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                if (onError != null) {
+                    onError.run();
+                }
+            }
+        });
+
+        Log.d(FIREBASE_RT_DB_TAG, "push method execution terminated");
+    }
+
 
     @Override
     public void observeDBChanges(

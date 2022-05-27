@@ -1,12 +1,8 @@
 package it.units.youweather.utils.storage.entities;
 
-import android.util.Log;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
-import it.units.youweather.utils.storage.helpers.DBHelper;
 
 /**
  * Base class for entities that can be saved into the DB.
@@ -25,8 +21,7 @@ public abstract class DBEntity {
     /**
      * Saves the classes that are registered for the DB.
      */
-    private static final List<Class<?>> registeredClasses = new ArrayList<>();
-
+    protected static final List<Class<?>> registeredClasses = new ArrayList<>();
     /**
      * The unique identifier required for the database.
      */
@@ -36,13 +31,6 @@ public abstract class DBEntity {
      * No-args constructor.
      */
     protected DBEntity() {
-        if (!registeredClasses.contains(getClass())) {
-            DBHelper.registerEntityClass(getClass(),
-                    arg -> Log.d(TAG, "CREATED " + this),
-                    arg -> Log.d(TAG, "REMOVED " + this),
-                    arg -> Log.d(TAG, "UPDATED " + this));
-            registeredClasses.add(getClass());
-        }
     }
 
     /**
