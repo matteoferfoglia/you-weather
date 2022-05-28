@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="history_table_heading_row_number_width">20dp</dimen>
+    <dimen name="history_reports_filter_date_margin_horizontal">5dp</dimen>
 </resources>

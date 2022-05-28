@@ -21,61 +21,52 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/history_of_your_reports"
-        app:layout_constraintBottom_toTopOf="@id/checkBox_filter_by_dates"
+        app:layout_constraintBottom_toTopOf="@id/select_dates_for_filtering"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/hello_text" />
-
-
-    <CheckBox
-        android:id="@+id/checkBox_filter_by_dates"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/filter_by_date"
-        app:layout_constraintBottom_toTopOf="@+id/select_dates_for_filtering"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/report_history_header" />
-
 
     <LinearLayout
         android:id="@+id/select_dates_for_filtering"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:visibility="gone"
-        android:weightSum="8"
+        android:gravity="center"
         android:orientation="horizontal"
+        android:visibility="visible"
+        android:weightSum="3"
         app:layout_constraintBottom_toTopOf="@id/history_reports_table_heading"
-        app:layout_constraintTop_toBottomOf="@id/checkBox_filter_by_dates">
+        app:layout_constraintTop_toBottomOf="@id/report_history_header">
 
-        <TextView
-            android:id="@+id/from_date"
+        <CheckBox
+            android:id="@+id/checkBox_filter_by_dates"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/history_reports_filter_date_margin_horizontal"
             android:layout_weight="1"
-            android:text="@string/from" />
+            android:text="@string/filter_by_date"
+            app:layout_constraintTop_toBottomOf="@+id/report_history_header" />
 
-        <Spinner
-            android:id="@+id/spinner_start_date"
+        <Button
+            android:id="@+id/from_date_filter_button"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="3" /><!-- TODO: must open the data picker to choose a date, otherwise shows the date of the first valid report-->
-        <!-- TODO: use text-date instead of spinner? -->
-
-        <TextView
-            android:id="@+id/to_date"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
+            android:layout_marginHorizontal="@dimen/history_reports_filter_date_margin_horizontal"
             android:layout_weight="1"
-            android:text="@string/to" />
+            android:text="@string/from"
+            android:textColor="@color/black"
+            style="?android:spinnerStyle"
+            android:visibility="gone" /><!-- TODO: refactor: extract buttons -->
 
-        <Spinner
-            android:id="@+id/spinner_end_date"
+        <Button
+            android:id="@+id/to_date_filter_button"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="3" /><!-- TODO: must open the data picker to choose a date, otherwise shows the date of the last valid report-->
-        <!-- TODO: use text-date instead of spinner? -->
+            android:layout_marginHorizontal="@dimen/history_reports_filter_date_margin_horizontal"
+            android:layout_weight="1"
+            android:text="@string/to"
+            style="?android:spinnerStyle"
+            android:textColor="@color/black"
+            android:visibility="gone" />
 
     </LinearLayout>
 
@@ -83,10 +74,10 @@
         android:id="@+id/history_reports_table_heading"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@id/scroll_view_history_reports"
-        app:layout_constraintTop_toBottomOf="@+id/select_dates_for_filtering"
         android:shrinkColumns="0"
-        android:stretchColumns="1,2,3"> <!-- stretchColumns to give the same width to each specified column -->
+        android:stretchColumns="1,2,3"
+        app:layout_constraintBottom_toTopOf="@id/scroll_view_history_reports"
+        app:layout_constraintTop_toBottomOf="@+id/select_dates_for_filtering"> <!-- stretchColumns to give the same width to each specified column -->
 
         <TableRow
             android:layout_width="0dp"
@@ -129,9 +120,9 @@
         android:id="@+id/scroll_view_history_reports"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:scrollbars="none"
         app:layout_constraintBottom_toTopOf="@id/go_to_map_button"
-        app:layout_constraintTop_toBottomOf="@+id/history_reports_table_heading"
-        android:scrollbars="none">
+        app:layout_constraintTop_toBottomOf="@+id/history_reports_table_heading">
 
         <TableLayout
             android:id="@+id/history_reports_table"

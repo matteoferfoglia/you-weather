@@ -92,6 +92,7 @@
     <string name="Not_found_city_for_user_position">No city found for your position</string>
     <string name="cannot_insert_without_location">Cannot insert without a location</string>
     <string name="Unable_to_retrieve_entities_from_DB">Unable to retrieve entities from the DB</string>
+    <string name="date_short_format">dd-MMM-yyyy</string>
 
     <!-- TODO: missing translations -->
 </resources>

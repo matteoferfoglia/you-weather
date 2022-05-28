@@ -1,12 +1,14 @@
 package it.units.youweather.ui.logged_in_area;
 
 import android.annotation.SuppressLint;
+import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -18,8 +20,11 @@ import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 
 import it.units.youweather.R;
 import it.units.youweather.databinding.FragmentUserPageWithHistoryBinding;
@@ -45,11 +50,37 @@ public class UserPageWithHistoryFragment extends Fragment {
 
     private FragmentUserPageWithHistoryBinding viewBinding;
 
-    private List<WeatherReport> weatherReports;
+    /**
+     * {@link List} of weather reports downloaded from the database.
+     */
+    private volatile List<WeatherReport> weatherReports;
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    /**
+     * {@link Map} of all {@link DatePickerDialog}s allowing the user to select a date,
+     * used in this object, associated with the clickable button.
+     */
+    private final Map<Button, DatePickerDialog> datePickerDialogMap = new ConcurrentHashMap<>();
+
+
+    /**
+     * Initialize the {@link #datePickerDialogMap} for a button that, when clicked
+     * on, should show the {@link #datePickerDialogMap}.
+     *
+     * @param selectDataButton A buttons that, when clicked, should show the data picker.
+     */
+    private void initDatePickerForButton(@NonNull Button selectDataButton) {
+        DatePickerDialog.OnDateSetListener onDateSetListener =
+                (datePicker, year, month/*0-based index*/, dayOfMonth) -> {
+                    String formattedDate = Timing.getShortFormattedDate(
+                            Timing.getDate(year, month, dayOfMonth));
+                    Objects.requireNonNull(selectDataButton).setText(formattedDate);
+                };
+        Calendar now = Calendar.getInstance();
+        datePickerDialogMap.put(selectDataButton, new DatePickerDialog(
+                requireContext(), android.R.style.Theme_Material_Dialog,
+                onDateSetListener,
+                now.get(Calendar.YEAR), now.get(Calendar.MONTH), now.get(Calendar.DAY_OF_MONTH)));
+
     }
 
     @Override
@@ -73,30 +104,60 @@ public class UserPageWithHistoryFragment extends Fragment {
         // end - navigation to the map containing user's report history
 
 
-        return viewBinding.getRoot();
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        getReportsFromDBAndPopulateView();
-
         viewBinding.helloText.setText(getString(
                 R.string.hello,
                 Objects.requireNonNull(Authentication
                         .getCurrentlySignedInUserOrNull(requireContext()))
                         .getDisplayName()));
 
-        viewBinding.checkBoxFilterByDates.setChecked(false);    // TODO: maybe remove?
-        viewBinding.checkBoxFilterByDates.setOnClickListener(view_ ->
-                viewBinding.selectDatesForFiltering.setVisibility(
-                        viewBinding.checkBoxFilterByDates.isChecked()
-                                ? View.VISIBLE
-                                : View.GONE));
+        Button[] filterByDateButtonArray = new Button[]{viewBinding.fromDateFilterButton, viewBinding.toDateFilterButton};
+        viewBinding.checkBoxFilterByDates.setChecked(false);                        // TODO: maybe remove?
+        for (Button filterByDateButton : filterByDateButtonArray) {
+            filterByDateButton.setVisibility(View.GONE);  // initial default value        // TODO: maybe remove?
+            initDatePickerForButton(filterByDateButton);
+            filterByDateButton.setOnClickListener(view_ -> openDatePicker(filterByDateButton));
 
+            // TODO: for data picker:
+            //  1) add action (e.g., Consumer to pass to initDatePickerForButton) to be invoked when
+            //     the date is confirmed: for the "From date" button the action should be to hide
+            //     all reports previous than the selected date, analogously for the "To date" button
+            //  2) when "Filter by date" is unchecked, clear dates from buttons and show again all
+            //     reports
+        }
+
+        viewBinding.checkBoxFilterByDates.setOnClickListener(view_ -> {
+            boolean showFilterByDateButtons = viewBinding.checkBoxFilterByDates.isChecked();
+            int filterByDateButtonsVisibility = showFilterByDateButtons ? View.VISIBLE : View.GONE;
+            for (Button filterByDateButton : filterByDateButtonArray) {
+                filterByDateButton.setVisibility(filterByDateButtonsVisibility);
+            }
+        });
+
+        return viewBinding.getRoot();
     }
 
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        getReportsFromDBAndPopulateView();
+    }
+
+    /**
+     * Opens the {@link #datePickerDialogMap}.
+     *
+     * @param button The {@link Button} that, when clicked, causes the
+     *               {@link DatePickerDialog} to open.
+     */
+    private void openDatePicker(@NonNull Button button) {
+        Objects.requireNonNull(
+                datePickerDialogMap.get(Objects.requireNonNull(button)),
+                "Button not registered").show();
+    }
+
+    /**
+     * Starts a new task to asynchronously download the data from the DB
+     * and populate this view.
+     */
     private void getReportsFromDBAndPopulateView() {
         new Thread(() -> {
             WeatherReport.registerThisClassForDB();
