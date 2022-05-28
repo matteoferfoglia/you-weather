@@ -145,6 +145,7 @@ public class WeatherReport extends DBEntity implements Serializable {
         this.millisecondsSinceEpoch = millisecondsSinceEpoch;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "WeatherReport{" +
@@ -154,6 +155,14 @@ public class WeatherReport extends DBEntity implements Serializable {
                 ", millisecondsSinceEpoch=" + millisecondsSinceEpoch +
                 ", picture=" + picture +
                 '}';
+    }
+
+    /**
+     * @return a short description of the {@link WeatherCondition}
+     * for this instance.
+     */
+    public String getWeatherConditionToString() {
+        return weatherCondition.getDescription();
     }
 
     @Override

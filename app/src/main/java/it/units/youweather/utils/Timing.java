@@ -17,8 +17,8 @@ public abstract class Timing {
      * @return the {@link String} corresponding to the UTC-formatted date-time.
      */
     public static String convertEpochMillisToFormattedDate(long secondsSinceEpoch) {
-        Date date = new Date(secondsSinceEpoch * 1000); // Date ctor expects milliseconds
-        SimpleDateFormat sdf = new SimpleDateFormat("EEEE,MMMM d,yyyy h:mm,a", Locale.getDefault());
+        Date date = new Date(secondsSinceEpoch);
+        SimpleDateFormat sdf = new SimpleDateFormat("EEEE, d MMMM, yyyy hh:mm", Locale.getDefault());
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         return sdf.format(date);
     }
