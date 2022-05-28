@@ -13,4 +13,17 @@ public abstract class Conversions {
     public static double temperatureFromKelvinToFahrenheit(double temperatureInKelvin) {
         return (temperatureInKelvin - KELVIN_OFFSET) * FAHRENHEIT_FACTOR + FAHRENHEIT_OFFSET;
     }
+
+    /**
+     * Convert density-independent pixels (dp) into pixels.
+     * From <a href="https://stackoverflow.com/a/5255256/17402378">here</a>.
+     *
+     * @param dp The input density-independent pixels to be converted.
+     * @return the rounded number of pixels converted from the input dp.
+     */
+    public static int dpToPx(double dp) {
+        final double scale = ResourceHelper.getAppContext().getResources()
+                .getDisplayMetrics().density;
+        return (int) Math.round(dp * scale);
+    }
 }

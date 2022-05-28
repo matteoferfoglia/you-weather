@@ -1,5 +1,6 @@
 package it.units.youweather.ui.logged_in_area;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
@@ -23,7 +24,9 @@ import java.util.Objects;
 import it.units.youweather.R;
 import it.units.youweather.databinding.FragmentUserPageWithHistoryBinding;
 import it.units.youweather.entities.storage.WeatherReport;
+import it.units.youweather.utils.Conversions;
 import it.units.youweather.utils.Timing;
+import it.units.youweather.utils.auth.Authentication;
 import it.units.youweather.utils.storage.helpers.DBHelper;
 
 /**
@@ -79,6 +82,19 @@ public class UserPageWithHistoryFragment extends Fragment {
 
         getReportsFromDBAndPopulateView();
 
+        viewBinding.helloText.setText(getString(
+                R.string.hello,
+                Objects.requireNonNull(Authentication
+                        .getCurrentlySignedInUserOrNull(requireContext()))
+                        .getDisplayName()));
+
+        viewBinding.checkBoxFilterByDates.setChecked(false);    // TODO: maybe remove?
+        viewBinding.checkBoxFilterByDates.setOnClickListener(view_ ->
+                viewBinding.selectDatesForFiltering.setVisibility(
+                        viewBinding.checkBoxFilterByDates.isChecked()
+                                ? View.VISIBLE
+                                : View.GONE));
+
     }
 
     private void getReportsFromDBAndPopulateView() {
@@ -91,17 +107,29 @@ public class UserPageWithHistoryFragment extends Fragment {
                         Log.i(TAG, retrievedWeatherReports.size() + " elements retrieved from the DB");
 
                         List<TableRow> sortedTableRowList = new ArrayList<>();
+
+                        int rowNumber = 0;
                         for (WeatherReport wr : Objects.requireNonNull(weatherReports)) {
                             final TableRow tableRow = new TableRow(requireContext());
                             tableRow.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.MATCH_PARENT));
 
+                            rowNumber++;
                             final String dateTime = Timing.convertEpochMillisToFormattedDate(wr.getMillisecondsSinceEpoch());
                             final String location = wr.getCity().toString();
                             final String weather = wr.getWeatherConditionToString();
-                            for (String cellContent : new String[]{dateTime, location, weather}) {
+                            final String[] columns = new String[]{String.valueOf(rowNumber), dateTime, location, weather};
+                            for (int i = 0; i < columns.length; i++) {
+                                String cellContent = columns[i];
+                                int cellWidthInPx = 0;  // 0 dp allows to inherits property from the container (e.g., stretchColumns)
+                                if (i == 0) {  // column containing the row number
+                                    @SuppressLint("ResourceType") // dimen resource is saved as string
+                                    double cellWidthInDp = Double.parseDouble(getString(R.dimen.history_table_heading_row_number_width)
+                                            .replaceAll("[^\\d.]", ""));
+                                    cellWidthInPx = Conversions.dpToPx(cellWidthInDp);
+                                }
                                 final TextView tableCell = new TextView(requireContext());
                                 tableCell.setText(cellContent);
-                                tableCell.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.MATCH_PARENT));
+                                tableCell.setLayoutParams(new TableRow.LayoutParams(cellWidthInPx, TableRow.LayoutParams.MATCH_PARENT));
                                 tableCell.setGravity(Gravity.CENTER);
                                 tableRow.addView(tableCell);
                             }
