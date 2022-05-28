@@ -77,35 +77,51 @@ public class UserPageWithHistoryFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        WeatherReport.registerThisClassForDB();
-        DBHelper.pull(WeatherReport.class,
-                retrievedWeatherReports -> {
-                    this.weatherReports = new ArrayList<>(Objects.requireNonNull(retrievedWeatherReports));
-                    Log.i(TAG, retrievedWeatherReports.size() + " elements retrieved from the DB");
-                    for (WeatherReport wr : Objects.requireNonNull(weatherReports)) {
-                        final TableRow tableRow = new TableRow(requireContext());
-                        tableRow.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.MATCH_PARENT));
+        getReportsFromDBAndPopulateView();
 
-                        final String dateTime = Timing.convertEpochMillisToFormattedDate(wr.getMillisecondsSinceEpoch());
-                        final String location = wr.getCity().toString();
-                        final String weather = wr.getWeatherConditionToString();
-                        for (String cellContent : new String[]{dateTime, location, weather}) {
-                            final TextView tableCell = new TextView(requireContext());
-                            tableCell.setText(cellContent);
-                            tableCell.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.MATCH_PARENT));
-                            tableCell.setGravity(Gravity.CENTER);
-                            tableRow.addView(tableCell);
+    }
+
+    private void getReportsFromDBAndPopulateView() {
+        new Thread(() -> {
+            WeatherReport.registerThisClassForDB();
+            DBHelper.pull(WeatherReport.class,
+                    retrievedWeatherReports -> {
+                        this.weatherReports = new ArrayList<>(Objects.requireNonNull(retrievedWeatherReports));
+                        this.weatherReports.sort((a, b) -> (int) (a.getMillisecondsSinceEpoch() - b.getMillisecondsSinceEpoch()));
+                        Log.i(TAG, retrievedWeatherReports.size() + " elements retrieved from the DB");
+
+                        List<TableRow> sortedTableRowList = new ArrayList<>();
+                        for (WeatherReport wr : Objects.requireNonNull(weatherReports)) {
+                            final TableRow tableRow = new TableRow(requireContext());
+                            tableRow.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.MATCH_PARENT));
+
+                            final String dateTime = Timing.convertEpochMillisToFormattedDate(wr.getMillisecondsSinceEpoch());
+                            final String location = wr.getCity().toString();
+                            final String weather = wr.getWeatherConditionToString();
+                            for (String cellContent : new String[]{dateTime, location, weather}) {
+                                final TextView tableCell = new TextView(requireContext());
+                                tableCell.setText(cellContent);
+                                tableCell.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.MATCH_PARENT));
+                                tableCell.setGravity(Gravity.CENTER);
+                                tableRow.addView(tableCell);
+                            }
+
+                            sortedTableRowList.add(tableRow);
                         }
 
-                        viewBinding.historyReportsTable.addView(tableRow);
-
-                    }
-                },
-                () -> {
-                    String errorMsg = getString(R.string.Unable_to_retrieve_entities_from_DB);
-                    Log.e(TAG, errorMsg);
-                    Toast.makeText(requireContext(), errorMsg, Toast.LENGTH_LONG).show();
-                });
+                        requireActivity().runOnUiThread(() -> {
+                            for (TableRow tr : sortedTableRowList) {
+                                viewBinding.historyReportsTable.addView(tr);
+                            }
+                        });
+                    },
+                    () -> {
+                        String errorMsg = getString(R.string.Unable_to_retrieve_entities_from_DB);
+                        Log.e(TAG, errorMsg);
+                        requireActivity().runOnUiThread(() ->
+                                Toast.makeText(requireContext(), errorMsg, Toast.LENGTH_LONG).show());
+                    });
+        }).start();
 
     }
 }
