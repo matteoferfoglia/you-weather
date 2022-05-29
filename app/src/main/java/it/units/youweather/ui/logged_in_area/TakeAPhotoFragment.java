@@ -21,8 +21,8 @@ import androidx.fragment.app.Fragment;
 
 import it.units.youweather.R;
 import it.units.youweather.databinding.FragmentTakeAPhotoBinding;
+import it.units.youweather.utils.ImagesHelper;
 import it.units.youweather.utils.PermissionsHelper;
-import it.units.youweather.utils.PicturesHelper;
 import it.units.youweather.utils.ResourceHelper;
 
 public class TakeAPhotoFragment extends Fragment {  // TODO: check if photos are saved in the gallery
@@ -65,7 +65,7 @@ public class TakeAPhotoFragment extends Fragment {  // TODO: check if photos are
                 result -> { // ActivityResultCallback<ActivityResult>#onActivityResult(ActivityResult)
                     if (result.getResultCode() == Activity.RESULT_OK) {
                         String imageRealUrl = getRealPathFromUri(imageUri);
-                        viewBinding.photo.setImageBitmap(PicturesHelper.straightImage(Uri.parse(imageRealUrl)));
+                        viewBinding.photo.setImageBitmap(ImagesHelper.straightImage(Uri.parse(imageRealUrl)));
                         viewBinding.photo.setVisibility(View.VISIBLE);
                     }
                 });

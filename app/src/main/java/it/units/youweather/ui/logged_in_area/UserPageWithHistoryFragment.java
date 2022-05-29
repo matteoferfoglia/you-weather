@@ -63,7 +63,7 @@ public class UserPageWithHistoryFragment extends Fragment {
     /**
      * {@link List} of showed weather reports.
      */
-    private volatile List<WeatherReport> showedWeatherReports;
+    private volatile LinkedList<WeatherReport> shownWeatherReports;
 
     /**
      * {@link Map} of all {@link DatePickerDialog}s allowing the user to select a date,
@@ -155,10 +155,10 @@ public class UserPageWithHistoryFragment extends Fragment {
         Button[] filterByDateButtonArray = new Button[]{viewBinding.fromDateFilterButton, viewBinding.toDateFilterButton};
         Consumer<Predicate<WeatherReport>> filterWeatherReportsByDateAndPopulateHistoryTable =
                 keepWeatherReportPredicate -> {
-                    showedWeatherReports.clear();
+                    shownWeatherReports.clear();
                     for (WeatherReport wr : Objects.requireNonNull(weatherReports)) {
                         if (keepWeatherReportPredicate.test(wr)) {
-                            showedWeatherReports.add(wr);
+                            shownWeatherReports.add(wr);
                         }
                     }
                     populateReportHistoryTable();
@@ -219,10 +219,37 @@ public class UserPageWithHistoryFragment extends Fragment {
         Log.d(TAG, "Selected date: " + maxDateFiltered);
         filterWeatherReportsByDateAndPopulateHistoryTable.accept(getReportFilteredPredicate());
 
+        sendDataToMapFragment();
+
         // Note: need to re-init the "other" date picker to set the max date properly (it cannot be greater than the "to-date")
         initDatePickerForButton(viewBinding.fromDateFilterButton,
                 date_ -> fromDateFilterAction(filterWeatherReportsByDateAndPopulateHistoryTable, date_),
                 null, maxDateFiltered);
+    }
+
+    /**
+     * Send the {@link #shownWeatherReports} to the fragment with the map,
+     * to show where the user made the reports. This means that, if a filter
+     * is selected, only reports matching the filter will be shown on the map.
+     */
+    private void sendDataToMapFragment() {
+        Bundle userWeatherReportsToShowOnMap = new Bundle();
+        userWeatherReportsToShowOnMap
+                .putSerializable(
+                        MapWithReportHistoryFragment.WEATHER_REPORTS_TO_SHOW_ON_MAP_BUNDLE_KEY,
+                        Objects.requireNonNull(shownWeatherReports));
+        userWeatherReportsToShowOnMap
+                .putSerializable(
+                        MapWithReportHistoryFragment.WEATHER_REPORTS_TO_SHOW_ON_MAP_MIN_DATE_BUNDLE_KEY,
+                        minDateFiltered);
+        userWeatherReportsToShowOnMap
+                .putSerializable(
+                        MapWithReportHistoryFragment.WEATHER_REPORTS_TO_SHOW_ON_MAP_MAX_DATE_BUNDLE_KEY,
+                        maxDateFiltered);
+        Objects.requireNonNull(requireActivity().getSupportFragmentManager())
+                .setFragmentResult(
+                        MapWithReportHistoryFragment.WEATHER_REPORTS_TO_SHOW_ON_MAP_REQUEST_KEY,
+                        Objects.requireNonNull(userWeatherReportsToShowOnMap));
     }
 
     /**
@@ -262,6 +289,7 @@ public class UserPageWithHistoryFragment extends Fragment {
     public void onResume() {
         super.onResume();
         viewBinding.checkBoxFilterByDates.setChecked(false);     // TODO: temporary solution: if we go to the map and come back to this fragment, it must not happen to have the checkbox checked but not showing filtering buttons.
+        // TODO: filtering min/max date are known to the fragment with the map (passed with Bundle).. cannot re-take from there?
     }
 
     @Override
@@ -295,9 +323,11 @@ public class UserPageWithHistoryFragment extends Fragment {
                         weatherReports.sort((a, b) -> (int) (a.getMillisecondsSinceEpoch() - b.getMillisecondsSinceEpoch()));
                         Log.i(TAG, retrievedWeatherReports.size() + " elements retrieved from the DB");
 
-                        showedWeatherReports = new LinkedList<>(weatherReports);
+                        shownWeatherReports = new LinkedList<>(weatherReports);
 
-                        // TODO : update should be periodic, and if filters are set, they must be considered
+                        sendDataToMapFragment();
+
+                        // TODO : update should be periodic (e.e., use Executors.newScheduledThreadPool), and if filters are set, they must be considered
 
                         populateReportHistoryTable();
                     },
@@ -313,7 +343,7 @@ public class UserPageWithHistoryFragment extends Fragment {
 
     /**
      * Asynchronously (on a new thread) populate the report history table,
-     * with data from {@link #showedWeatherReports}.
+     * with data from {@link #shownWeatherReports}.
      */
     private void populateReportHistoryTable() {
 
@@ -321,7 +351,7 @@ public class UserPageWithHistoryFragment extends Fragment {
             List<TableRow> sortedTableRowList = new ArrayList<>();
 
             int rowNumber = 0;
-            for (WeatherReport wr : Objects.requireNonNull(showedWeatherReports)) {
+            for (WeatherReport wr : Objects.requireNonNull(shownWeatherReports)) {
                 final TableRow tableRow = new TableRow(requireContext());
                 tableRow.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.MATCH_PARENT));
 

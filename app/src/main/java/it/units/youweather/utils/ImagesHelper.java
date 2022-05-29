@@ -16,12 +16,12 @@ import java.util.Objects;
  * Utility class for pictures.
  * Adapted from <a href="https://stackoverflow.com/a/14066265/17402378">here</a>.
  */
-public abstract class PicturesHelper {
+public abstract class ImagesHelper {
 
     /**
      * TAG for logger.
      */
-    private static final String TAG = PicturesHelper.class.getSimpleName();
+    private static final String TAG = ImagesHelper.class.getSimpleName();
 
     /**
      * Most phone cameras are landscape, meaning if you

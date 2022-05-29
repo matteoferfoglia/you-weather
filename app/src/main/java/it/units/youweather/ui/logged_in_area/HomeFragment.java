@@ -317,11 +317,11 @@ public class HomeFragment extends Fragment {
         Bundle selectedLocationForWeatherViewerFragment_bundle = new Bundle();
         selectedLocationForWeatherViewerFragment_bundle
                 .putSerializable(
-                        WeatherViewerFragment.CITY_TO_BE_SHOWED_BUNDLE_KEY,
+                        WeatherViewerFragment.CITY_TO_BE_SHOWN_BUNDLE_KEY,
                         Objects.requireNonNull(city));
         Objects.requireNonNull(parentFragmentManager)
                 .setFragmentResult(
-                        WeatherViewerFragment.CITY_TO_BE_SHOWED_REQUEST_KEY,
+                        WeatherViewerFragment.CITY_TO_BE_SHOWN_REQUEST_KEY,
                         Objects.requireNonNull(selectedLocationForWeatherViewerFragment_bundle));
     }
 

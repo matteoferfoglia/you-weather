@@ -93,6 +93,8 @@
     <string name="cannot_insert_without_location">Cannot insert without a location</string>
     <string name="Unable_to_retrieve_entities_from_DB">Unable to retrieve entities from the DB</string>
     <string name="date_short_format">dd-MMM-yyyy</string>
+    <string name="filtered_reports_from_to">Filtered reports from %1$s to %2$s</string>
+    <string name="ever">ever</string>
 
     <!-- TODO: missing translations -->
 </resources>
