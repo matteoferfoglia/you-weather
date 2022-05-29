@@ -33,7 +33,7 @@ class FirebaseRTDBSynchronizer {
     /**
      * The period at which the task synchronize local changes with the database.
      */
-    final int SCHEDULING_PERIOD_IN_MILLIS = 2000;
+    final int SCHEDULING_PERIOD_IN_MILLIS = 600_000; // 10 minutes
 
     /**
      * The TAG for the logger.

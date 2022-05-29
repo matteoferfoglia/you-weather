@@ -44,6 +44,7 @@
             android:layout_marginHorizontal="@dimen/history_reports_filter_date_margin_horizontal"
             android:layout_weight="1"
             android:text="@string/filter_by_date"
+            android:checked="false"
             app:layout_constraintTop_toBottomOf="@+id/report_history_header" />
 
         <Button

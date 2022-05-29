@@ -97,4 +97,60 @@ public abstract class Timing {
                 ResourceHelper.getResString(R.string.date_short_format), Locale.getDefault());
         return sdf.format(Objects.requireNonNull(date));
     }
+
+    /**
+     * @return the {@link Date} for today.
+     */
+    @NonNull
+    public static Date getTodayDate() {
+        Calendar today = Calendar.getInstance();
+        return getDate(today.get(Calendar.YEAR), today.get(Calendar.MONTH), today.get(Calendar.DAY_OF_MONTH));
+    }
+
+    /**
+     * Increments of one day the given {@link Date}.
+     *
+     * @param date A {@link Date}
+     * @return The next day.
+     */
+    public static Date getNextDay(@NonNull Date date) {
+        Calendar calendar = dateToCalendar(date);
+        calendar.add(Calendar.DATE, 1); // add one day
+        return calendar.getTime();
+    }
+
+    /**
+     * @param date Input date.
+     * @return the start of day {@link Date} for the given {@link Date}.
+     */
+    @NonNull
+    public static Date getStartOfDay(@NonNull Date date) {
+        Calendar calendar = dateToCalendar(date);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        return calendar.getTime();
+    }
+
+    /**
+     * @param date Input date.
+     * @return the end of day {@link Date} for the given {@link Date}.
+     */
+    @NonNull
+    public static Date getEndOfDay(@NonNull Date date) {
+        Calendar calendar = dateToCalendar(date);
+        calendar.set(Calendar.HOUR_OF_DAY, 23);
+        calendar.set(Calendar.MINUTE, 59);
+        calendar.set(Calendar.SECOND, 59);
+        calendar.set(Calendar.MILLISECOND, 999);
+        return calendar.getTime();
+    }
+
+    @NonNull
+    private static Calendar dateToCalendar(@NonNull Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(Objects.requireNonNull(date));
+        return calendar;
+    }
 }
