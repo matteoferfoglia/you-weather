@@ -1,6 +1,5 @@
 package it.units.youweather.entities.storage;
 
-import android.graphics.Bitmap;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -13,9 +12,10 @@ import it.units.youweather.entities.City;
 import it.units.youweather.entities.LoggedInUser;
 import it.units.youweather.entities.forecast_fields.Coordinates;
 import it.units.youweather.entities.forecast_fields.WeatherCondition;
+import it.units.youweather.utils.ImagesHelper;
 import it.units.youweather.utils.Timing;
-import it.units.youweather.utils.storage.entities.DBEntity;
-import it.units.youweather.utils.storage.helpers.DBHelper;
+import it.units.youweather.utils.storage.DBEntity;
+import it.units.youweather.utils.storage.DBHelper;
 
 /**
  * This class is a weather report that can be created by the user.
@@ -46,14 +46,14 @@ public class WeatherReport extends DBEntity implements Serializable {
     private volatile long millisecondsSinceEpoch;
 
     /**
-     * The {@link Bitmap photo} taken by the user for this report.
+     * The {@link ImagesHelper.SerializableBitmap photo} taken by the user for this report.
      */
-    private volatile Bitmap picture;
+    private volatile ImagesHelper.SerializableBitmap picture;
 
     /**
-     * The {@link it.units.youweather.entities.LoggedInUser} who reported this instance.
+     * The {@link LoggedInUser#userId} of the {@link LoggedInUser} that made this report
      */
-    private volatile LoggedInUser reporter;
+    private volatile String reporterUserId;
 
     /**
      * TAG for Logger.
@@ -76,18 +76,18 @@ public class WeatherReport extends DBEntity implements Serializable {
     /**
      * Creates a new instance of this class.
      *
-     * @param reporter         The {@link LoggedInUser} that made this report.
+     * @param reporterUserId   The {@link LoggedInUser#userId} of the {@link LoggedInUser} that made this report
      * @param city             The {@link City} to which this instance refers to.
      * @param coordinates      The {@link Coordinates} (more precise than the
      *                         {@link City}) to which this instance refers to.
      * @param weatherCondition The {@link WeatherCondition} for this instance.
-     * @param picture          The {@link Bitmap photo} for this instance.
+     * @param picture          The {@link ImagesHelper.SerializableBitmap photo} for this instance.
      */
-    public WeatherReport(@NonNull LoggedInUser reporter,
+    public WeatherReport(@NonNull String reporterUserId,
                          @NonNull City city, @NonNull Coordinates coordinates,
-                         @NonNull WeatherCondition weatherCondition, @Nullable Bitmap picture) {
+                         @NonNull WeatherCondition weatherCondition, @Nullable ImagesHelper.SerializableBitmap picture) {
         this();
-        this.reporter = Objects.requireNonNull(reporter);
+        this.reporterUserId = Objects.requireNonNull(reporterUserId);
         this.city = Objects.requireNonNull(city);
         this.coordinates = Objects.requireNonNull(coordinates);
         this.weatherCondition = Objects.requireNonNull(weatherCondition);
@@ -95,54 +95,42 @@ public class WeatherReport extends DBEntity implements Serializable {
         this.millisecondsSinceEpoch = Timing.getMillisSinceEpoch();
     }
 
-    public WeatherReport(@NonNull LoggedInUser reporter,
+    /**
+     * See parameter descriptions in {@link #WeatherReport(String, City, Coordinates, WeatherCondition, ImagesHelper.SerializableBitmap)}
+     */
+    public WeatherReport(@NonNull String reporterUserId,
                          @NonNull City city, @NonNull Coordinates coordinates,
                          @NonNull WeatherCondition weatherCondition) {
-        this(reporter, city, coordinates, weatherCondition, null);
+        this(reporterUserId, city, coordinates, weatherCondition, null);
     }
 
     private WeatherReport() {
         super();
+        registerThisClassForDB();
     }
 
     public City getCity() {
         return city;
     }
 
-    public void setCity(@NonNull City city) {
-        this.city = Objects.requireNonNull(city);
-    }
-
     public Coordinates getCoordinates() {
         return coordinates;
-    }
-
-    public void setCoordinates(@NonNull Coordinates coordinates) {
-        this.coordinates = Objects.requireNonNull(coordinates);
     }
 
     public WeatherCondition getWeatherCondition() {
         return weatherCondition;
     }
 
-    public void setWeatherCondition(@NonNull WeatherCondition weatherCondition) {
-        this.weatherCondition = Objects.requireNonNull(weatherCondition);
-    }
-
-    public Bitmap getPicture() {
+    public ImagesHelper.SerializableBitmap getPicture() {
         return picture;
-    }
-
-    public void setPicture(@NonNull Bitmap picture) {
-        this.picture = Objects.requireNonNull(picture);
     }
 
     public long getMillisecondsSinceEpoch() {
         return millisecondsSinceEpoch;
     }
 
-    public void setMillisecondsSinceEpoch(long millisecondsSinceEpoch) {
-        this.millisecondsSinceEpoch = millisecondsSinceEpoch;
+    public String getReporterUserId() {
+        return reporterUserId;
     }
 
     @NonNull

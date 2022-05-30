@@ -1,4 +1,4 @@
-package it.units.youweather.utils.storage.entities;
+package it.units.youweather.utils.storage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,8 +6,6 @@ import java.util.Objects;
 
 /**
  * Base class for entities that can be saved into the DB.
- * Derived class must be invoke the "super" constructor if
- * derived objects have to be saved into te DB.
  *
  * @author Matteo Ferfoglia
  */

@@ -13,6 +13,7 @@ import androidx.fragment.app.FragmentContainerView;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.net.URL;
 import java.util.Objects;
 
@@ -45,7 +46,8 @@ public class WeatherViewerFragment extends Fragment {
      * {@link it.units.youweather.entities.City} for which the weather has
      * to be shown.
      */
-    public final static String CITY_TO_BE_SHOWN_REQUEST_KEY = "cityToBeShowedRequestKey";
+    public final static String CITY_TO_BE_SHOWN_REQUEST_KEY =
+            WeatherViewerFragment.class.getCanonicalName();
 
     /**
      * The bundle key for which this fragment expects to find the result
@@ -55,8 +57,8 @@ public class WeatherViewerFragment extends Fragment {
      * parent fragment and it is useful if more results are provided for
      * the same {@link #CITY_TO_BE_SHOWN_REQUEST_KEY}; in this case, this
      * fragment receives the city only.
-     */
-    public static final String CITY_TO_BE_SHOWN_BUNDLE_KEY = CITY_TO_BE_SHOWN_REQUEST_KEY;
+     */// TODO : fix and improve Javadoc
+    public static final String CITY_TO_BE_SHOWN_BUNDLE_KEY = "cityToBeShownRequestKey";
 
     private static final String TAG = WeatherViewerFragment.class.getSimpleName();
 
@@ -76,10 +78,11 @@ public class WeatherViewerFragment extends Fragment {
                 ((FragmentContainerView) Objects.requireNonNull(container).getRootView()
                         .findViewById(R.id.nav_host_fragment_container_activity_main))
                         .getFragment();
-        fragmentContainer.getParentFragmentManager()
+        assert CITY_TO_BE_SHOWN_REQUEST_KEY != null;
+        fragmentContainer.getParentFragmentManager()    // TODO : using requireContext().getSupportFragmentManager() directly?
                 .setFragmentResultListener(CITY_TO_BE_SHOWN_REQUEST_KEY, this,
                         (requestKey, bundle) -> {
-                            Object dataFromOtherFragment = bundle.getSerializable(CITY_TO_BE_SHOWN_BUNDLE_KEY);
+                            Serializable dataFromOtherFragment = bundle.getSerializable(CITY_TO_BE_SHOWN_BUNDLE_KEY);
                             if (dataFromOtherFragment instanceof City) {
                                 City cityToSearchForTheWeather = (City) dataFromOtherFragment;
                                 Log.d(TAG, "Received: " + cityToSearchForTheWeather);

@@ -319,6 +319,7 @@ public class HomeFragment extends Fragment {
                 .putSerializable(
                         WeatherViewerFragment.CITY_TO_BE_SHOWN_BUNDLE_KEY,
                         Objects.requireNonNull(city));
+        assert WeatherViewerFragment.CITY_TO_BE_SHOWN_REQUEST_KEY != null;
         Objects.requireNonNull(parentFragmentManager)
                 .setFragmentResult(
                         WeatherViewerFragment.CITY_TO_BE_SHOWN_REQUEST_KEY,

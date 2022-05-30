@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReference;
@@ -25,11 +26,12 @@ import it.units.youweather.entities.City;
 import it.units.youweather.entities.forecast_fields.Coordinates;
 import it.units.youweather.entities.forecast_fields.WeatherCondition;
 import it.units.youweather.entities.storage.WeatherReport;
+import it.units.youweather.utils.ImagesHelper;
 import it.units.youweather.utils.LocationHelper;
 import it.units.youweather.utils.PermissionsHelper;
 import it.units.youweather.utils.ResourceHelper;
 import it.units.youweather.utils.auth.Authentication;
-import it.units.youweather.utils.storage.helpers.DBHelper;
+import it.units.youweather.utils.storage.DBHelper;
 
 /**
  * Fragment allowing the user to insert a new report
@@ -169,18 +171,31 @@ public class NewReportFragment extends Fragment {
             //       for location and cords and show error message in a text view)
         }
 
+        // Get picture from other fragment
+        final ImagesHelper.SerializableBitmap[] serializableBitmaps = new ImagesHelper.SerializableBitmap[1];   // array to make it final
+        assert TakeAPhotoFragment.CAPTURED_PHOTO_REQUEST_KEY != null;
+        requireActivity().getSupportFragmentManager()
+                .setFragmentResultListener(TakeAPhotoFragment.CAPTURED_PHOTO_REQUEST_KEY, this,
+                        (requestKey, bundle) -> {
+                            Serializable capturedPictureObj = bundle.getSerializable(TakeAPhotoFragment.CAPTURED_PHOTO_BUNDLE_KEY);
+                            if (capturedPictureObj instanceof ImagesHelper.SerializableBitmap) {
+                                serializableBitmaps[0] = (ImagesHelper.SerializableBitmap) capturedPictureObj;
+                            }
+                        });
+
         // Insertion button
         viewBinding.insertNewReportButton.setOnClickListener(view_ -> {
             new Thread(() -> {
+
                 if (cityMatchingCurrentUserPosition != null) {
                     double latitude = Double.parseDouble(viewBinding.locationLatitude.getText().toString());
                     double longitude = Double.parseDouble(viewBinding.locationLongitude.getText().toString());
                     WeatherReport weatherReport = new WeatherReport(
-                            Authentication.getCurrentlySignedInUserOrNull(requireContext()),
+                            Authentication.getCurrentlySignedInUserOrNull(requireContext()).getUserId(),
                             cityMatchingCurrentUserPosition,
                             new Coordinates(latitude, longitude),
                             WeatherCondition.getInstancesForDescription((String) viewBinding.weatherConditionSpinner.getSelectedItem())[0/* TODO: create the real WeatherCondition instance, with the correct icon, and save it */],
-                            null/* Pass picture from child fragment */);
+                            serializableBitmaps[0]); // TODO: picture needed!!
                     DBHelper.push(
                             weatherReport,
                             () -> Log.d(TAG, "Pushed to DB " + weatherReport),

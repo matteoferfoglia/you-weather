@@ -81,7 +81,8 @@ public class MapWithReportHistoryFragment extends Fragment {
      * The key of the request of this fragment when this fragment want to get the
      * weather reports to show on the map.
      */
-    public static final String WEATHER_REPORTS_TO_SHOW_ON_MAP_REQUEST_KEY = "weatherReportsToShowOnMap_requestKey";
+    public static final String WEATHER_REPORTS_TO_SHOW_ON_MAP_REQUEST_KEY =
+            WeatherReport.class.getCanonicalName() + "weatherReportsToShowOnMap_requestKey";
 
     /**
      * The {@link MapView} for the map.

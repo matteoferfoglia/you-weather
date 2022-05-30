@@ -1,4 +1,4 @@
-package it.units.youweather.utils.storage.helpers.firebase_rtdb;
+package it.units.youweather.utils.storage.firebase_rtdb;
 
 import android.util.Log;
 
@@ -15,7 +15,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import it.units.youweather.utils.Timing;
-import it.units.youweather.utils.storage.entities.DBEntity;
+import it.units.youweather.utils.storage.DBEntity;
 
 /**
  * Registers the instances to be synchronized with the real time database.

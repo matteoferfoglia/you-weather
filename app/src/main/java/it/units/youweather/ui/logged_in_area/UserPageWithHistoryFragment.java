@@ -20,6 +20,7 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -37,7 +38,8 @@ import it.units.youweather.utils.Timing;
 import it.units.youweather.utils.auth.Authentication;
 import it.units.youweather.utils.functionals.Consumer;
 import it.units.youweather.utils.functionals.Predicate;
-import it.units.youweather.utils.storage.helpers.DBHelper;
+import it.units.youweather.utils.storage.DBHelper;
+import it.units.youweather.utils.storage.Query;
 
 /**
  * Fragment containing user's info and the history of her/his
@@ -58,12 +60,12 @@ public class UserPageWithHistoryFragment extends Fragment {
     /**
      * {@link List} of all weather reports downloaded from the database.
      */
-    private volatile List<WeatherReport> weatherReports;
+    private volatile List<WeatherReport> weatherReports = new LinkedList<>();
 
     /**
      * {@link List} of showed weather reports.
      */
-    private volatile LinkedList<WeatherReport> shownWeatherReports;
+    private volatile LinkedList<WeatherReport> shownWeatherReports = new LinkedList<>();
 
     /**
      * {@link Map} of all {@link DatePickerDialog}s allowing the user to select a date,
@@ -317,26 +319,34 @@ public class UserPageWithHistoryFragment extends Fragment {
     private void getReportsFromDBAndPopulateView() {
         new Thread(() -> {
             WeatherReport.registerThisClassForDB();
-            DBHelper.pull(WeatherReport.class,  // TODO: only reports of this user should be retrieved
-                    retrievedWeatherReports -> {
-                        weatherReports = new LinkedList<>(Objects.requireNonNull(retrievedWeatherReports));
-                        weatherReports.sort((a, b) -> (int) (a.getMillisecondsSinceEpoch() - b.getMillisecondsSinceEpoch()));
-                        Log.i(TAG, retrievedWeatherReports.size() + " elements retrieved from the DB");
 
-                        shownWeatherReports = new LinkedList<>(weatherReports);
+            try {
+                Field usernameField = WeatherReport.class.getDeclaredField("reporterUserId");
+                DBHelper.pull( // TODO : test with multiple users
+                        new Query<>(usernameField, Authentication.getCurrentlySignedInUserOrNull(requireContext()).getUserId()),
+                        WeatherReport.class,
+                        retrievedWeatherReports -> {
+                            weatherReports = new LinkedList<>(Objects.requireNonNull(retrievedWeatherReports));
+                            weatherReports.sort((a, b) -> (int) (a.getMillisecondsSinceEpoch() - b.getMillisecondsSinceEpoch()));
+                            Log.i(TAG, retrievedWeatherReports.size() + " elements retrieved from the DB");
 
-                        sendDataToMapFragment();
+                            shownWeatherReports = new LinkedList<>(weatherReports);
 
-                        // TODO : update should be periodic (e.e., use Executors.newScheduledThreadPool), and if filters are set, they must be considered
+                            sendDataToMapFragment();
 
-                        populateReportHistoryTable();
-                    },
-                    () -> {
-                        String errorMsg = getString(R.string.Unable_to_retrieve_entities_from_DB);
-                        Log.e(TAG, errorMsg);
-                        requireActivity().runOnUiThread(() ->
-                                Toast.makeText(requireContext(), errorMsg, Toast.LENGTH_LONG).show());
-                    });
+                            // TODO : update should be periodic (e.e., use Executors.newScheduledThreadPool), and if filters are set, they must be considered
+
+                            populateReportHistoryTable();
+                        },
+                        () -> {
+                            String errorMsg = getString(R.string.Unable_to_retrieve_entities_from_DB);
+                            Log.e(TAG, errorMsg);
+                            requireActivity().runOnUiThread(() ->
+                                    Toast.makeText(requireContext(), errorMsg, Toast.LENGTH_LONG).show());
+                        });
+            } catch (NoSuchFieldException e) {
+                Log.e(TAG, "Unknown reporter", e);
+            }
         }).start();
 
     }

@@ -1,9 +1,8 @@
-package it.units.youweather.utils.storage.helpers;
+package it.units.youweather.utils.storage;
 
 import java.util.Objects;
 
 import it.units.youweather.utils.functionals.Consumer;
-import it.units.youweather.utils.storage.entities.DBEntity;
 
 /**
  * Adapter to an entity of the database.

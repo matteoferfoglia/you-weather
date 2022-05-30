@@ -90,6 +90,10 @@ dependencies {
     implementation "org.osmdroid:osmdroid-geopackage:$map_geopackage_version"
 
     /* END OPEN STREET MAP */
+
+    // Base64 encoder
+    implementation 'commons-codec:commons-codec:1.15'
+
 }
 
 apply plugin: 'com.google.gms.google-services'

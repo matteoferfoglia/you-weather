@@ -1,4 +1,4 @@
-package it.units.youweather.utils.storage.helpers;
+package it.units.youweather.utils.storage;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -6,7 +6,6 @@ import androidx.annotation.Nullable;
 import java.util.Collection;
 
 import it.units.youweather.utils.functionals.Consumer;
-import it.units.youweather.utils.storage.entities.DBEntity;
 
 /**
  * Interface for an entity of a database (i.e., a table in the relational
@@ -46,16 +45,26 @@ interface DBEntityHelper<T extends DBEntity> {
 
 
     /**
-     * Retrieve all {@link DBEntity tuples} for this entity.
-     * The method assigns an unique identifier to each entity after it has been retrieved.
-     * The method also starts to observe each object if it is updated by the application
-     * and, if changes are observed, they are propagated to the database.
+     * Retrieve all {@link DBEntity tuples} for the entity associate with this instance.
      *
      * @param onSuccess The {@link Consumer} that will accept all the retrieved entities
      *                  in case of success.
      * @param onError   The {@link Runnable} to be run in case of error.
      */
     void pull(@NonNull Consumer<Collection<T>> onSuccess, @Nullable Runnable onError);
+
+    /**
+     * Retrieve all {@link DBEntity tuples} for the entity associate with this instance,
+     * matching the given {@link Query}.
+     *
+     * @param <S>       The generic for the field on which the query is applied.
+     * @param query     The query.
+     * @param onSuccess The {@link Consumer} that will accept all the retrieved entities
+     *                  in case of success.
+     * @param onError   The {@link Runnable} to be run in case of error.
+     */
+    <S> void pull(@NonNull Query<S> query,
+                  @NonNull Consumer<Collection<T>> onSuccess, @Nullable Runnable onError);
 
     /**
      * This method makes the instance to start to observe the entity associated

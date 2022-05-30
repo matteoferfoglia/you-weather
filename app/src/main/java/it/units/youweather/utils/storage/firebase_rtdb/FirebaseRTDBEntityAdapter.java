@@ -1,4 +1,4 @@
-package it.units.youweather.utils.storage.helpers.firebase_rtdb;
+package it.units.youweather.utils.storage.firebase_rtdb;
 
 import android.util.Log;
 
@@ -21,8 +21,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import it.units.youweather.EnvironmentVariables;
 import it.units.youweather.utils.functionals.Consumer;
-import it.units.youweather.utils.storage.entities.DBEntity;
-import it.units.youweather.utils.storage.helpers.DBEntityAdapter;
+import it.units.youweather.utils.storage.DBEntity;
+import it.units.youweather.utils.storage.DBEntityAdapter;
+import it.units.youweather.utils.storage.Query;
 
 public class FirebaseRTDBEntityAdapter<T extends DBEntity> extends DBEntityAdapter<T> {
 
@@ -30,7 +31,7 @@ public class FirebaseRTDBEntityAdapter<T extends DBEntity> extends DBEntityAdapt
     /**
      * TAG for the logger for this class.
      */
-    private final static String FIREBASE_RT_DB_TAG = "FirebaseRealTimeDB";
+    private final static String TAG = "FirebaseRealTimeDB";
 
     /**
      * Reference to the table in the database.
@@ -76,7 +77,7 @@ public class FirebaseRTDBEntityAdapter<T extends DBEntity> extends DBEntityAdapt
 
     @Override
     public void push(DBEntity newTuple, Runnable onSuccess, Runnable onError) {
-        Log.d(FIREBASE_RT_DB_TAG, "push method execution started");
+        Log.d(TAG, "push method execution started");
 
         String newTupleId = Objects.requireNonNull(dbRef.push().getKey());
         newTuple.setId(newTupleId);
@@ -85,25 +86,37 @@ public class FirebaseRTDBEntityAdapter<T extends DBEntity> extends DBEntityAdapt
                 .setValue(newTuple)     // create a new tuple with the content
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        Log.d(FIREBASE_RT_DB_TAG, "push successfully completed");
+                        Log.d(TAG, "push successfully completed");
                         if (onSuccess != null) {
                             onSuccess.run();
                         }
                     } else {
-                        Log.e(FIREBASE_RT_DB_TAG, "error with push", task.getException());
+                        Log.e(TAG, "error with push", task.getException());
                         if (onError != null) {
                             onError.run();
                         }
                     }
                 });
-        Log.d(FIREBASE_RT_DB_TAG, "push method execution terminated");
+        Log.d(TAG, "push method execution terminated");
     }
 
     @Override
     public void pull(@NonNull Consumer<Collection<T>> onSuccess, @Nullable Runnable onError) {
-        Log.d(FIREBASE_RT_DB_TAG, "pull method execution started");
+        Log.d(TAG, "pull method execution started");
 
-        dbRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        ValueEventListener querySingleValueEventListener = getSingleValueEventListenerForQuery(onSuccess, onError);
+        dbRef.addListenerForSingleValueEvent(querySingleValueEventListener);
+
+        Log.d(TAG, "pull method execution terminated");
+    }
+
+    /**
+     * @return The {@link ValueEventListener} to use for queries
+     * (See {@link #pull(Consumer, Runnable)} and {@link #pull(Query, Consumer, Runnable)}).
+     */
+    @NonNull
+    private ValueEventListener getSingleValueEventListenerForQuery(@NonNull Consumer<Collection<T>> onSuccess, @Nullable Runnable onError) {
+        return new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 Map<String, Object> content = (Map<String, Object>) snapshot.getValue();
@@ -119,6 +132,9 @@ public class FirebaseRTDBEntityAdapter<T extends DBEntity> extends DBEntityAdapt
                     deserializedContent.put(aTuple.getKey(), gson.fromJson(json, (Type) getDbEntityClass()));
                 }
 
+                Log.d(TAG, "DB event listener - onDataChanged : "
+                        + content.size() + " elements retrieved");
+
                 Objects.requireNonNull(onSuccess).accept(deserializedContent.values());
 
             }
@@ -129,11 +145,37 @@ public class FirebaseRTDBEntityAdapter<T extends DBEntity> extends DBEntityAdapt
                     onError.run();
                 }
             }
-        });
-
-        Log.d(FIREBASE_RT_DB_TAG, "push method execution terminated");
+        };
     }
 
+    @Override
+    public <S> void pull(@NonNull Query<S> query, @NonNull Consumer<Collection<T>> onSuccess, @Nullable Runnable onError) {
+        Log.d(TAG, "pull query method execution started");
+
+        S queryMinValue = Objects.requireNonNull(query).getMinValueInclusive();
+        Class<S> fieldForQueryClass = (Class<S>) queryMinValue.getClass();
+
+        com.google.firebase.database.Query q = dbRef.orderByChild(query.getField().getName());
+        if (queryMinValue instanceof String) {
+            q = q.startAt((String) query.getMinValueInclusive())
+                    .endAt((String) query.getMaxValueInclusive());
+        } else if (queryMinValue instanceof Double) {
+            q = q.startAt((Double) query.getMinValueInclusive())
+                    .endAt((Double) query.getMaxValueInclusive());
+        } else if (queryMinValue instanceof Boolean) {
+            q = q.startAt((Boolean) query.getMinValueInclusive())
+                    .endAt((Boolean) query.getMaxValueInclusive());
+        } else {
+            throw new IllegalArgumentException("Invalid class " + fieldForQueryClass
+                    + ". You can use only: "
+                    + String.class + ", " + Double.class + ", " + Boolean.class);
+        }
+
+        q.addListenerForSingleValueEvent(getSingleValueEventListenerForQuery(onSuccess, onError));
+
+        Log.d(TAG, "pull query method execution terminated:" +
+                " it will asynchronously download the data for the query");
+    }
 
     @Override
     public void observeDBChanges(
@@ -143,14 +185,14 @@ public class FirebaseRTDBEntityAdapter<T extends DBEntity> extends DBEntityAdapt
 
         tableListener = new ChildEventListener() {
             private void logDataChangedInfo() {
-                Log.i(FIREBASE_RT_DB_TAG, "Data changed.");
+                Log.i(TAG, "Data changed.");
             }
 
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                 if (snapshot.exists()) {
                     T changedContent = snapshot.getValue(getDbEntityClass());
-                    Log.i(FIREBASE_RT_DB_TAG, "New tuple: " + changedContent);
+                    Log.i(TAG, "New tuple: " + changedContent);
                     onCreated.accept(changedContent);
                 }
             }
@@ -160,7 +202,7 @@ public class FirebaseRTDBEntityAdapter<T extends DBEntity> extends DBEntityAdapt
             public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                 if (snapshot.exists()) {
                     T changedContent = snapshot.getValue(getDbEntityClass());
-                    Log.i(FIREBASE_RT_DB_TAG, "Updated tuple: " + changedContent);
+                    Log.i(TAG, "Updated tuple: " + changedContent);
                     onUpdated.accept(changedContent);
                 }
             }
@@ -169,7 +211,7 @@ public class FirebaseRTDBEntityAdapter<T extends DBEntity> extends DBEntityAdapt
             public void onChildRemoved(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
                     T changedContent = snapshot.getValue(getDbEntityClass());
-                    Log.i(FIREBASE_RT_DB_TAG, "Removed tuple: " + changedContent);
+                    Log.i(TAG, "Removed tuple: " + changedContent);
                     onRemoved.accept(changedContent);
                 }
             }
@@ -178,13 +220,13 @@ public class FirebaseRTDBEntityAdapter<T extends DBEntity> extends DBEntityAdapt
             public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                 if (snapshot.exists()) {
                     T changedContent = snapshot.getValue(getDbEntityClass());
-                    Log.i(FIREBASE_RT_DB_TAG, "Moved tuple: " + changedContent);
+                    Log.i(TAG, "Moved tuple: " + changedContent);
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Log.w(FIREBASE_RT_DB_TAG, "EventListener CANCELLED", error.toException());
+                Log.w(TAG, "EventListener CANCELLED", error.toException());
             }
         };
     }
@@ -201,9 +243,9 @@ public class FirebaseRTDBEntityAdapter<T extends DBEntity> extends DBEntityAdapt
         dbRef.child(tuple.getId()).removeValue()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        Log.d(FIREBASE_RT_DB_TAG, "remove successfully completed");
+                        Log.d(TAG, "remove successfully completed");
                     } else {
-                        Log.e(FIREBASE_RT_DB_TAG, "error with remove", task.getException());
+                        Log.e(TAG, "error with remove", task.getException());
                     }
                 });
     }

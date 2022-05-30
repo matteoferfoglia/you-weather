@@ -32,6 +32,16 @@ public class TakeAPhotoFragment extends Fragment {  // TODO: check if photos are
      */
     private static final String TAG = TakeAPhotoFragment.class.getSimpleName();
 
+    /**
+     * The key for the requests for passing data used by this fragment.
+     */
+    public static final String CAPTURED_PHOTO_REQUEST_KEY = TakeAPhotoFragment.class.getCanonicalName();
+
+    /**
+     * The key for the {@link Bundle} used to pass to the image captured from this fragment.
+     */
+    public static final String CAPTURED_PHOTO_BUNDLE_KEY = "capturedPhoto";
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,8 +75,17 @@ public class TakeAPhotoFragment extends Fragment {  // TODO: check if photos are
                 result -> { // ActivityResultCallback<ActivityResult>#onActivityResult(ActivityResult)
                     if (result.getResultCode() == Activity.RESULT_OK) {
                         String imageRealUrl = getRealPathFromUri(imageUri);
-                        viewBinding.photo.setImageBitmap(ImagesHelper.straightImage(Uri.parse(imageRealUrl)));
+                        ImagesHelper.SerializableBitmap capturedImage =
+                                new ImagesHelper.SerializableBitmap(
+                                        ImagesHelper.straightImage(Uri.parse(imageRealUrl)));
+                        viewBinding.photo.setImageBitmap(capturedImage.getBitmap());
                         viewBinding.photo.setVisibility(View.VISIBLE);
+
+                        Bundle exportPictureBundle = new Bundle();
+                        exportPictureBundle.putSerializable(CAPTURED_PHOTO_BUNDLE_KEY, capturedImage);
+                        assert CAPTURED_PHOTO_REQUEST_KEY != null;
+                        requireActivity().getSupportFragmentManager()
+                                .setFragmentResult(CAPTURED_PHOTO_REQUEST_KEY, exportPictureBundle);
                     }
                 });
 
