@@ -23,6 +23,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -327,7 +328,7 @@ public class UserPageWithHistoryFragment extends Fragment {
                         WeatherReport.class,
                         retrievedWeatherReports -> {
                             weatherReports = new LinkedList<>(Objects.requireNonNull(retrievedWeatherReports));
-                            weatherReports.sort((a, b) -> (int) (a.getMillisecondsSinceEpoch() - b.getMillisecondsSinceEpoch()));
+                            Collections.sort(weatherReports, (a, b) -> (int) (a.getMillisecondsSinceEpoch() - b.getMillisecondsSinceEpoch()));
                             Log.i(TAG, retrievedWeatherReports.size() + " elements retrieved from the DB");
 
                             shownWeatherReports = new LinkedList<>(weatherReports);

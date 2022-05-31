@@ -124,6 +124,8 @@ public class FirebaseRTDBEntityAdapter<T extends DBEntity> extends DBEntityAdapt
                     content = new ConcurrentHashMap<>(0);
                 }
 
+                // TODO : maybe a loader (graphic) is needed until data are downloaded
+
                 // De-serialization of the object
                 Map<String, T> deserializedContent = new ConcurrentHashMap<>(); // data form DB
                 Gson gson = new Gson();
