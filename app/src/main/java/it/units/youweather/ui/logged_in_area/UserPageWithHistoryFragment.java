@@ -34,7 +34,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import it.units.youweather.R;
 import it.units.youweather.databinding.FragmentUserPageWithHistoryBinding;
 import it.units.youweather.entities.storage.WeatherReport;
-import it.units.youweather.utils.Conversions;
+import it.units.youweather.utils.ConversionsHelper;
 import it.units.youweather.utils.Timing;
 import it.units.youweather.utils.auth.Authentication;
 import it.units.youweather.utils.functionals.Consumer;
@@ -378,7 +378,7 @@ public class UserPageWithHistoryFragment extends Fragment {
                         @SuppressLint("ResourceType") // dimen resource is saved as string
                         double cellWidthInDp = Double.parseDouble(getString(R.dimen.history_table_heading_row_number_width)
                                 .replaceAll("[^\\d.]", ""));
-                        cellWidthInPx = Conversions.dpToPx(cellWidthInDp);
+                        cellWidthInPx = ConversionsHelper.dpToPx(cellWidthInDp);
                     }
                     final TextView tableCell = new TextView(requireContext());
                     tableCell.setText(cellContent);

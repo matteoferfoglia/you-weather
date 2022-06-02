@@ -7,7 +7,7 @@ import androidx.annotation.NonNull;
 import java.util.Objects;
 
 import it.units.youweather.EnvironmentVariables;
-import it.units.youweather.utils.Conversions;
+import it.units.youweather.utils.ConversionsHelper;
 import it.units.youweather.utils.MathHelper;
 
 /**
@@ -54,10 +54,10 @@ public class Temperature {
                 convertedValue = temperatureInKelvin;
                 break;
             case CELSIUS:
-                convertedValue = Conversions.temperatureFromKelvinToCelsius(temperatureInKelvin);
+                convertedValue = ConversionsHelper.temperatureFromKelvinToCelsius(temperatureInKelvin);
                 break;
             case FAHRENHEIT:
-                convertedValue = Conversions.temperatureFromKelvinToFahrenheit(temperatureInKelvin);
+                convertedValue = ConversionsHelper.temperatureFromKelvinToFahrenheit(temperatureInKelvin);
                 break;
             default:
                 throw new IllegalStateException("Unknown temperature measure unit");

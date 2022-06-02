@@ -1,6 +1,6 @@
 package it.units.youweather.utils;
 
-public abstract class Conversions {
+public abstract class ConversionsHelper {
 
     private static final double KELVIN_OFFSET = 273.15;
     private static final double FAHRENHEIT_FACTOR = 9d / 5d;

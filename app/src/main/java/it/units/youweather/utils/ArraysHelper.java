@@ -14,7 +14,7 @@ import it.units.youweather.utils.functionals.Function;
  *
  * @author Matteo Ferfoglia
  */
-public abstract class Arrays {
+public abstract class ArraysHelper {
 
     /**
      * Given an array, this methods returns an array of {@link String}s
