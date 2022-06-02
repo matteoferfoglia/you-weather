@@ -45,7 +45,9 @@ public abstract class ImagesHelper {
                     ExifInterface.ORIENTATION_UNDEFINED // default returned value if the specified tag in unavailable
             );
             Bitmap inputBitmap = BitmapFactory.decodeFile(inputBitmapPath);
+
             if (inputBitmap != null) {
+
                 Bitmap straightenImage;
                 switch (imageOrientation) {
                     case ExifInterface.ORIENTATION_ROTATE_90:
@@ -73,6 +75,45 @@ public abstract class ImagesHelper {
             Log.e(TAG, "Returning null due to an IOException", exception);
             return null;
         }
+    }
+
+    /**
+     * Compresses the given input image such that it will have at most the
+     * provided number of pixels (intended as outputWidthPx * outputHeightPx)
+     *
+     * @param inputBitmap    The input {@link Bitmap} image to compress.
+     * @param maxNumOfPixels The maximum number of pixels
+     *                       (intended as outputWidthPx * outputHeightPx)
+     *                       of the output image.
+     * @return The compressed image.
+     */
+    public static Bitmap compressImageAndGet(@NonNull Bitmap inputBitmap, int maxNumOfPixels) {
+
+        Bitmap outputBitmap = Objects.requireNonNull(inputBitmap);
+        final int inputImageWidth = inputBitmap.getWidth();
+        final int inputImageHeight = inputBitmap.getHeight();
+
+        if (maxNumOfPixels > 0 && inputImageWidth > 0 && inputImageHeight > 0) {
+
+            // Compute the compression ratio
+            final double widthToHeightRatio = inputImageWidth / (double) inputImageHeight;
+            final double compressionRatio =
+                    Math.sqrt(maxNumOfPixels / (widthToHeightRatio)) / inputImageHeight;
+
+            assert compressionRatio > 0;
+
+            if (compressionRatio < 1) {
+                // If compression ration is greater than 1, it would mean to enlarge the input image, hence avoided
+
+                final int outputImageWidth = (int) Math.round(compressionRatio * inputImageWidth);
+                final int outputImageHeight = (int) Math.round(compressionRatio * inputImageHeight);
+
+                // Actual compression
+                outputBitmap = Bitmap.createScaledBitmap(inputBitmap, outputImageWidth, outputImageHeight, true);
+            }
+        }
+
+        return outputBitmap;
     }
 
     /**
@@ -104,10 +145,12 @@ public abstract class ImagesHelper {
         private String bitmapConfigName;
 
         public SerializableBitmap(Bitmap bitmap) {
-            this.base64Bitmap = Base64Helper.encode(convertToByteArray(Objects.requireNonNull(bitmap)));
-            this.bitmapConfigName = bitmap.getConfig().name();  // adapted from https://stackoverflow.com/a/34165515/17402378
-            this.widthPx = bitmap.getWidth();
-            this.heightPx = bitmap.getHeight();
+            final int MAX_NUM_OF_PIXELS = 1_000_000;
+            Bitmap compressedBitmap = compressImageAndGet(Objects.requireNonNull(bitmap), MAX_NUM_OF_PIXELS);
+            this.base64Bitmap = Base64Helper.encode(convertToByteArray(compressedBitmap));
+            this.bitmapConfigName = compressedBitmap.getConfig().name();  // adapted from https://stackoverflow.com/a/34165515/17402378
+            this.widthPx = compressedBitmap.getWidth();
+            this.heightPx = compressedBitmap.getHeight();
         }
 
         private SerializableBitmap() {  // needed no-args constructor
