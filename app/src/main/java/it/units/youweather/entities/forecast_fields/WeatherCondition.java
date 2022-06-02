@@ -326,6 +326,7 @@ public class WeatherCondition implements Serializable {
         return icon;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "WeatherCondition{" + "id=" + id + ", main=" + main + ", description=" + description + ", icon=" + icon + '}';

@@ -97,5 +97,9 @@
     <string name="ever">ever</string>
     <string name="click_on_a_report_to_see_details">Click on a report to see details</string>
 
+    <string name="city">City: %1$s</string>
+    <string name="coordinates">Latitude: %1$.6f, Longitude: %2$.6f</string>
+    <string name="reported_on_date">Reported on: %1$s</string>
+
     <!-- TODO: missing translations -->
 </resources>

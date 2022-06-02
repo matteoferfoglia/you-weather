@@ -1,17 +1,27 @@
 package it.units.youweather.ui.logged_in_area;
 
+import android.annotation.SuppressLint;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.Objects;
 
+import it.units.youweather.R;
 import it.units.youweather.databinding.FragmentWeatherReportBinding;
 import it.units.youweather.entities.storage.WeatherReport;
+import it.units.youweather.utils.Timing;
 
 /**
  * {@link Fragment} used to show a {@link it.units.youweather.entities.storage.WeatherReport}.
@@ -25,6 +35,11 @@ public class WeatherReportFragment extends Fragment {
      */
     private static final String WEATHER_REPORT_ARG_NAME =
             WeatherReportFragment.class.getCanonicalName() + "weatherReport";
+
+    /**
+     * TAG for logger.
+     */
+    private static final String TAG = WeatherViewerFragment.class.getSimpleName();
 
     // TODO: Rename and change types of parameters
     private WeatherReport weatherReport;
@@ -64,13 +79,41 @@ public class WeatherReportFragment extends Fragment {
         }
     }
 
+    @SuppressLint("UseCompatLoadingForDrawables")
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         FragmentWeatherReportBinding viewBinding = FragmentWeatherReportBinding.inflate(inflater);
 
-        viewBinding.cityName.setText(weatherReport.getCity().getName());
-        viewBinding.weatherDescription.setText(weatherReport.getWeatherCondition().getDescription());
+        new Thread(() -> {
+            Drawable imageTmp = null;
+            if (weatherReport.getPicture() != null) {
+                imageTmp = new BitmapDrawable(getResources(), weatherReport.getPicture().getBitmap());
+            } else {
+                try (InputStream iconIS =
+                             new URL(weatherReport.getWeatherCondition().getIconUrl()).openStream()) {
+                    imageTmp = Drawable.createFromStream(iconIS, "weatherIcon");
+                } catch (IOException exception) {
+                    Log.e(TAG, "Weather icon not showed due to an exception", exception);
+                    imageTmp = ContextCompat.getDrawable(requireContext(), R.drawable.ic_baseline_wb_sunny_24);    // TODO: replace with app icon
+                }
+            }
+
+            double reportLatitude = weatherReport.getCoordinates().getLat();
+            double reportLongitude = weatherReport.getCoordinates().getLon();
+
+            assert imageTmp != null;
+            final Drawable image = imageTmp;    // copy image to effectively final variable
+            requireActivity().runOnUiThread(() -> {
+                viewBinding.reportImageOrWeatherConditionIcon.setImageDrawable(image);
+                viewBinding.cityName.setText(getString(R.string.city, weatherReport.getCity().toString()));
+                viewBinding.weatherDescription.setText(weatherReport.getWeatherCondition().getDescription());
+                viewBinding.coordinates.setText(getString(R.string.coordinates, reportLatitude, reportLongitude));
+                viewBinding.reportedDateTime.setText(getString(R.string.reported_on_date, Timing.convertEpochMillisToFormattedDate(weatherReport.getMillisecondsSinceEpoch())));
+            });
+
+        }).start();
+
 
         return viewBinding.getRoot();
     }
