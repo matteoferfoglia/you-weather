@@ -1,6 +1,7 @@
 package it.units.youweather.ui.logged_in_area;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -8,6 +9,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -114,7 +117,24 @@ public class WeatherReportFragment extends Fragment {
 
         }).start();
 
+        viewBinding.reportImageOrWeatherConditionIcon
+                .setOnClickListener(view_ -> showFullScreenWeatherReportImage(viewBinding));
 
         return viewBinding.getRoot();
+    }
+
+    /**
+     * Shows the weather report image to full screen.
+     * Adapted from <a href="https://stackoverflow.com/a/12089733/17402378">here</a>.
+     */
+    @SuppressLint("ResourceAsColor")
+    private void showFullScreenWeatherReportImage(FragmentWeatherReportBinding viewBinding) {
+        Dialog imageFullScreenPreview = new Dialog(requireContext(), android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+        imageFullScreenPreview.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        imageFullScreenPreview.setContentView(R.layout.preview_image);
+        imageFullScreenPreview.show();
+        ImageView ivPreview = (ImageView) imageFullScreenPreview.findViewById(R.id.preview_image);
+        ivPreview.setImageDrawable(viewBinding.reportImageOrWeatherConditionIcon.getDrawable());
+        ivPreview.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.white));
     }
 }
