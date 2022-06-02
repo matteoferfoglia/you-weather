@@ -95,6 +95,7 @@
     <string name="date_short_format">dd-MMM-yyyy</string>
     <string name="filtered_reports_from_to">Filtered reports from %1$s to %2$s</string>
     <string name="ever">ever</string>
+    <string name="click_on_a_report_to_see_details">Click on a report to see details</string>
 
     <!-- TODO: missing translations -->
 </resources>

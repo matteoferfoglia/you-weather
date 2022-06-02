@@ -387,6 +387,12 @@ public class UserPageWithHistoryFragment extends Fragment {
                     tableRow.addView(tableCell);
                 }
 
+                // Add on click listener to show weather report details
+                tableRow.setOnClickListener(view_ -> {
+                    new DialogFragmentContainer(WeatherReportFragment.newInstance(wr))
+                            .show(getChildFragmentManager(), null);
+                });
+
                 sortedTableRowList.add(tableRow);
             }
 

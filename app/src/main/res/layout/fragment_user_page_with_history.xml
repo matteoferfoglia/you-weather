@@ -34,7 +34,7 @@
         android:orientation="horizontal"
         android:visibility="visible"
         android:weightSum="3"
-        app:layout_constraintBottom_toTopOf="@id/history_reports_table_heading"
+        app:layout_constraintBottom_toTopOf="@id/text_click_on_reports"
         app:layout_constraintTop_toBottomOf="@id/report_history_header">
 
         <CheckBox
@@ -71,6 +71,14 @@
 
     </LinearLayout>
 
+    <TextView
+        android:id="@+id/text_click_on_reports"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/select_dates_for_filtering"
+        app:layout_constraintBottom_toTopOf="@+id/history_reports_table_heading"
+        android:text="@string/click_on_a_report_to_see_details" />
+
     <TableLayout
         android:id="@+id/history_reports_table_heading"
         android:layout_width="match_parent"
@@ -78,7 +86,7 @@
         android:shrinkColumns="0"
         android:stretchColumns="1,2,3"
         app:layout_constraintBottom_toTopOf="@id/scroll_view_history_reports"
-        app:layout_constraintTop_toBottomOf="@+id/select_dates_for_filtering"> <!-- stretchColumns to give the same width to each specified column -->
+        app:layout_constraintTop_toBottomOf="@+id/text_click_on_reports"> <!-- stretchColumns to give the same width to each specified column -->
 
         <TableRow
             android:layout_width="0dp"
