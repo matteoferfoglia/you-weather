@@ -92,8 +92,6 @@ dependencies {
 
     /* END OPEN STREET MAP */
 
-    // Base64 encoder
-    implementation 'commons-codec:commons-codec:1.15'
 
 }
 

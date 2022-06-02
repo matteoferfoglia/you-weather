@@ -2,7 +2,7 @@ package it.units.youweather.utils;
 
 import androidx.annotation.NonNull;
 
-import org.apache.commons.codec.binary.Base64;
+import com.google.android.gms.common.util.Base64Utils;
 
 import java.util.Objects;
 
@@ -15,7 +15,7 @@ public abstract class Base64Helper {
      * @return The Base64-encoded string.
      */
     public static String encode(@NonNull byte[] bytes) {
-        return Base64.encodeBase64String(Objects.requireNonNull(bytes));
+        return Base64Utils.encode(Objects.requireNonNull(bytes));
     }
 
     /**
@@ -25,7 +25,7 @@ public abstract class Base64Helper {
      * @return The decoded bytes.
      */
     public static byte[] decode(@NonNull String base64Encoded) {
-        return Base64.decodeBase64(Objects.requireNonNull(base64Encoded));
+        return Base64Utils.decode(Objects.requireNonNull(base64Encoded));
     }
 
 }
