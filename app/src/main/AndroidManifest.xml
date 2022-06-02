@@ -33,6 +33,8 @@
         android:supportsRtl="true"
         android:networkSecurityConfig="@xml/network_security_config"
         android:theme="@style/NoActionBar"
+        android:hardwareAccelerated="false"
+        android:largeHeap="true"
         tools:targetApi="n">
         <meta-data
             android:name="com.google.android.actions"

@@ -11,8 +11,11 @@ public class EnvironmentVariables {
 
     /**
      * Flag: if true, Firebase emulators will be used (for development).
+     * <strong>Notice</strong>: problems were detected when using Firebase
+     * Authentication on real (physical) devices: for them, the emulator did
+     * not work and the real Firebase Authentication service had to be used.
      */
-    public static final boolean USE_FIREBASE_EMULATORS = true;
+    public static final boolean USE_FIREBASE_EMULATORS = false;
 
     /**
      * Android emulator IP (when {@link #USE_FIREBASE_EMULATORS} is true).
