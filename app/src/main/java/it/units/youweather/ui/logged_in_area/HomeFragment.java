@@ -105,7 +105,7 @@ public class HomeFragment extends Fragment {
                                     cities,
                                     viewBinding.searchBarResults,
                                     viewBinding.searchBar,
-                                    selectedCity -> showReportFromOtherUsersForTodayAtGivenCity(selectedCity));
+                                    selectedCity -> hideAppIconAndShowWeatherReports(selectedCity));
                             Activity activity = getActivity();
                             if (activity != null) {
                                 activity.runOnUiThread(() ->
@@ -149,32 +149,48 @@ public class HomeFragment extends Fragment {
             Log.e(TAG, "Error getting user's location", e);
         }
 
-        viewBinding.useCurrentPositionButton.setOnClickListener(view_ -> {
-            new Thread(() -> {
-                City[] citiesForCurrentUserPosition = userLocation == null
-                        ? new City[0]
-                        : LocationHelper.getCitiesFromCoordinates(
-                        new Coordinates(
-                                userLocation.getLatitude(),
-                                userLocation.getLongitude()));
-                if (citiesForCurrentUserPosition.length > 0) {
+        viewBinding.useCurrentPositionButton.setOnClickListener(view_ ->
+                new Thread(() -> {
+                    City[] citiesForCurrentUserPosition = userLocation == null
+                            ? new City[0]
+                            : LocationHelper.getCitiesFromCoordinates(
+                            new Coordinates(
+                                    userLocation.getLatitude(),
+                                    userLocation.getLongitude()));
+                    if (citiesForCurrentUserPosition.length > 0) {
 
-                    City city = citiesForCurrentUserPosition[0];
-                    showWeatherForCity(getFragmentManager(requireView()), city);
-                    showReportFromOtherUsersForTodayAtGivenCity(city);
-                } else {
-                    Activity activity = getActivity();
-                    if (activity != null) {
-                        activity.runOnUiThread(() ->
-                                Toast.makeText(requireContext(), R.string.Not_found_city_for_user_position, Toast.LENGTH_LONG)
-                                        .show());
+                        City city = citiesForCurrentUserPosition[0];
+                        hideAppIconAndShowWeatherReports(city);
+                    } else {
+                        Activity activity = getActivity();
+                        if (activity != null) {
+                            activity.runOnUiThread(() ->
+                                    Toast.makeText(requireContext(), R.string.Not_found_city_for_user_position, Toast.LENGTH_LONG)
+                                            .show());
+                        }
                     }
-                }
-            }).start();
-        });
+                }).start());
         viewBinding.authButton.setOnClickListener(_view -> signOut());
 
         collapseKeyboardForSearchBox();
+    }
+
+    /**
+     * Hides the application logo (which is shown by default) and
+     * shows the weather reports (that are initially hidden).
+     *
+     * @param city The {@link City} for which the weather reports have to be shown.
+     */
+    private void hideAppIconAndShowWeatherReports(City city) {
+        showWeatherForCity(getFragmentManager(requireView()), city);
+        showReportFromOtherUsersForTodayAtGivenCity(city);
+        Activity activity = getActivity();
+        if (activity != null) {
+            activity.runOnUiThread(() -> {
+                viewBinding.applicationLogo.setVisibility(View.GONE);
+                viewBinding.weatherViewers.setVisibility(View.VISIBLE);
+            });
+        }
     }
 
     /**
@@ -306,8 +322,6 @@ public class HomeFragment extends Fragment {
             View view = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.text_row_item_in_dropdown, parent, false);
 
-            FragmentManager parentFragmentManager = HomeFragment.getFragmentManager(parent.getRootView());
-
             view.setOnClickListener(view_ -> {  // define onClickListener for items
 
                 // Find this item position iterating over all items of the recyclerView (parent)
@@ -322,7 +336,6 @@ public class HomeFragment extends Fragment {
                 }
                 City clickedCity = localDataset[itemPosition];
 
-                showWeatherForCity(parentFragmentManager, clickedCity);
                 onCitySelected.accept(clickedCity);
 
                 // Clear the old query from the search bar

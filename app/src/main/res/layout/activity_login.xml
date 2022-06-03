@@ -27,7 +27,7 @@
             android:layout_weight="65"
             android:contentDescription="@string/application_logo_content_description"
             app:srcCompat="@drawable/app_icon"
-            tools:ignore="ImageContrastCheck" /><!-- TODO: set application logo -->
+            tools:ignore="ImageContrastCheck" />
 
     </LinearLayout>
 
