@@ -1,57 +1,74 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="horizontal"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:layout_gravity="center"
-    android:weightSum="5"
     tools:context=".ui.logged_in_area.WeatherReportFragment">
 
-    <ImageView
-        android:id="@+id/report_image_or_weather_condition_icon"
-        android:layout_width="0dp"
-        android:layout_height="@dimen/weather_fragment_height"
-        android:layout_gravity="center"
-        android:layout_weight="2"
-        android:contentDescription="@string/weather_icon"
-        android:gravity="center" />
-
+    <ProgressBar
+        android:id="@+id/progress_loader"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="visible" /><!-- Adapted from https://stackoverflow.com/a/35082220/17402378 -->
 
     <LinearLayout
-        android:layout_width="0dp"
+        android:id="@+id/weather_viewer_main_layout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_weight="3"
-        android:gravity="center"
-        android:orientation="vertical">
+        android:visibility="gone"
+        android:weightSum="5">
 
-        <TextView
-            android:id="@+id/city_name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+        <ImageView
+            android:id="@+id/report_image_or_weather_condition_icon"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/weather_fragment_height"
+            android:layout_gravity="center"
+            android:layout_weight="2"
+            android:contentDescription="@string/weather_icon"
             android:gravity="center" />
 
-        <TextView
-            android:id="@+id/coordinates"
-            android:layout_width="match_parent"
+
+        <LinearLayout
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="3"
             android:gravity="center"
-            android:textAlignment="center" /><!-- TODO: correct case and handle translation -->
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/weather_description"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginVertical="10dp"
-            android:gravity="center"
-            android:textStyle="bold" />
+            <TextView
+                android:id="@+id/city_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center" />
 
-        <TextView
-            android:id="@+id/reported_date_time"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center" />
+            <TextView
+                android:id="@+id/coordinates"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textAlignment="center" /><!-- TODO: correct case and handle translation -->
 
+            <TextView
+                android:id="@+id/weather_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="10dp"
+                android:gravity="center"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/reported_date_time"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center" />
+
+        </LinearLayout>
     </LinearLayout>
+
 
 </LinearLayout>

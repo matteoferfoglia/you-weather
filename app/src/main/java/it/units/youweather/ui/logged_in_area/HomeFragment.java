@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import it.units.youweather.R;
 import it.units.youweather.databinding.FragmentHomeBinding;
@@ -97,7 +98,7 @@ public class HomeFragment extends Fragment {
         viewBinding.searchBar.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-
+                AtomicBoolean anyErrorsRetrievingCity = new AtomicBoolean(false);
                 LocationHelper.getCitiesFromNameAndConsume(
                         query,
                         cities -> {
@@ -113,7 +114,7 @@ public class HomeFragment extends Fragment {
                             }
                             Log.d(TAG, "Cities matching the query: " + Arrays.toString(cities));
 
-                            if (cities.length == 0) {
+                            if (cities.length == 0 && !anyErrorsRetrievingCity.get()) {
                                 final String errorMsg = ResourceHelper.getResString(R.string.no_results);
                                 activity = getActivity();
                                 if (activity != null) {
@@ -122,7 +123,14 @@ public class HomeFragment extends Fragment {
                                                     .show());
                                 }
                             }
-
+                        },
+                        errorMsgIdRes -> {
+                            Activity activity = getActivity();
+                            if (activity != null) {
+                                activity.runOnUiThread(() ->
+                                        Toast.makeText(requireContext(), errorMsgIdRes, Toast.LENGTH_LONG).show());
+                            }
+                            anyErrorsRetrievingCity.set(true);
                         });
                 return false;
             }
@@ -151,18 +159,27 @@ public class HomeFragment extends Fragment {
 
         viewBinding.useCurrentPositionButton.setOnClickListener(view_ ->
                 new Thread(() -> {
+                    AtomicBoolean anyErrorRetrievingLocation = new AtomicBoolean(false);
                     City[] citiesForCurrentUserPosition = userLocation == null
                             ? new City[0]
                             : LocationHelper.getCitiesFromCoordinates(
                             new Coordinates(
                                     userLocation.getLatitude(),
-                                    userLocation.getLongitude()));
+                                    userLocation.getLongitude()),
+                            errorMsgIdRes -> {
+                                Activity activity = getActivity();
+                                if (activity != null) {
+                                    activity.runOnUiThread(() ->
+                                            Toast.makeText(requireContext(), errorMsgIdRes, Toast.LENGTH_LONG).show());
+                                }
+                                anyErrorRetrievingLocation.set(true);
+                            });
                     if (citiesForCurrentUserPosition.length > 0) {
                         City city = citiesForCurrentUserPosition[0];
                         hideAppIconAndShowWeatherReports(city);
                     } else {
                         Activity activity = getActivity();
-                        if (activity != null) {
+                        if (activity != null && !anyErrorRetrievingLocation.get()) {
                             activity.runOnUiThread(() ->
                                     Toast.makeText(requireContext(), R.string.Not_found_city_for_user_position, Toast.LENGTH_LONG)
                                             .show());

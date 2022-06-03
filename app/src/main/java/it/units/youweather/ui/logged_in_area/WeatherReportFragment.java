@@ -120,6 +120,9 @@ public class WeatherReportFragment extends Fragment {
                     viewBinding.weatherDescription.setText(weatherReport.getWeatherCondition().getDescription());
                     viewBinding.coordinates.setText(getString(R.string.coordinates, reportLatitude, reportLongitude));
                     viewBinding.reportedDateTime.setText(getString(R.string.reported_on_date, Timing.convertEpochMillisToFormattedDate(weatherReport.getMillisecondsSinceEpoch())));
+
+                    viewBinding.weatherViewerMainLayout.setVisibility(View.VISIBLE);
+                    viewBinding.progressLoader.setVisibility(View.GONE);
                 });
             }
 
@@ -141,7 +144,7 @@ public class WeatherReportFragment extends Fragment {
         imageFullScreenPreview.requestWindowFeature(Window.FEATURE_NO_TITLE);
         imageFullScreenPreview.setContentView(R.layout.preview_image);
         imageFullScreenPreview.show();
-        ImageView ivPreview = (ImageView) imageFullScreenPreview.findViewById(R.id.preview_image);
+        ImageView ivPreview = imageFullScreenPreview.findViewById(R.id.preview_image);
         ivPreview.setImageDrawable(viewBinding.reportImageOrWeatherConditionIcon.getDrawable());
         ivPreview.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.white));
     }

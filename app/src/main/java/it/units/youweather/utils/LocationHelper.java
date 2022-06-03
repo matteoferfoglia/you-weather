@@ -11,6 +11,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -177,7 +178,7 @@ public class LocationHelper {
             }
         });
 
-        Location lastKnownSavedLocation = (Location) SharedData.getValue(SharedData.SharedDataName.USER_LAST_KNOWN_POSITION);
+        Location lastKnownSavedLocation = SharedData.getValue(SharedData.SharedDataName.USER_LAST_KNOWN_POSITION);
         listener.start();
 
         // If any location is saved, use that until a more recent position will be available
@@ -286,9 +287,11 @@ public class LocationHelper {
      * @param cityName          The name of a {@link City}.
      * @param cityArrayConsumer The consumer for the array of {@link City cities}
      *                          matching the inserted string.
+     * @param onError           The {@link Consumer} for the {@link IdRes} of the error message (if any).
      */
     public static void getCitiesFromNameAndConsume(@NonNull String cityName,
-                                                   @NonNull Consumer<City[]> cityArrayConsumer) {
+                                                   @NonNull Consumer<City[]> cityArrayConsumer,
+                                                   @NonNull Consumer<Integer> onError) {
         new Thread(() -> {
             String requestString = "http://api.openweathermap.org/geo/1.0/direct?"
                     + "q=" + Objects.requireNonNull(cityName)
@@ -302,6 +305,7 @@ public class LocationHelper {
                 cities = JsonHelper.fromJson(responseString, City[].class);
             } catch (IOException e) {
                 cities = new City[0];
+                onError.accept(R.string.check_internet_connection);
             }
             cityArrayConsumer.accept(cities);
         }).start();
@@ -317,9 +321,11 @@ public class LocationHelper {
      * {@link } instead.
      *
      * @param coordinates Coordinates.
+     * @param onError     The {@link Consumer} for the {@link IdRes} of the error message (if any).
      * @return the array of know cities complying with the request.
      */
-    public static City[] getCitiesFromCoordinates(@NonNull Coordinates coordinates) {
+    public static City[] getCitiesFromCoordinates(
+            @NonNull Coordinates coordinates, @NonNull Consumer<Integer> onError) {
 
         City[] resolvedCities;
 
@@ -336,6 +342,7 @@ public class LocationHelper {
             resolvedCities = JsonHelper.fromJson(responseString, City[].class);
         } catch (IOException e) {
             Log.e(TAG, "Unable to open HTTP connection. Error is: " + e.getMessage(), e);
+            onError.accept(R.string.check_internet_connection);
             resolvedCities = new City[0];
         }
 
@@ -352,13 +359,14 @@ public class LocationHelper {
      * @param coordinates       Coordinates.
      * @param cityArrayConsumer The {@link Consumer} for the array of cities matching
      *                          the request and returned by the server.
+     * @param onError           The {@link Consumer} for the {@link IdRes} of the error message (if any).
      * @return The {@link Thread} responsible for the asynchronous operations, after
      * having <strong>already</strong> started it.
      */
     public static Thread getCitiesFromCoordinatesAndConsume(
-            @NonNull Coordinates coordinates, @NonNull Consumer<City[]> cityArrayConsumer) {
+            @NonNull Coordinates coordinates, @NonNull Consumer<City[]> cityArrayConsumer, @NonNull Consumer<Integer> onError) {
         Thread t = new Thread(() -> Objects.requireNonNull(cityArrayConsumer)
-                .accept(getCitiesFromCoordinates(coordinates)));
+                .accept(getCitiesFromCoordinates(coordinates, onError)));
         t.start();
         return t;
     }

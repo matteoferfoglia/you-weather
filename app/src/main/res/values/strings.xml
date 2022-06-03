@@ -101,6 +101,7 @@
     <string name="coordinates">Latitude: %1$.6f, Longitude: %2$.6f</string>
     <string name="reported_on_date">Reported on: %1$s</string>
     <string name="app_icon">App icon</string>
+    <string name="check_internet_connection">Check your internet connection</string>
 
     <!-- TODO: missing translations -->
 </resources>

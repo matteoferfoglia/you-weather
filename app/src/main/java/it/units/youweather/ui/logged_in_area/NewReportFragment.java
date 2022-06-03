@@ -171,7 +171,15 @@ public class NewReportFragment extends Fragment {
                                     });
                                 }
 
+                            },
+                            errorMsgIdRes -> {
+                                Activity activity_ = getActivity();
+                                if (activity_ != null) {
+                                    activity_.runOnUiThread(() ->
+                                            Toast.makeText(requireContext(), errorMsgIdRes, Toast.LENGTH_LONG).show());
+                                }
                             });
+
                 }
             });
         } catch (PermissionsHelper.MissingPermissionsException e) {
