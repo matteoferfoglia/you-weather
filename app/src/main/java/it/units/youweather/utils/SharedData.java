@@ -1,18 +1,20 @@
 package it.units.youweather.utils;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.util.Log;
 import android.util.Pair;
 
 import androidx.annotation.NonNull;
 
 import java.lang.reflect.Type;
+import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * This class is an helper for saving shared data for the application.
- * Data are saved as shared preferences.
+ * Data are saved in a static {@link Map} and are lost when the application ends.
  */
 public abstract class SharedData {
 
@@ -27,7 +29,7 @@ public abstract class SharedData {
     private static final String SHARED_PREFERENCES_NAME =
             SharedData.class.getCanonicalName();
 
-    private static final Context appContext = ResourceHelper.getAppContext();
+    private static final ConcurrentMap<SharedDataName, String> sharedDate = new ConcurrentHashMap<>();
 
     /**
      * Enumeration of valid shared data names.
@@ -62,11 +64,6 @@ public abstract class SharedData {
     }
 
     /**
-     * Mutex to handle concurrent access to the data.
-     */
-    private final static Object sharedDataMutex = new Object();
-
-    /**
      * Retrieves a shared data.
      *
      * @param sharedDataName The name for the shared data to retrieve.
@@ -74,12 +71,9 @@ public abstract class SharedData {
      */
     public static <T> T getValue(@NonNull SharedDataName sharedDataName) {
 
-        synchronized (sharedDataMutex) {
+        synchronized (sharedDate) {
 
-            String preferenceValueAsJson = appContext
-                    .getSharedPreferences(
-                            Objects.requireNonNull(SHARED_PREFERENCES_NAME), Context.MODE_PRIVATE)
-                    .getString(sharedDataName.name(), null/*default value if absent*/);
+            String preferenceValueAsJson = sharedDate.get(sharedDataName);  // Date saved in JSON format
 
             if (preferenceValueAsJson != null) {
 
@@ -112,16 +106,10 @@ public abstract class SharedData {
                                     @NonNull T preferenceValue) {
         String classCanonicalName = Objects.requireNonNull(preferenceValue).getClass().getCanonicalName();
 
-        synchronized (sharedDataMutex) {
-
-            appContext.getSharedPreferences(
-                    Objects.requireNonNull(SHARED_PREFERENCES_NAME), Context.MODE_PRIVATE)
-                    .edit()
-                    .putString(
-                            sharedDataName.name(),
-                            JsonHelper.toJson(new Pair<>(classCanonicalName, JsonHelper.toJson(preferenceValue))))
-                    .commit();
-
+        synchronized (sharedDate) {
+            sharedDate.put(
+                    sharedDataName,
+                    JsonHelper.toJson(new Pair<>(classCanonicalName, JsonHelper.toJson(preferenceValue))));
         }
     }
 
@@ -132,8 +120,8 @@ public abstract class SharedData {
      */
     public static <T> void setValueIfAbsent(@NonNull SharedDataName sharedDataName,
                                             @NonNull T preferenceValue) {
-        synchronized (sharedDataMutex) {
-            if (getValue(sharedDataName) == null) {
+        synchronized (sharedDate) {
+            if (!sharedDate.containsKey(sharedDataName)) {
                 setValue(sharedDataName, preferenceValue);
             }
         }
@@ -146,12 +134,8 @@ public abstract class SharedData {
      */
     @SuppressLint("ApplySharedPref")    // synchronous (blocking operation) update
     public static void removeValue(@NonNull SharedDataName sharedDataName) {
-        synchronized (sharedDataMutex) {
-            appContext.getSharedPreferences(
-                    Objects.requireNonNull(SHARED_PREFERENCES_NAME), Context.MODE_PRIVATE)
-                    .edit()
-                    .remove(sharedDataName.name())
-                    .commit();
+        synchronized (sharedDate) {
+            sharedDate.remove(sharedDataName);
         }
     }
 

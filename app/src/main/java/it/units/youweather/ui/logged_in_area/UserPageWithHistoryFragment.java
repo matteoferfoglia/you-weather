@@ -458,13 +458,4 @@ public class UserPageWithHistoryFragment extends Fragment {
         }).start();
 
     }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-
-        SharedData.removeValue(SharedData.SharedDataName.USER_PAGE_WITH_HISTORY_FRAGMENT_FILTER_DATE_CHECKED);
-        SharedData.removeValue(SharedData.SharedDataName.USER_PAGE_WITH_HISTORY_FRAGMENT_FILTER_DATE_FROM);
-        SharedData.removeValue(SharedData.SharedDataName.USER_PAGE_WITH_HISTORY_FRAGMENT_FILTER_DATE_TO);
-    }
 }
