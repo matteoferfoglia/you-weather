@@ -94,6 +94,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:orientation="vertical">
 
             <androidx.fragment.app.FragmentContainerView
@@ -102,12 +103,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:layout_constraintBottom_toTopOf="@+id/weather_report_by_other_user_textview"
-                android:layout_margin="@dimen/home_fragment_common_margin" />
+                android:layout_marginHorizontal="@dimen/home_fragment_common_margin" />
 
             <TextView
                 android:id="@+id/weather_report_by_other_user_textview"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/home_fragment_common_margin"
                 android:layout_marginHorizontal="@dimen/home_fragment_common_margin"
                 android:text="@string/most_recent_weather_report_from_other_users"
                 android:visibility="gone" />
@@ -125,7 +127,6 @@
         android:id="@+id/auth_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginVertical="@dimen/home_fragment_common_margin"
         android:enabled="true"
         android:text="@string/action_sign_out"
         app:layout_constraintTop_toBottomOf="@+id/weather_viewers"
