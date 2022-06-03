@@ -20,6 +20,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import it.units.youweather.EnvironmentVariables;
 import it.units.youweather.utils.functionals.Consumer;
@@ -177,7 +180,29 @@ public class FirebaseRTDBEntityAdapter<T extends DBEntity> extends DBEntityAdapt
                     + String.class + ", " + Double.class + ", " + Boolean.class);
         }
 
-        q.addListenerForSingleValueEvent(getSingleValueEventListenerForQuery(onSuccess, onError));
+
+        // Try to execute the query and, if after a given amount of time the query execution
+        // is not completed yet, abort the execution and run the onError callback
+
+        final int AMOUNT_OF_SECONDS_FOR_FAILURE_DETECTION = 5;
+
+        AtomicBoolean queryExecutionCompleted = new AtomicBoolean(false);
+        Executors.newScheduledThreadPool(1).schedule(() -> {
+            synchronized (queryExecutionCompleted) {
+                if (!queryExecutionCompleted.get() && onError != null) {
+                    onError.run();
+                    queryExecutionCompleted.set(true);
+                }
+            }
+        }, AMOUNT_OF_SECONDS_FOR_FAILURE_DETECTION, TimeUnit.SECONDS);
+        q.addListenerForSingleValueEvent(getSingleValueEventListenerForQuery(results -> {
+            synchronized (queryExecutionCompleted) {
+                if (!queryExecutionCompleted.get()) {
+                    queryExecutionCompleted.set(true);
+                    onSuccess.accept(results);
+                }
+            }
+        }, onError));
 
         Log.d(TAG, "pull query method execution terminated:" +
                 " it will asynchronously download the data for the query");

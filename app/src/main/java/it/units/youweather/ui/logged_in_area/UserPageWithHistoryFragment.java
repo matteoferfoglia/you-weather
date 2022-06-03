@@ -361,24 +361,20 @@ public class UserPageWithHistoryFragment extends Fragment {
 
             try {
                 Field usernameField = WeatherReport.class.getDeclaredField("reporterUserId");
-                DBHelper.pull( // TODO : test with multiple users
+                DBHelper.pull(
                         new Query<>(usernameField, Authentication.getCurrentlySignedInUserOrNull(requireContext()).getUserId()),
                         WeatherReport.class,
                         retrievedWeatherReports -> {
                             weatherReports = new LinkedList<>(Objects.requireNonNull(retrievedWeatherReports));
                             Collections.sort(weatherReports, (a, b) -> (int) (a.getMillisecondsSinceEpoch() - b.getMillisecondsSinceEpoch()));
                             Log.i(TAG, retrievedWeatherReports.size() + " elements retrieved from the DB");
-
                             shownWeatherReports = new LinkedList<>(weatherReports);
-
                             sendDataToMapFragment();
-
-                            // TODO : update should be periodic (e.e., use Executors.newScheduledThreadPool), and if filters are set, they must be considered
-
                             populateReportHistoryTable();
                         },
                         () -> {
-                            String errorMsg = getString(R.string.Unable_to_retrieve_entities_from_DB);
+                            String errorMsg = getString(R.string.Unable_to_retrieve_entities_from_DB)
+                                    + ". " + getString(R.string.check_internet_connection);
                             Log.e(TAG, errorMsg);
                             Activity activity = getActivity();
                             if (activity != null) {
@@ -453,6 +449,8 @@ public class UserPageWithHistoryFragment extends Fragment {
                     for (TableRow tr : sortedTableRowList) {
                         viewBinding.historyReportsTable.addView(tr);
                     }
+                    viewBinding.loadingLayout.setVisibility(View.GONE);
+                    viewBinding.scrollViewHistoryReports.setVisibility(View.VISIBLE);
                 });
             }
         }).start();
