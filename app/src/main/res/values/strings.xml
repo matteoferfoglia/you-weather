@@ -7,7 +7,7 @@
     <string name="action_sign_out">Sign out</string>
     <string name="home">Home</string>
     <string name="search_location">Search for a location</string>
-    <string name="you_re_favourite_locations">You\'re favourite locations:</string>
+    <string name="most_recent_weather_report_from_other_users">Most recent weather report for this location:</string>
     <string name="new_report">New report</string>
     <string name="account">Account</string>
     <string name="hello">Hello, %1$s!</string>

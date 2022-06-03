@@ -41,6 +41,8 @@ import it.units.youweather.utils.LocationHelper;
  */
 public class WeatherViewerFragment extends Fragment {
 
+    // TODO: make layout scrollable
+
     /**
      * The request key used to implement the communication mechanism with
      * the parent fragment: the latter has to send to this fragment the

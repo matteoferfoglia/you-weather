@@ -6,99 +6,114 @@
     android:layout_height="match_parent"
     tools:context=".ui.logged_in_area.HomeFragment">
 
-    <!-- TODO : add app name ? -->
     <!-- TODO : dimensions (search for "dp") should be moved to resources -->
 
-    <androidx.appcompat.widget.SearchView
-        android:id="@+id/search_bar"
-        android:layout_width="0dp"
-        android:layout_height="48dp"
-        android:layout_marginHorizontal="30dp"
-        android:iconifiedByDefault="false"
-        android:queryHint="@string/search_location"
-        app:defaultQueryHint="@string/search_location"
-        app:iconifiedByDefault="false"
-        app:layout_constraintBottom_toTopOf="@id/favourite_locations_header"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.1"
-        app:queryHint="@string/search_location" />
-    <!-- Show query hint before clicking on searchView https://stackoverflow.com/a/52678158/17402378 -->
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/search_bar_results"
-        android:layout_width="0dp"
+    <TextView
+        android:id="@+id/app_name"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="35dp"
-        android:foregroundGravity="center"
-        android:visibility="visible"
-        app:layout_constraintBottom_toTopOf="@+id/fragment_weather_viewer"
+        android:text="@string/app_name"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/search_layout"
+        style="@style/TextAppearance.AppCompat.Title" />
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/search_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/search_bar" /><!--recycler view to display our data-->
+        android:layout_margin="@dimen/home_fragment_common_margin"
+        app:layout_constraintTop_toBottomOf="@+id/app_name"
+        app:layout_constraintBottom_toBottomOf="@+id/fragment_weather_viewer">
+
+        <androidx.appcompat.widget.SearchView
+            android:id="@+id/search_bar"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:iconifiedByDefault="false"
+            android:text="@string/search_location"
+            app:defaultQueryHint="@string/search_location"
+            app:iconifiedByDefault="false"
+            app:layout_constraintBottom_toTopOf="@+id/search_bar_results"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@+id/use_current_position_button"
+            app:layout_constraintTop_toTopOf="parent"
+            app:queryHint="@string/search_location" />
+        <!-- Show query hint before clicking on searchView https://stackoverflow.com/a/52678158/17402378 -->
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/search_bar_results"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="5dp"
+            android:foregroundGravity="center"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/search_bar" /><!--recycler view to display our data-->
+
+        <ImageView
+            android:id="@+id/use_current_position_button"
+            android:layout_width="40dp"
+            android:layout_height="0dp"
+            android:src="@drawable/ic_baseline_my_location_50"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@+id/search_bar_results"
+            app:layout_constraintLeft_toRightOf="@+id/search_bar"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:contentDescription="@string/use_current_position" />    <!-- TODO: this button must be visible only if locations permissions are ok -->
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fragment_weather_viewer"
         android:name="it.units.youweather.ui.logged_in_area.WeatherViewerFragment"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/fragment_weather_viewer_report_by_other_users"
+        app:layout_constraintBottom_toTopOf="@+id/weather_report_by_other_user_textview"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/search_bar_results" /><!-- TODO: show only after the location for which the weather has to be shown was selected -->
+        app:layout_constraintTop_toBottomOf="@+id/search_layout" />
+
+    <TextView
+        android:id="@+id/weather_report_by_other_user_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_marginTop="@dimen/home_fragment_common_margin"
+        android:visibility="gone"
+        android:text="@string/most_recent_weather_report_from_other_users"
+        app:layout_constraintBottom_toTopOf="@id/fragment_weather_viewer_report_by_other_users"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/fragment_weather_viewer" />
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fragment_weather_viewer_report_by_other_users"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@+id/favourite_locations_header"
+        app:layout_constraintBottom_toTopOf="@+id/auth_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/fragment_weather_viewer" /><!-- TODO: show only after the location for which the weather has to be shown was selected -->
+        app:layout_constraintTop_toBottomOf="@+id/weather_report_by_other_user_textview" />
 
-    <TextView
-        android:id="@+id/favourite_locations_header"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:text="@string/you_re_favourite_locations"
-        app:layout_constraintBottom_toTopOf="@id/favourite_locations_list"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/fragment_weather_viewer_report_by_other_users" /><!-- TODO: to be showed only if at least one favourite location is set -->
-
-    <ListView
-        android:id="@+id/favourite_locations_list"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@id/use_current_position_button"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/favourite_locations_header" />
-
-    <Button
-        android:id="@+id/use_current_position_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/use_current_position"
-        app:layout_constraintBottom_toTopOf="@id/auth_button"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/favourite_locations_header" /><!-- TODO: this button must be visible only if locations permissions are ok --><!-- TODO: set the action for this button -->
 
     <Button
         android:id="@+id/auth_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
-        android:layout_marginBottom="50dp"
+        android:layout_marginVertical="@dimen/home_fragment_common_margin"
         android:enabled="true"
         android:text="@string/action_sign_out"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/use_current_position_button" /><!-- TODO: move somewhere else ? -->
+        app:layout_constraintTop_toBottomOf="@id/fragment_weather_viewer_report_by_other_users" /><!-- TODO: move somewhere else ? -->
 
 </androidx.constraintlayout.widget.ConstraintLayout>

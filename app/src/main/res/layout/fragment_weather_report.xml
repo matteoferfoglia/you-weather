@@ -1,26 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="@dimen/weather_fragment_height"
+    android:weightSum="5"
+    android:layout_gravity="center"
     tools:context=".ui.logged_in_area.WeatherReportFragment">
 
-    <LinearLayout
+    <ImageView
+        android:id="@+id/report_image_or_weather_condition_icon"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
         android:layout_gravity="center"
-        android:layout_width="match_parent"
-        android:layout_height="250dp"
-        android:weightSum="5"
-        tools:ignore="UselessParent">
-
-        <ImageView
-            android:id="@+id/report_image_or_weather_condition_icon"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:layout_weight="2"
-            android:contentDescription="@string/weather_icon"
-            android:gravity="center" />
+        android:layout_weight="2"
+        android:contentDescription="@string/weather_icon"
+        android:gravity="center" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="0dp"
@@ -71,6 +66,5 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-    </LinearLayout>
 
-</FrameLayout>
+</LinearLayout>

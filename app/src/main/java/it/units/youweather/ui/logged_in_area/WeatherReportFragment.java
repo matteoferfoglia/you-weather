@@ -45,7 +45,10 @@ public class WeatherReportFragment extends Fragment {
      */
     private static final String TAG = WeatherViewerFragment.class.getSimpleName();
 
-    // TODO: Rename and change types of parameters
+    // TODO: Rename and change types of parametersù
+
+    // TODO: make layout scrollable
+
     private WeatherReport weatherReport;
 
     private WeatherReportFragment() {

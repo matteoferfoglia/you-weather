@@ -36,8 +36,10 @@ import it.units.youweather.ui.LoginActivity;
 import it.units.youweather.utils.LocationHelper;
 import it.units.youweather.utils.PermissionsHelper;
 import it.units.youweather.utils.ResourceHelper;
+import it.units.youweather.utils.Stoppable;
 import it.units.youweather.utils.Timing;
 import it.units.youweather.utils.auth.Authentication;
+import it.units.youweather.utils.functionals.Consumer;
 import it.units.youweather.utils.storage.DBHelper;
 import it.units.youweather.utils.storage.Query;
 
@@ -60,6 +62,7 @@ public class HomeFragment extends Fragment {
      * Cache for the current user's location.
      */
     private Location userLocation = null;
+    private Stoppable locationListener;
 
     /**
      * Signs the user out.
@@ -98,7 +101,11 @@ public class HomeFragment extends Fragment {
                 LocationHelper.getCitiesFromNameAndConsume(
                         query,
                         cities -> {
-                            LocationsAdapter cityNamesArrayAdapter = new LocationsAdapter(cities, viewBinding.searchBarResults, viewBinding.searchBar);
+                            LocationsAdapter cityNamesArrayAdapter = new LocationsAdapter(
+                                    cities,
+                                    viewBinding.searchBarResults,
+                                    viewBinding.searchBar,
+                                    selectedCity -> showReportFromOtherUsersForTodayAtGivenCity(selectedCity));
                             Activity activity = getActivity();
                             if (activity != null) {
                                 activity.runOnUiThread(() ->
@@ -127,11 +134,17 @@ public class HomeFragment extends Fragment {
         });
 
         try {
-            new LocationHelper(requireActivity()).addPositionChangeListener(location -> {
-                if (location != null) {
-                    this.userLocation = location;
-                }
-            });
+            locationListener = new LocationHelper(requireActivity())
+                    .addPositionChangeListener(location -> {
+                        if (location != null) {
+                            this.userLocation = location;
+                            Activity activity = getActivity();
+                            if (activity != null) {
+                                activity.runOnUiThread(() ->
+                                        viewBinding.useCurrentPositionButton.setVisibility(View.VISIBLE));
+                            }
+                        }
+                    });
         } catch (PermissionsHelper.MissingPermissionsException e) {
             Log.e(TAG, "Error getting user's location", e);
         }
@@ -186,10 +199,10 @@ public class HomeFragment extends Fragment {
                     }
                     if (mostRecentWr != null) {
                         Log.d(TAG, "Most recent weather report is " + mostRecentWr);
+                        WeatherReport finalMostRecentWr = mostRecentWr; // copy to effectively final
 
                         Activity activity = getActivity();
                         if (activity != null) {
-                            WeatherReport finalMostRecentWr = mostRecentWr; // copy to effectively final
                             activity.runOnUiThread(() -> {
                                 FragmentTransaction ft = getChildFragmentManager().beginTransaction();
                                 ft.add(
@@ -197,6 +210,7 @@ public class HomeFragment extends Fragment {
                                         WeatherReportFragment.newInstance(finalMostRecentWr))
                                         .commitNow();
                                 viewBinding.fragmentWeatherViewerReportByOtherUsers.setVisibility(View.VISIBLE);
+                                viewBinding.weatherReportByOtherUserTextview.setVisibility(View.VISIBLE);
                             });
                         }
                     } else {
@@ -243,6 +257,11 @@ public class HomeFragment extends Fragment {
         private final SearchView searchBar;
 
         /**
+         * The action to do when a {@link City} is selected (onClick).
+         */
+        private final Consumer<City> onCitySelected;
+
+        /**
          * Provide a reference to the type of views that you are using
          * (custom ViewHolder). Bind with the XML file.
          */
@@ -266,13 +285,16 @@ public class HomeFragment extends Fragment {
          *                         by RecyclerView.
          * @param searchBarResults The {@link RecyclerView} for which this adapter is created.
          * @param searchBar        The {@link SearchView searchbar}.
+         * @param onCitySelected   The action to do when a {@link City} is selected (onClick).
          */
         public LocationsAdapter(@NonNull City[] dataSet,
                                 @NonNull RecyclerView searchBarResults,
-                                @NonNull SearchView searchBar) {
+                                @NonNull SearchView searchBar,
+                                @NonNull Consumer<City> onCitySelected) {
             this.localDataset = Objects.requireNonNull(dataSet);
             this.searchBarResults = Objects.requireNonNull(searchBarResults);
             this.searchBar = Objects.requireNonNull(searchBar);
+            this.onCitySelected = Objects.requireNonNull(onCitySelected);
         }
 
         /**
@@ -301,10 +323,11 @@ public class HomeFragment extends Fragment {
                 City clickedCity = localDataset[itemPosition];
 
                 showWeatherForCity(parentFragmentManager, clickedCity);
+                onCitySelected.accept(clickedCity);
 
                 // Clear the old query from the search bar
                 searchBar.setQuery("", false);  // remove the old query
-                searchBarResults.setAdapter(new LocationsAdapter(new City[0], searchBarResults, searchBar));   // Replace the adapter with a new one (clear previous results)
+                searchBarResults.setAdapter(new LocationsAdapter(new City[0], searchBarResults, searchBar, onCitySelected));   // Replace the adapter with a new one (clear previous results)
             });
             return new ViewHolder(view);
         }
@@ -366,4 +389,11 @@ public class HomeFragment extends Fragment {
 
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (locationListener != null) {
+            locationListener.stop();    // TODO: test
+        }
+    }
 }

@@ -2,4 +2,6 @@
 <resources>
     <dimen name="history_table_heading_row_number_width">20dp</dimen>
     <dimen name="history_reports_filter_date_margin_horizontal">5dp</dimen>
+    <dimen name="weather_fragment_height">200dp</dimen>
+    <dimen name="home_fragment_common_margin">30dp</dimen>
 </resources>
