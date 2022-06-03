@@ -421,14 +421,11 @@ public class UserPageWithHistoryFragment extends Fragment {
                             cellWidthInPx = ConversionsHelper.dpToPx(cellWidthInDp);
                         }
 
-                        activity = getActivity();
-                        if (activity != null) {
-                            final TextView tableCell = new TextView(activity);
-                            tableCell.setText(cellContent);
-                            tableCell.setLayoutParams(new TableRow.LayoutParams(cellWidthInPx, TableRow.LayoutParams.MATCH_PARENT));
-                            tableCell.setGravity(Gravity.CENTER);
-                            tableRow.addView(tableCell);
-                        }
+                        final TextView tableCell = new TextView(activity);
+                        tableCell.setText(cellContent);
+                        tableCell.setLayoutParams(new TableRow.LayoutParams(cellWidthInPx, TableRow.LayoutParams.MATCH_PARENT));
+                        tableCell.setGravity(Gravity.CENTER);
+                        tableRow.addView(tableCell);
                     }
 
                     // Add on click listener to show weather report details

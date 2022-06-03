@@ -14,12 +14,11 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -124,27 +123,27 @@ public class FirebaseRTDBEntityAdapter<T extends DBEntity> extends DBEntityAdapt
         return new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                Map<String, Object> content = (Map<String, Object>) snapshot.getValue();
-                if (content == null) {
-                    content = new ConcurrentHashMap<>(0);
-                }
+                new Thread(() -> {
+                    Map<String, Object> content = (Map<String, Object>) snapshot.getValue();
+                    if (content == null) {
+                        content = new LinkedHashMap<>(0);
+                    }
 
-                // TODO : maybe a loader (graphic) is needed until data are downloaded
+                    // De-serialization of the object
+                    Map<String, T> deserializedContent = new LinkedHashMap<>(); // data form DB
+                    Gson gson = new Gson();
+                    for (Map.Entry<String, Object> aTuple : content.entrySet()) {
+                        String json = gson.toJson(aTuple.getValue());
+                        deserializedContent.put(aTuple.getKey(), gson.fromJson(json, (Type) getDbEntityClass()));
+                    }
 
-                // De-serialization of the object
-                Map<String, T> deserializedContent = new ConcurrentHashMap<>(); // data form DB
-                Gson gson = new Gson();
-                for (Map.Entry<String, Object> aTuple : content.entrySet()) {
-                    String json = gson.toJson(aTuple.getValue());
-                    deserializedContent.put(aTuple.getKey(), gson.fromJson(json, (Type) getDbEntityClass()));
-                }
+                    Log.d(TAG, "DB event listener - onDataChanged : "
+                            + content.size() + " elements retrieved");
 
-                Log.d(TAG, "DB event listener - onDataChanged : "
-                        + content.size() + " elements retrieved");
+                    List<T> results = new LinkedList<>(deserializedContent.values());
+                    Objects.requireNonNull(onSuccess).accept(results);
+                }).start();
 
-                List<T> results = new ArrayList<>(deserializedContent.values());
-                Collections.sort(results, (a, b) -> a.toString().compareTo(b.toString()));
-                Objects.requireNonNull(onSuccess).accept(results);
 
             }
 
