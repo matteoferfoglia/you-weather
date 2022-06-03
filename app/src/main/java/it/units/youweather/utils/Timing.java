@@ -30,10 +30,18 @@ public abstract class Timing {
     }
 
     /**
-     * @return the value of {@link Date#getTime()}.
+     * @return the number of milliseconds elapsed since epoch.
      */
     public static long getMillisSinceEpoch() {
-        return new Date().getTime();
+        return getMillisSinceEpoch(new Date());
+    }
+
+    /**
+     * @param date A {@link Date}.
+     * @return the number of milliseconds elapsed from epoch to the given {@link Date}.
+     */
+    public static long getMillisSinceEpoch(@NonNull Date date) {
+        return Objects.requireNonNull(date).getTime();
     }
 
     /**

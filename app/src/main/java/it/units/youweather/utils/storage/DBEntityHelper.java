@@ -3,7 +3,7 @@ package it.units.youweather.utils.storage;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.Collection;
+import java.util.List;
 
 import it.units.youweather.utils.functionals.Consumer;
 
@@ -51,7 +51,7 @@ interface DBEntityHelper<T extends DBEntity> {
      *                  in case of success.
      * @param onError   The {@link Runnable} to be run in case of error.
      */
-    void pull(@NonNull Consumer<Collection<T>> onSuccess, @Nullable Runnable onError);
+    void pull(@NonNull Consumer<List<T>> onSuccess, @Nullable Runnable onError);
 
     /**
      * Retrieve all {@link DBEntity tuples} for the entity associate with this instance,
@@ -64,7 +64,7 @@ interface DBEntityHelper<T extends DBEntity> {
      * @param onError   The {@link Runnable} to be run in case of error.
      */
     <S> void pull(@NonNull Query<S> query,
-                  @NonNull Consumer<Collection<T>> onSuccess, @Nullable Runnable onError);
+                  @NonNull Consumer<List<T>> onSuccess, @Nullable Runnable onError);
 
     /**
      * This method makes the instance to start to observe the entity associated

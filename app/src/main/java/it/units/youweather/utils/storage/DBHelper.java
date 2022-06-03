@@ -3,7 +3,7 @@ package it.units.youweather.utils.storage;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -77,9 +77,11 @@ public class DBHelper {
 
     /**
      * See {@link DBEntityHelper#pull(Consumer, Runnable)}.
+     *
+     * @param entityClass The {@link Class} for the entity.
      */
     public static <T extends DBEntity> void pull(@NonNull Class<T> entityClass,
-                                                 @NonNull Consumer<Collection<T>> onSuccess,
+                                                 @NonNull Consumer<List<T>> onSuccess,
                                                  @Nullable Runnable onError) {
         getInstance(Objects.requireNonNull(entityClass)).pull(onSuccess, onError);
     }
@@ -89,7 +91,7 @@ public class DBHelper {
      */
     public static <S, T extends DBEntity> void pull(@NonNull Query<S> query,
                                                     @NonNull Class<T> entityClass,
-                                                    @NonNull Consumer<Collection<T>> onSuccess,
+                                                    @NonNull Consumer<List<T>> onSuccess,
                                                     @Nullable Runnable onError) {
         getInstance(Objects.requireNonNull(entityClass)).pull(query, onSuccess, onError);
     }

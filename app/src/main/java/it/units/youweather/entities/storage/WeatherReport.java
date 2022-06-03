@@ -6,6 +6,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.io.Serializable;
+import java.lang.reflect.Field;
+import java.util.Date;
 import java.util.Objects;
 
 import it.units.youweather.entities.City;
@@ -16,6 +18,7 @@ import it.units.youweather.utils.ImagesHelper;
 import it.units.youweather.utils.Timing;
 import it.units.youweather.utils.storage.DBEntity;
 import it.units.youweather.utils.storage.DBHelper;
+import it.units.youweather.utils.storage.Query;
 
 /**
  * This class is a weather report that can be created by the user.
@@ -51,9 +54,17 @@ public class WeatherReport extends DBEntity implements Serializable {
     private volatile ImagesHelper.SerializableBitmap picture;
 
     /**
-     * The {@link LoggedInUser#userId} of the {@link LoggedInUser} that made this report
+     * The property returned by {@link LoggedInUser#getUserId()} of the {@link LoggedInUser}
+     * that made this report.
      */
     private volatile String reporterUserId;
+
+    /**
+     * Tis property merges the city and the time and is created to support
+     * queries involving the time and then the city too, in the case that your
+     * DBMS supports query on single field only.
+     */
+    private volatile String city_time;
 
     /**
      * TAG for Logger.
@@ -76,7 +87,8 @@ public class WeatherReport extends DBEntity implements Serializable {
     /**
      * Creates a new instance of this class.
      *
-     * @param reporterUserId   The {@link LoggedInUser#userId} of the {@link LoggedInUser} that made this report
+     * @param reporterUserId   The property returned by {@link LoggedInUser#getUserId()} of the
+     *                         {@link LoggedInUser} that made this report
      * @param city             The {@link City} to which this instance refers to.
      * @param coordinates      The {@link Coordinates} (more precise than the
      *                         {@link City}) to which this instance refers to.
@@ -93,10 +105,19 @@ public class WeatherReport extends DBEntity implements Serializable {
         this.weatherCondition = Objects.requireNonNull(weatherCondition);
         this.picture = picture;
         this.millisecondsSinceEpoch = Timing.getMillisSinceEpoch();
+        this.city_time = mergeCityAndTimeIntoSingleValue(city, millisecondsSinceEpoch);
     }
 
     /**
-     * See parameter descriptions in {@link #WeatherReport(String, City, Coordinates, WeatherCondition, ImagesHelper.SerializableBitmap)}
+     * This method should be used to populate the value of {@link #city_time}.
+     */
+    @NonNull
+    private static String mergeCityAndTimeIntoSingleValue(@NonNull City city, long millisecondsSinceEpoch) {
+        return city.toString() + millisecondsSinceEpoch;
+    }
+
+    /**
+     * See parameter descriptions in {@link #WeatherReport(String, City, Coordinates, WeatherCondition, ImagesHelper.SerializableBitmap)}.
      */
     public WeatherReport(@NonNull String reporterUserId,
                          @NonNull City city, @NonNull Coordinates coordinates,
@@ -131,6 +152,37 @@ public class WeatherReport extends DBEntity implements Serializable {
 
     public String getReporterUserId() {
         return reporterUserId;
+    }
+
+    public String getCity_time() {
+        return city_time;
+    }
+
+    /**
+     * Create a {@link Query} whose expected result (after evaluation) are all
+     * the instances of this class, reported in the specified time interval,
+     * for the specified {@link City}.
+     *
+     * @param city A city
+     * @return a {@link Query} for {@link WeatherReport}s, for all entities with
+     * the given city in the given time interval.
+     */
+    public static Query<String> createQueryOnCityAndTime(
+            @NonNull City city, @NonNull Date startDateTime, @NonNull Date endDateTime) {
+        registerThisClassForDB();   // if it is not registered yet
+        try {
+            Field city_time_field = WeatherReport.class.getDeclaredField("city_time");
+            long startDateTimeSinceEpoch = Timing.getMillisSinceEpoch(startDateTime);
+            long endDateTimeSinceEpoch = Timing.getMillisSinceEpoch(endDateTime);
+            String startingValue = mergeCityAndTimeIntoSingleValue(
+                    Objects.requireNonNull(city), startDateTimeSinceEpoch);
+            String endingValue = mergeCityAndTimeIntoSingleValue(
+                    Objects.requireNonNull(city), endDateTimeSinceEpoch);
+            return new Query<>(city_time_field, startingValue, endingValue);
+        } catch (NoSuchFieldException e) {
+            Log.e(TAG, "Error in query generation.", e);
+            throw new IllegalStateException(e);
+        }
     }
 
     @NonNull

@@ -16,7 +16,7 @@ import java.util.Objects;
  * maximum values included) or to be exactly a given value: use the
  * appropriate constructor.
  *
- * @param <T> generic for the entity to query in the database.
+ * @param <T> generic for the field of an entity to query in the database.
  * @author Matteo Ferfoglia
  */
 public class Query<T> {

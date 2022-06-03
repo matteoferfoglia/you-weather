@@ -14,7 +14,9 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 
 import java.lang.reflect.Type;
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
@@ -101,7 +103,7 @@ public class FirebaseRTDBEntityAdapter<T extends DBEntity> extends DBEntityAdapt
     }
 
     @Override
-    public void pull(@NonNull Consumer<Collection<T>> onSuccess, @Nullable Runnable onError) {
+    public void pull(@NonNull Consumer<List<T>> onSuccess, @Nullable Runnable onError) {
         Log.d(TAG, "pull method execution started");
 
         ValueEventListener querySingleValueEventListener = getSingleValueEventListenerForQuery(onSuccess, onError);
@@ -115,7 +117,7 @@ public class FirebaseRTDBEntityAdapter<T extends DBEntity> extends DBEntityAdapt
      * (See {@link #pull(Consumer, Runnable)} and {@link #pull(Query, Consumer, Runnable)}).
      */
     @NonNull
-    private ValueEventListener getSingleValueEventListenerForQuery(@NonNull Consumer<Collection<T>> onSuccess, @Nullable Runnable onError) {
+    private ValueEventListener getSingleValueEventListenerForQuery(@NonNull Consumer<List<T>> onSuccess, @Nullable Runnable onError) {
         return new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -137,7 +139,9 @@ public class FirebaseRTDBEntityAdapter<T extends DBEntity> extends DBEntityAdapt
                 Log.d(TAG, "DB event listener - onDataChanged : "
                         + content.size() + " elements retrieved");
 
-                Objects.requireNonNull(onSuccess).accept(deserializedContent.values());
+                List<T> results = new ArrayList<>(deserializedContent.values());
+                Collections.sort(results, (a, b) -> a.toString().compareTo(b.toString()));
+                Objects.requireNonNull(onSuccess).accept(results);
 
             }
 
@@ -151,7 +155,7 @@ public class FirebaseRTDBEntityAdapter<T extends DBEntity> extends DBEntityAdapt
     }
 
     @Override
-    public <S> void pull(@NonNull Query<S> query, @NonNull Consumer<Collection<T>> onSuccess, @Nullable Runnable onError) {
+    public <S> void pull(@NonNull Query<S> query, @NonNull Consumer<List<T>> onSuccess, @Nullable Runnable onError) {
         Log.d(TAG, "pull query method execution started");
 
         S queryMinValue = Objects.requireNonNull(query).getMinValueInclusive();

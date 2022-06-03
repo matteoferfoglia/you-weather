@@ -43,10 +43,20 @@
         android:name="it.units.youweather.ui.logged_in_area.WeatherViewerFragment"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/favourite_locations_header"
+        app:layout_constraintBottom_toTopOf="@+id/fragment_weather_viewer_report_by_other_users"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/search_bar_results" /><!-- TODO: show only after the location for which the weather has to be shown was selected -->
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/fragment_weather_viewer_report_by_other_users"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/favourite_locations_header"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/fragment_weather_viewer" /><!-- TODO: show only after the location for which the weather has to be shown was selected -->
 
     <TextView
         android:id="@+id/favourite_locations_header"
@@ -57,7 +67,7 @@
         app:layout_constraintBottom_toTopOf="@id/favourite_locations_list"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/fragment_weather_viewer" /><!-- TODO: to be showed only if at least one favourite location is set -->
+        app:layout_constraintTop_toBottomOf="@id/fragment_weather_viewer_report_by_other_users" /><!-- TODO: to be showed only if at least one favourite location is set -->
 
     <ListView
         android:id="@+id/favourite_locations_list"

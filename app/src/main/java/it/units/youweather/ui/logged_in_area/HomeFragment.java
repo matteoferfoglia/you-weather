@@ -7,7 +7,6 @@ import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -19,21 +18,28 @@ import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentContainerView;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 import it.units.youweather.R;
 import it.units.youweather.databinding.FragmentHomeBinding;
 import it.units.youweather.entities.City;
 import it.units.youweather.entities.forecast_fields.Coordinates;
+import it.units.youweather.entities.storage.WeatherReport;
 import it.units.youweather.ui.LoginActivity;
 import it.units.youweather.utils.LocationHelper;
 import it.units.youweather.utils.PermissionsHelper;
 import it.units.youweather.utils.ResourceHelper;
+import it.units.youweather.utils.Timing;
 import it.units.youweather.utils.auth.Authentication;
+import it.units.youweather.utils.storage.DBHelper;
+import it.units.youweather.utils.storage.Query;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -110,25 +116,6 @@ public class HomeFragment extends Fragment {
                                 }
                             }
 
-                            recyclerView.addOnItemTouchListener(
-                                    new RecyclerView.OnItemTouchListener() {
-                                        @Override
-                                        public boolean onInterceptTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
-                                            // TODO: see logcat: why multiple prints??
-                                            // TODO: add a small star icon to add the view to the favourite locations (it should appear in the weather viewer fragment)
-                                            // TODO: solve warnings (see them by cleaning [clean] the build and then re-build)
-                                            return false;
-                                        }
-
-                                        @Override
-                                        public void onTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
-                                        }
-
-                                        @Override
-                                        public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
-                                        }
-                                    }
-                            );
                         });
                 return false;
             }
@@ -158,11 +145,17 @@ public class HomeFragment extends Fragment {
                                 userLocation.getLatitude(),
                                 userLocation.getLongitude()));
                 if (citiesForCurrentUserPosition.length > 0) {
-                    showWeatherForCity(getFragmentManager(requireView()), citiesForCurrentUserPosition[0]);
+
+                    City city = citiesForCurrentUserPosition[0];
+                    showWeatherForCity(getFragmentManager(requireView()), city);
+                    showReportFromOtherUsersForTodayAtGivenCity(city);
                 } else {
-                    requireActivity().runOnUiThread(() ->
-                            Toast.makeText(requireContext(), R.string.Not_found_city_for_user_position, Toast.LENGTH_LONG)
-                                    .show());
+                    Activity activity = getActivity();
+                    if (activity != null) {
+                        activity.runOnUiThread(() ->
+                                Toast.makeText(requireContext(), R.string.Not_found_city_for_user_position, Toast.LENGTH_LONG)
+                                        .show());
+                    }
                 }
             }).start();
         });
@@ -171,10 +164,47 @@ public class HomeFragment extends Fragment {
         collapseKeyboardForSearchBox();
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        collapseKeyboardForSearchBox();
+    /**
+     * Shows the {@link WeatherReport} provided by some other user for today at
+     * the given {@link City}.
+     */
+    private void showReportFromOtherUsersForTodayAtGivenCity(@NonNull City city) {
+        Date today = Timing.getTodayDate();
+        Query<?> queryWeatherReportsForCityInTimeInterval =
+                WeatherReport.createQueryOnCityAndTime(city, Timing.getStartOfDay(today), Timing.getEndOfDay(today));
+        DBHelper.pull(
+                queryWeatherReportsForCityInTimeInterval,
+                WeatherReport.class,
+                (List<WeatherReport> weatherReports) -> {
+                    Log.d(TAG, "Retrieved " + weatherReports.size()
+                            + " weather reports for query " + queryWeatherReportsForCityInTimeInterval);
+                    int i = 1;
+                    WeatherReport mostRecentWr = null;
+                    for (WeatherReport wr : weatherReports) {
+                        Log.d(TAG, "Retrieved weather report " + (i++) + ": " + wr);
+                        mostRecentWr = wr;
+                    }
+                    if (mostRecentWr != null) {
+                        Log.d(TAG, "Most recent weather report is " + mostRecentWr);
+
+                        Activity activity = getActivity();
+                        if (activity != null) {
+                            WeatherReport finalMostRecentWr = mostRecentWr; // copy to effectively final
+                            activity.runOnUiThread(() -> {
+                                FragmentTransaction ft = getChildFragmentManager().beginTransaction();
+                                ft.add(
+                                        viewBinding.fragmentWeatherViewerReportByOtherUsers.getId(),
+                                        WeatherReportFragment.newInstance(finalMostRecentWr))
+                                        .commitNow();
+                                viewBinding.fragmentWeatherViewerReportByOtherUsers.setVisibility(View.VISIBLE);
+                            });
+                        }
+                    } else {
+                        Log.d(TAG, "No user weather report for query " + queryWeatherReportsForCityInTimeInterval);
+                    }
+                },
+                () -> Log.e(TAG, "Error in evaluation of query "
+                        + queryWeatherReportsForCityInTimeInterval));
     }
 
     /**
@@ -333,6 +363,7 @@ public class HomeFragment extends Fragment {
                 .setFragmentResult(
                         WeatherViewerFragment.CITY_TO_BE_SHOWN_REQUEST_KEY,
                         Objects.requireNonNull(selectedLocationForWeatherViewerFragment_bundle));
+
     }
 
 }
