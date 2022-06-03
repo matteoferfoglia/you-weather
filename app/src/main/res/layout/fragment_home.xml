@@ -47,15 +47,14 @@
             android:id="@+id/search_bar"
             android:layout_width="0dp"
             android:layout_height="48dp"
-            android:iconifiedByDefault="false"
-            android:text="@string/search_location"
             app:defaultQueryHint="@string/search_location"
             app:iconifiedByDefault="false"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
             app:layout_constraintBottom_toTopOf="@+id/search_bar_results"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toLeftOf="@+id/use_current_position_button"
-            app:layout_constraintTop_toTopOf="parent"
-            app:queryHint="@string/search_location" />
+            app:layout_constraintTop_toTopOf="parent" />
         <!-- Show query hint before clicking on searchView https://stackoverflow.com/a/52678158/17402378 -->
 
         <androidx.recyclerview.widget.RecyclerView
@@ -88,20 +87,20 @@
         android:id="@+id/applicationLogo"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:contentDescription="@string/application_logo_content_description"
-        app:layout_constraintTop_toBottomOf="@+id/search_layout"
-        app:layout_constraintBottom_toTopOf="@+id/weather_viewers"
         android:layout_margin="@dimen/home_fragment_common_margin"
+        android:contentDescription="@string/application_logo_content_description"
+        app:layout_constraintBottom_toTopOf="@+id/weather_viewers"
+        app:layout_constraintTop_toBottomOf="@+id/search_layout"
         app:srcCompat="@drawable/app_icon"
         tools:ignore="ImageContrastCheck" />
 
     <ScrollView
         android:id="@+id/weather_viewers"
         android:layout_width="match_parent"
+        android:layout_height="0dp"
         android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@+id/applicationLogo"
         app:layout_constraintBottom_toTopOf="@+id/auth_button"
-        android:layout_height="0dp">
+        app:layout_constraintTop_toBottomOf="@+id/applicationLogo">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -114,15 +113,15 @@
                 android:name="it.units.youweather.ui.logged_in_area.WeatherViewerFragment"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:layout_constraintBottom_toTopOf="@+id/weather_report_by_other_user_textview"
-                android:layout_marginHorizontal="@dimen/home_fragment_common_margin" />
+                android:layout_marginHorizontal="@dimen/home_fragment_common_margin"
+                app:layout_constraintBottom_toTopOf="@+id/weather_report_by_other_user_textview" />
 
             <TextView
                 android:id="@+id/weather_report_by_other_user_textview"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/home_fragment_common_margin"
                 android:layout_marginHorizontal="@dimen/home_fragment_common_margin"
+                android:layout_marginTop="@dimen/home_fragment_common_margin"
                 android:text="@string/most_recent_weather_report_from_other_users"
                 android:visibility="gone" />
 
@@ -130,8 +129,8 @@
                 android:id="@+id/fragment_weather_viewer_report_by_other_users"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="gone"
-                android:layout_marginHorizontal="@dimen/home_fragment_common_margin" />
+                android:layout_marginHorizontal="@dimen/home_fragment_common_margin"
+                android:visibility="gone" />
         </LinearLayout>
     </ScrollView>
 
@@ -141,9 +140,9 @@
         android:layout_height="wrap_content"
         android:enabled="true"
         android:text="@string/action_sign_out"
-        app:layout_constraintTop_toBottomOf="@+id/weather_viewers"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent" />
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/weather_viewers" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

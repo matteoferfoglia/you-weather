@@ -158,7 +158,6 @@ public class HomeFragment extends Fragment {
                                     userLocation.getLatitude(),
                                     userLocation.getLongitude()));
                     if (citiesForCurrentUserPosition.length > 0) {
-
                         City city = citiesForCurrentUserPosition[0];
                         hideAppIconAndShowWeatherReports(city);
                     } else {
@@ -172,7 +171,6 @@ public class HomeFragment extends Fragment {
                 }).start());
         viewBinding.authButton.setOnClickListener(_view -> signOut());
 
-        collapseKeyboardForSearchBox();
     }
 
     /**
@@ -181,15 +179,21 @@ public class HomeFragment extends Fragment {
      *
      * @param city The {@link City} for which the weather reports have to be shown.
      */
-    private void hideAppIconAndShowWeatherReports(City city) {
-        showWeatherForCity(getFragmentManager(requireView()), city);
-        showReportFromOtherUsersForTodayAtGivenCity(city);
+    private void hideAppIconAndShowWeatherReports(@NonNull City city) {
         Activity activity = getActivity();
         if (activity != null) {
             activity.runOnUiThread(() -> {
                 viewBinding.applicationLogo.setVisibility(View.GONE);
                 viewBinding.weatherViewers.setVisibility(View.VISIBLE);
+
+                // Clear the old query and the old weather reports
+                viewBinding.searchBar.setQuery("", false);  // remove the old query
+                viewBinding.searchBar.clearFocus();
+                viewBinding.weatherReportByOtherUserTextview.setVisibility(View.GONE);
+                viewBinding.fragmentWeatherViewerReportByOtherUsers.setVisibility(View.GONE);
             });
+            showWeatherForCity(getFragmentManager(requireView()), city);
+            showReportFromOtherUsersForTodayAtGivenCity(city);
         }
     }
 
@@ -235,19 +239,6 @@ public class HomeFragment extends Fragment {
                 },
                 () -> Log.e(TAG, "Error in evaluation of query "
                         + queryWeatherReportsForCityInTimeInterval));
-    }
-
-    /**
-     * Avoid the keyboard to show up by default for text insertion
-     * in the search box. This method should be invoked in {@link #onViewCreated(View, Bundle)}
-     * and in {@link #onResume()} to avoid the keyboard to automatic show up.
-     * The desired behaviour is that the keyboard shows up only after the user
-     * clicked on the search box.
-     */
-    private void collapseKeyboardForSearchBox() {
-        viewBinding.searchBar.clearFocus();
-        requireView().getRootView().requestFocus();
-        viewBinding.searchBar.onActionViewCollapsed();
     }
 
     /**
@@ -338,9 +329,8 @@ public class HomeFragment extends Fragment {
 
                 onCitySelected.accept(clickedCity);
 
-                // Clear the old query from the search bar
-                searchBar.setQuery("", false);  // remove the old query
                 searchBarResults.setAdapter(new LocationsAdapter(new City[0], searchBarResults, searchBar, onCitySelected));   // Replace the adapter with a new one (clear previous results)
+
             });
             return new ViewHolder(view);
         }
