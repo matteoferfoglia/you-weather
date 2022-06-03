@@ -256,7 +256,7 @@ public class NewReportFragment extends Fragment {
                                     .beginTransaction()
                                     .detach(this)
                                     .attach(this)
-                                    .commitNow());
+                                    .commitNow());  // TODO : not working, reset fragment when a new report is added
                 }
 
             }).start();
