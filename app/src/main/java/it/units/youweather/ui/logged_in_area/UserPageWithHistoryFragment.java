@@ -155,8 +155,8 @@ public class UserPageWithHistoryFragment extends Fragment {
         // end - navigation to the map containing user's report history
 
 
-        viewBinding.helloText.setText(getString(
-                R.string.hello,
+        viewBinding.reportHistoryHeader.setText(getString(
+                R.string.history_of_your_reports,
                 Objects.requireNonNull(Authentication
                         .getCurrentlySignedInUserOrNull(requireContext()))
                         .getDisplayName()));

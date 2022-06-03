@@ -39,7 +39,7 @@
         android:id="@+id/search_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/home_fragment_common_margin"
+        android:layout_margin="@dimen/common_margin"
         app:layout_constraintBottom_toTopOf="@+id/applicationLogo"
         app:layout_constraintTop_toBottomOf="@+id/home_header">
 
@@ -87,7 +87,7 @@
         android:id="@+id/applicationLogo"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_margin="@dimen/home_fragment_common_margin"
+        android:layout_margin="@dimen/common_margin"
         android:contentDescription="@string/application_logo_content_description"
         app:layout_constraintBottom_toTopOf="@+id/weather_viewers"
         app:layout_constraintTop_toBottomOf="@+id/search_layout"
@@ -113,15 +113,15 @@
                 android:name="it.units.youweather.ui.logged_in_area.WeatherViewerFragment"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="@dimen/home_fragment_common_margin"
+                android:layout_marginHorizontal="@dimen/common_margin"
                 app:layout_constraintBottom_toTopOf="@+id/weather_report_by_other_user_textview" />
 
             <TextView
                 android:id="@+id/weather_report_by_other_user_textview"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="@dimen/home_fragment_common_margin"
-                android:layout_marginTop="@dimen/home_fragment_common_margin"
+                android:layout_marginHorizontal="@dimen/common_margin"
+                android:layout_marginTop="@dimen/common_margin"
                 android:text="@string/most_recent_weather_report_from_other_users"
                 android:visibility="gone" />
 
@@ -129,7 +129,7 @@
                 android:id="@+id/fragment_weather_viewer_report_by_other_users"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="@dimen/home_fragment_common_margin"
+                android:layout_marginHorizontal="@dimen/common_margin"
                 android:visibility="gone" />
         </LinearLayout>
     </ScrollView>

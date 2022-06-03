@@ -1,22 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
+
+    <TextView
+        style="@style/TextAppearance.AppCompat.Title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/insert_new_report"
+        android:textAlignment="center" />
 
     <LinearLayout
         android:id="@+id/waiting_for_location_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:visibility="visible">
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAlignment="center"
             android:layout_margin="50dp"
-            android:text="@string/waiting_for_location" />
+            android:text="@string/waiting_for_location"
+            android:textAlignment="center" />
 
         <ProgressBar
             android:id="@+id/progress_loader"
@@ -28,15 +38,15 @@
 
     </LinearLayout>
 
-    <androidx.constraintlayout.widget.ConstraintLayout xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/new_report_main_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_margin="@dimen/common_margin"
         android:visibility="gone"
         tools:context=".ui.logged_in_area.NewReportFragment">
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/newReportMainLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -47,44 +57,58 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <TextView
-                android:layout_width="match_parent"
+                android:id="@+id/location_label"
+                android:layout_width="@dimen/label_widths"
                 android:layout_height="wrap_content"
-                android:text="@string/insert_new_report" />
-
-            <TextView
-                android:id="@+id/location_heading"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/location_name" />
+                android:text="@string/location_name"
+                app:layout_constraintBottom_toTopOf="@id/location_latitude_and_longitude"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toLeftOf="@id/location_name"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <Spinner
                 android:id="@+id/location_name"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:prompt="@string/location_name"
-                android:spinnerMode="dialog">
+                android:spinnerMode="dialog"
+                app:layout_constraintBottom_toTopOf="@id/location_latitude_and_longitude"
+                app:layout_constraintLeft_toRightOf="@id/location_label"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
                 <!-- To be populated programmatically according to user's position -->
             </Spinner>
 
             <TextView
-                android:id="@+id/location_latitude"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-            <TextView
-                android:id="@+id/location_longitude"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-            <TextView
-                android:id="@+id/weather_condition_heading"
+                android:id="@+id/location_latitude_and_longitude"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:text="@string/latitude_and_longitude"
+                android:textAlignment="center"
+                android:textSize="10sp"
+                android:textStyle="italic"
+                app:layout_constraintBottom_toTopOf="@id/weather_condition_label"
+                app:layout_constraintTop_toBottomOf="@+id/location_label"
+                tools:ignore="SmallSp" />
+
+            <TextView
+                android:id="@+id/weather_condition_label"
+                android:layout_height="wrap_content"
+                android:layout_width="@dimen/label_widths"
+                android:layout_marginTop="@dimen/common_margin"
+                app:layout_constraintTop_toBottomOf="@id/location_latitude_and_longitude"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toLeftOf="@id/weather_condition_spinner"
+                app:layout_constraintBottom_toTopOf="@id/weather_condition_icon"
                 android:text="@string/weather_condition" />
 
             <Spinner
                 android:id="@+id/weather_condition_spinner"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
+                app:layout_constraintLeft_toRightOf="@id/weather_condition_label"
+                app:layout_constraintTop_toBottomOf="@id/location_latitude_and_longitude"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/weather_condition_icon"
                 android:layout_height="wrap_content"
                 android:prompt="@string/weather_condition"
                 android:spinnerMode="dialog">
@@ -94,9 +118,12 @@
             <ImageView
                 android:id="@+id/weather_condition_icon"
                 android:layout_width="match_parent"
-                android:layout_height="150dp"
+                android:layout_height="125dp"
+                android:layout_margin="@dimen/common_margin"
+                app:layout_constraintTop_toBottomOf="@id/weather_condition_label"
+                app:layout_constraintBottom_toBottomOf="parent"
                 android:contentDescription="@string/weather_icon" />
-        </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/insertPhotoFragmentContainerView"

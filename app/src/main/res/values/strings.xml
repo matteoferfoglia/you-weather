@@ -11,7 +11,7 @@
     <string name="new_report">New report</string>
     <string name="account">Account</string>
     <string name="hello">Hello, %1$s!</string>
-    <string name="history_of_your_reports">History of your reports</string>
+    <string name="history_of_your_reports">History of %1$s\'s reports</string>
     <string name="location">Location</string>
     <string name="date_time">Date-time</string>
     <string name="weather">Weather</string>
@@ -103,6 +103,10 @@
     <string name="app_icon">App icon</string>
     <string name="check_internet_connection">Check your internet connection</string>
     <string name="waiting_for_location">Waiting for your location</string>
+    <string name="longitude">Longitude: %1$f</string>
+    <string name="latitude">Latitude: %1$f</string>
+    <string name="latitude_and_longitude">Latitude: %1$f, Longitude: %2$f</string>
+    <string name="weather_report_added">Weather report correctly added</string>
 
     <!-- TODO: missing translations -->
 </resources>

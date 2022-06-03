@@ -3,5 +3,6 @@
     <dimen name="history_table_heading_row_number_width">20dp</dimen>
     <dimen name="history_reports_filter_date_margin_horizontal">5dp</dimen>
     <dimen name="weather_fragment_height">180dp</dimen>
-    <dimen name="home_fragment_common_margin">25dp</dimen>
+    <dimen name="common_margin">25dp</dimen>
+    <dimen name="label_widths">125dp</dimen>
 </resources>

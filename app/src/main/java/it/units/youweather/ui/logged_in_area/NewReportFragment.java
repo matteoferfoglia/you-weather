@@ -59,6 +59,16 @@ public class NewReportFragment extends Fragment {
      */
     private City cityMatchingCurrentUserPosition = null;
 
+    /**
+     * Saves and keep updated the latitude.
+     */
+    private double latitude;
+
+    /**
+     * Saves and keep updated the longitude.
+     */
+    private double longitude;
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -72,20 +82,19 @@ public class NewReportFragment extends Fragment {
             locationHelper.addPositionChangeListener(newLocation -> {
                 if (newLocation != null) {  // TODO: test if coordinates update when location change
 
-                    final double newLat = newLocation.getLatitude();
-                    final double newLon = newLocation.getLongitude();
+                    latitude = newLocation.getLatitude();
+                    longitude = newLocation.getLongitude();
 
                     Activity activity = getActivity();
                     if (activity != null) {
                         activity.runOnUiThread(() -> { // changes on the view must be executed by the main thread
-                            viewBinding.locationLatitude.setText(String.valueOf(newLat));
-                            viewBinding.locationLongitude.setText(String.valueOf(newLon));
+                            viewBinding.locationLatitudeAndLongitude.setText(getString(R.string.latitude_and_longitude, latitude, longitude));
                         });
                     }
 
                     AtomicBoolean errorRetrievingLocation = new AtomicBoolean(false);
                     LocationHelper.getCitiesFromCoordinatesAndConsume(
-                            new Coordinates(newLat, newLon),
+                            new Coordinates(latitude, longitude),
                             cities -> {
 
                                 if (errorRetrievingLocation.get()) {
@@ -215,8 +224,6 @@ public class NewReportFragment extends Fragment {
             new Thread(() -> {
 
                 if (cityMatchingCurrentUserPosition != null) {
-                    double latitude = Double.parseDouble(viewBinding.locationLatitude.getText().toString());
-                    double longitude = Double.parseDouble(viewBinding.locationLongitude.getText().toString());
                     WeatherReport weatherReport = new WeatherReport(
                             Authentication.getCurrentlySignedInUserOrNull(requireContext()).getUserId(),
                             cityMatchingCurrentUserPosition,
@@ -225,7 +232,11 @@ public class NewReportFragment extends Fragment {
                             serializableBitmaps[0]); // TODO: picture needed!!
                     DBHelper.push(
                             weatherReport,
-                            () -> Log.d(TAG, "Pushed to DB " + weatherReport),
+                            () -> {
+                                Log.d(TAG, "Pushed to DB " + weatherReport);
+                                Toast.makeText(requireContext(), R.string.weather_report_added, Toast.LENGTH_LONG)
+                                        .show();
+                            },
                             () -> Log.e(TAG, "Unable to push to DB " + weatherReport));
                 } else {
                     Activity activity = getActivity();
@@ -235,7 +246,19 @@ public class NewReportFragment extends Fragment {
                                         .show());
                     }
                 }
-                // TODO: clear the fragment after having saved the data into the DB
+
+                Activity activity = getActivity();
+                if (activity != null) {
+
+                    // recreate this fragment
+                    activity.runOnUiThread(() ->
+                            getParentFragmentManager()
+                                    .beginTransaction()
+                                    .detach(this)
+                                    .attach(this)
+                                    .commitNow());
+                }
+
             }).start();
         });
 
