@@ -1,12 +1,10 @@
 package it.units.youweather.utils;
 
 import android.annotation.SuppressLint;
-import android.util.Log;
 import android.util.Pair;
 
 import androidx.annotation.NonNull;
 
-import java.lang.reflect.Type;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
@@ -23,13 +21,8 @@ public abstract class SharedData {
      */
     private static final String TAG = SharedData.class.getSimpleName();
 
-    /**
-     * Name used for shared preferences, that is uniquely identifiable to this app
-     */
-    private static final String SHARED_PREFERENCES_NAME =
-            SharedData.class.getCanonicalName();
-
-    private static final ConcurrentMap<SharedDataName, String> sharedDate = new ConcurrentHashMap<>();
+    private static final ConcurrentMap<SharedDataName, Pair<Class<?>, ?>> sharedDate
+            = new ConcurrentHashMap<>();
 
     /**
      * Enumeration of valid shared data names.
@@ -73,20 +66,10 @@ public abstract class SharedData {
 
         synchronized (sharedDate) {
 
-            String preferenceValueAsJson = sharedDate.get(sharedDataName);  // Date saved in JSON format
-
-            if (preferenceValueAsJson != null) {
-
-                @SuppressWarnings("unchecked")
-                Pair<String, String> preferenceValue_class_value = (Pair<String, String>)
-                        JsonHelper.fromJson(preferenceValueAsJson, Pair.class);
-                try {
-                    Class<?> clazz = Class.forName(preferenceValue_class_value.first);
-                    return JsonHelper.fromJson(preferenceValue_class_value.second, (Type) clazz);
-                } catch (ClassNotFoundException e) {
-                    Log.e(TAG, "Error in class detection", e);
-                    return null;
-                }
+            Pair<Class<?>, ?> preferenceValue_class_value = sharedDate.get(sharedDataName);
+            if (preferenceValue_class_value != null) {
+                Class<?> clazz = preferenceValue_class_value.first;
+                return (T) clazz.cast(preferenceValue_class_value.second);
             } else {
                 return null;
             }
@@ -104,12 +87,12 @@ public abstract class SharedData {
     @SuppressLint("ApplySharedPref")    // synchronous (blocking operation) update
     public static <T> void setValue(@NonNull SharedDataName sharedDataName,
                                     @NonNull T preferenceValue) {
-        String classCanonicalName = Objects.requireNonNull(preferenceValue).getClass().getCanonicalName();
 
+        Class<T> clazz = (Class<T>) Objects.requireNonNull(preferenceValue).getClass();
         synchronized (sharedDate) {
             sharedDate.put(
                     sharedDataName,
-                    JsonHelper.toJson(new Pair<>(classCanonicalName, JsonHelper.toJson(preferenceValue))));
+                    new Pair<>(clazz, preferenceValue));
         }
     }
 
