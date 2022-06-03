@@ -1,6 +1,7 @@
 package it.units.youweather.ui.logged_in_area;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.Dialog;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -107,13 +108,17 @@ public class WeatherReportFragment extends Fragment {
 
             assert imageTmp != null;
             final Drawable image = imageTmp;    // copy image to effectively final variable
-            requireActivity().runOnUiThread(() -> {
-                viewBinding.reportImageOrWeatherConditionIcon.setImageDrawable(image);
-                viewBinding.cityName.setText(getString(R.string.city, weatherReport.getCity().toString()));
-                viewBinding.weatherDescription.setText(weatherReport.getWeatherCondition().getDescription());
-                viewBinding.coordinates.setText(getString(R.string.coordinates, reportLatitude, reportLongitude));
-                viewBinding.reportedDateTime.setText(getString(R.string.reported_on_date, Timing.convertEpochMillisToFormattedDate(weatherReport.getMillisecondsSinceEpoch())));
-            });
+
+            Activity activity = getActivity();
+            if (activity != null) {
+                activity.runOnUiThread(() -> {
+                    viewBinding.reportImageOrWeatherConditionIcon.setImageDrawable(image);
+                    viewBinding.cityName.setText(getString(R.string.city, weatherReport.getCity().toString()));
+                    viewBinding.weatherDescription.setText(weatherReport.getWeatherCondition().getDescription());
+                    viewBinding.coordinates.setText(getString(R.string.coordinates, reportLatitude, reportLongitude));
+                    viewBinding.reportedDateTime.setText(getString(R.string.reported_on_date, Timing.convertEpochMillisToFormattedDate(weatherReport.getMillisecondsSinceEpoch())));
+                });
+            }
 
         }).start();
 

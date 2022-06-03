@@ -18,6 +18,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 
 import it.units.youweather.R;
 import it.units.youweather.databinding.FragmentTakeAPhotoBinding;
@@ -84,8 +85,11 @@ public class TakeAPhotoFragment extends Fragment {  // TODO: check if photos are
                         Bundle exportPictureBundle = new Bundle();
                         exportPictureBundle.putSerializable(CAPTURED_PHOTO_BUNDLE_KEY, capturedImage);
                         assert CAPTURED_PHOTO_REQUEST_KEY != null;
-                        requireActivity().getSupportFragmentManager()
-                                .setFragmentResult(CAPTURED_PHOTO_REQUEST_KEY, exportPictureBundle);
+                        FragmentActivity activity = getActivity();
+                        if (activity != null) {
+                            activity.getSupportFragmentManager()
+                                    .setFragmentResult(CAPTURED_PHOTO_REQUEST_KEY, exportPictureBundle);
+                        }
                     }
                 });
 

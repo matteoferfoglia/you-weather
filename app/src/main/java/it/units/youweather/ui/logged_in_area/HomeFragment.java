@@ -1,6 +1,7 @@
 package it.units.youweather.ui.logged_in_area;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
@@ -60,7 +61,10 @@ public class HomeFragment extends Fragment {
     private void signOut() {
         Log.i(TAG, "Sign-out request");
         Authentication.signOut();
-        startActivity(new Intent(requireActivity(), LoginActivity.class));
+        Activity activity = getActivity();
+        if (activity != null) {
+            startActivity(new Intent(activity, LoginActivity.class));
+        }
     }
 
     @Override
@@ -89,16 +93,21 @@ public class HomeFragment extends Fragment {
                         query,
                         cities -> {
                             LocationsAdapter cityNamesArrayAdapter = new LocationsAdapter(cities, viewBinding.searchBarResults, viewBinding.searchBar);
-                            requireActivity().runOnUiThread(() ->
-                                    viewBinding.searchBarResults.setAdapter(cityNamesArrayAdapter));
+                            Activity activity = getActivity();
+                            if (activity != null) {
+                                activity.runOnUiThread(() ->
+                                        viewBinding.searchBarResults.setAdapter(cityNamesArrayAdapter));
+                            }
                             Log.d(TAG, "Cities matching the query: " + Arrays.toString(cities));
 
                             if (cities.length == 0) {
                                 final String errorMsg = ResourceHelper.getResString(R.string.no_results);
-                                requireActivity()
-                                        .runOnUiThread(() ->
-                                                Toast.makeText(requireContext(), errorMsg, Toast.LENGTH_LONG)
-                                                        .show());
+                                activity = getActivity();
+                                if (activity != null) {
+                                    activity.runOnUiThread(() ->
+                                            Toast.makeText(requireContext(), errorMsg, Toast.LENGTH_LONG)
+                                                    .show());
+                                }
                             }
 
                             recyclerView.addOnItemTouchListener(

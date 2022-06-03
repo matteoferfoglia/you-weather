@@ -1,6 +1,7 @@
 package it.units.youweather.ui.logged_in_area;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,6 +18,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
@@ -35,6 +37,7 @@ import it.units.youweather.R;
 import it.units.youweather.databinding.FragmentUserPageWithHistoryBinding;
 import it.units.youweather.entities.storage.WeatherReport;
 import it.units.youweather.utils.ConversionsHelper;
+import it.units.youweather.utils.SharedData;
 import it.units.youweather.utils.Timing;
 import it.units.youweather.utils.auth.Authentication;
 import it.units.youweather.utils.functionals.Consumer;
@@ -50,6 +53,8 @@ import it.units.youweather.utils.storage.Query;
  * where the same history data can be seen on a map.
  */
 public class UserPageWithHistoryFragment extends Fragment {
+
+    // TODO : try to refactor this class
 
     /**
      * The TAG for the logger.
@@ -87,8 +92,8 @@ public class UserPageWithHistoryFragment extends Fragment {
     private Date maxDateFiltered;
 
     /**
-     * Initialize the {@link #datePickerDialogMap} for a button that, when clicked
-     * on, should show the {@link #datePickerDialogMap}.
+     * Initialize the {@link DatePickerDialog} for a button that should be shown
+     * when clicked on the button.
      *
      * @param selectDataButton   A buttons that, when clicked, should show the data picker.
      * @param chosenDateConsumer If non-null, the {@link Consumer} that will accept the
@@ -126,6 +131,7 @@ public class UserPageWithHistoryFragment extends Fragment {
             datePickerDialog.getDatePicker().setMaxDate(maxDate.getTime());
         }
         datePickerDialogMap.put(selectDataButton, datePickerDialog);
+
     }
 
     @Override
@@ -155,6 +161,31 @@ public class UserPageWithHistoryFragment extends Fragment {
                         .getCurrentlySignedInUserOrNull(requireContext()))
                         .getDisplayName()));
 
+        SharedData.setValueIfAbsent(SharedData.SharedDataName.USER_PAGE_WITH_HISTORY_FRAGMENT_FILTER_DATE_CHECKED, viewBinding.checkBoxFilterByDates.isChecked());
+
+        // Restore old filtering options if set
+        Boolean isFilteringByDateCheckedTmp = SharedData.getValue(
+                SharedData.SharedDataName.USER_PAGE_WITH_HISTORY_FRAGMENT_FILTER_DATE_CHECKED);
+        boolean isFilteringByDateChecked = isFilteringByDateCheckedTmp != null && isFilteringByDateCheckedTmp;
+        Date fromDateFiltering = null, toDateFiltering = null;
+        if (isFilteringByDateChecked) {
+            fromDateFiltering = SharedData.getValue(
+                    SharedData.SharedDataName.USER_PAGE_WITH_HISTORY_FRAGMENT_FILTER_DATE_FROM);
+            toDateFiltering = SharedData.getValue(
+                    SharedData.SharedDataName.USER_PAGE_WITH_HISTORY_FRAGMENT_FILTER_DATE_TO);
+            isFilteringByDateChecked = fromDateFiltering != null    // if the user checked the filtering checkbox but did not choose the from-date
+                    && toDateFiltering != null;                     // if the user checked the filtering checkbox but did not choose the to-date
+        }
+        if (isFilteringByDateChecked) {
+            minDateFiltered = fromDateFiltering;
+            maxDateFiltered = toDateFiltering;
+            viewBinding.fromDateFilterButton.setText(Timing.getShortFormattedDate(minDateFiltered));
+            viewBinding.toDateFilterButton.setText(Timing.getShortFormattedDate(maxDateFiltered));
+        } else {
+            viewBinding.fromDateFilterButton.setText(R.string.from);
+            viewBinding.toDateFilterButton.setText(R.string.to);
+        }
+
         Button[] filterByDateButtonArray = new Button[]{viewBinding.fromDateFilterButton, viewBinding.toDateFilterButton};
         Consumer<Predicate<WeatherReport>> filterWeatherReportsByDateAndPopulateHistoryTable =
                 keepWeatherReportPredicate -> {
@@ -168,11 +199,14 @@ public class UserPageWithHistoryFragment extends Fragment {
                 };
         initDatePickersForFilteringButtons(filterWeatherReportsByDateAndPopulateHistoryTable);
         for (Button filterByDateButton : filterByDateButtonArray) {
+            filterByDateButton.setVisibility(isFilteringByDateChecked ? View.VISIBLE : View.GONE);
             filterByDateButton.setOnClickListener(view_ -> openDatePicker(filterByDateButton));
         }
 
+        viewBinding.checkBoxFilterByDates.setChecked(isFilteringByDateChecked);
         viewBinding.checkBoxFilterByDates.setOnClickListener(view_ -> {
             boolean filterByDateChecked = viewBinding.checkBoxFilterByDates.isChecked();
+            SharedData.setValue(SharedData.SharedDataName.USER_PAGE_WITH_HISTORY_FRAGMENT_FILTER_DATE_CHECKED, filterByDateChecked);
             int filterByDateButtonsVisibility = filterByDateChecked ? View.VISIBLE : View.GONE;
             for (Button filterByDateButton : filterByDateButtonArray) {
                 filterByDateButton.setVisibility(filterByDateButtonsVisibility);
@@ -182,6 +216,8 @@ public class UserPageWithHistoryFragment extends Fragment {
             if (!filterByDateChecked) { // reset text of buttons and selected dates
                 viewBinding.fromDateFilterButton.setText(R.string.from);
                 viewBinding.toDateFilterButton.setText(R.string.to);
+                SharedData.removeValue(SharedData.SharedDataName.USER_PAGE_WITH_HISTORY_FRAGMENT_FILTER_DATE_FROM);
+                SharedData.removeValue(SharedData.SharedDataName.USER_PAGE_WITH_HISTORY_FRAGMENT_FILTER_DATE_TO);
                 initDatePickersForFilteringButtons(filterWeatherReportsByDateAndPopulateHistoryTable);
             }
         });
@@ -197,13 +233,15 @@ public class UserPageWithHistoryFragment extends Fragment {
      */
     private void initDatePickersForFilteringButtons(
             Consumer<Predicate<WeatherReport>> filterWeatherReportsByDateAndPopulateHistoryTable) {
+        Date today = Timing.getTodayDate();
         initDatePickerForButton(viewBinding.fromDateFilterButton,
                 date -> fromDateFilterAction(filterWeatherReportsByDateAndPopulateHistoryTable, date),
-                null, Timing.getTodayDate());
+                null,
+                maxDateFiltered == null ? today : maxDateFiltered);
         initDatePickerForButton(viewBinding.toDateFilterButton,
                 date -> toDateFilterAction(filterWeatherReportsByDateAndPopulateHistoryTable, date),
-                null,
-                Timing.getTodayDate());
+                minDateFiltered,
+                today);
     }
 
     /**
@@ -219,6 +257,8 @@ public class UserPageWithHistoryFragment extends Fragment {
             @NonNull Consumer<Predicate<WeatherReport>> filterWeatherReportsByDateAndPopulateHistoryTable,
             @NonNull Date toDate) {
         maxDateFiltered = Timing.getEndOfDay(Objects.requireNonNull(toDate));
+        SharedData.setValue(SharedData.SharedDataName.USER_PAGE_WITH_HISTORY_FRAGMENT_FILTER_DATE_TO, toDate);
+
         Log.d(TAG, "Selected date: " + maxDateFiltered);
         filterWeatherReportsByDateAndPopulateHistoryTable.accept(getReportFilteredPredicate());
 
@@ -249,10 +289,13 @@ public class UserPageWithHistoryFragment extends Fragment {
                 .putSerializable(
                         MapWithReportHistoryFragment.WEATHER_REPORTS_TO_SHOW_ON_MAP_MAX_DATE_BUNDLE_KEY,
                         maxDateFiltered);
-        Objects.requireNonNull(requireActivity().getSupportFragmentManager())
-                .setFragmentResult(
-                        MapWithReportHistoryFragment.WEATHER_REPORTS_TO_SHOW_ON_MAP_REQUEST_KEY,
-                        Objects.requireNonNull(userWeatherReportsToShowOnMap));
+        FragmentActivity activity = getActivity();
+        if (activity != null) {
+            Objects.requireNonNull(activity.getSupportFragmentManager())
+                    .setFragmentResult(
+                            MapWithReportHistoryFragment.WEATHER_REPORTS_TO_SHOW_ON_MAP_REQUEST_KEY,
+                            Objects.requireNonNull(userWeatherReportsToShowOnMap));
+        }
     }
 
     /**
@@ -268,13 +311,15 @@ public class UserPageWithHistoryFragment extends Fragment {
             @NonNull Consumer<Predicate<WeatherReport>> filterWeatherReportsByDateAndPopulateHistoryTable,
             @NonNull Date fromDate) {
         minDateFiltered = Timing.getStartOfDay(Objects.requireNonNull(fromDate));
+        SharedData.setValue(SharedData.SharedDataName.USER_PAGE_WITH_HISTORY_FRAGMENT_FILTER_DATE_FROM, fromDate);
+
         Log.d(TAG, "Selected date: " + minDateFiltered);
         filterWeatherReportsByDateAndPopulateHistoryTable.accept(getReportFilteredPredicate());
 
         // Note: need to re-init the "other" date picker to set the min date properly (it cannot be lower than the "from-date")
         initDatePickerForButton(viewBinding.toDateFilterButton,
                 date_ -> toDateFilterAction(filterWeatherReportsByDateAndPopulateHistoryTable, date_),
-                minDateFiltered, null);
+                minDateFiltered, Timing.getTodayDate());
     }
 
     /**
@@ -286,13 +331,6 @@ public class UserPageWithHistoryFragment extends Fragment {
         return weatherReport ->
                 (minDateFiltered == null || weatherReport.getMillisecondsSinceEpoch() >= minDateFiltered.getTime())
                         && (maxDateFiltered == null || weatherReport.getMillisecondsSinceEpoch() <= maxDateFiltered.getTime());
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        viewBinding.checkBoxFilterByDates.setChecked(false);     // TODO: temporary solution: if we go to the map and come back to this fragment, it must not happen to have the checkbox checked but not showing filtering buttons.
-        // TODO: filtering min/max date are known to the fragment with the map (passed with Bundle).. cannot re-take from there?
     }
 
     @Override
@@ -342,8 +380,11 @@ public class UserPageWithHistoryFragment extends Fragment {
                         () -> {
                             String errorMsg = getString(R.string.Unable_to_retrieve_entities_from_DB);
                             Log.e(TAG, errorMsg);
-                            requireActivity().runOnUiThread(() ->
-                                    Toast.makeText(requireContext(), errorMsg, Toast.LENGTH_LONG).show());
+                            Activity activity = getActivity();
+                            if (activity != null) {
+                                activity.runOnUiThread(() ->
+                                        Toast.makeText(requireContext(), errorMsg, Toast.LENGTH_LONG).show());
+                            }
                         });
             } catch (NoSuchFieldException e) {
                 Log.e(TAG, "Unknown reporter", e);
@@ -361,48 +402,69 @@ public class UserPageWithHistoryFragment extends Fragment {
         new Thread(() -> {
             List<TableRow> sortedTableRowList = new ArrayList<>();
 
+            Activity activity;
             int rowNumber = 0;
             for (WeatherReport wr : Objects.requireNonNull(shownWeatherReports)) {
-                final TableRow tableRow = new TableRow(requireContext());
-                tableRow.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.MATCH_PARENT));
+                activity = getActivity();
+                if (activity != null) {
+                    final TableRow tableRow = new TableRow(activity);
+                    tableRow.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.MATCH_PARENT));
 
-                rowNumber++;
-                final String dateTime = Timing.convertEpochMillisToFormattedDate(wr.getMillisecondsSinceEpoch());
-                final String location = wr.getCity().toString();
-                final String weather = wr.getWeatherConditionToString();
-                final String[] columns = new String[]{String.valueOf(rowNumber), dateTime, location, weather};
-                for (int i = 0; i < columns.length; i++) {
-                    String cellContent = columns[i];
-                    int cellWidthInPx = 0;  // 0 dp allows to inherits property from the container (e.g., stretchColumns)
-                    if (i == 0) {  // column containing the row number
-                        @SuppressLint("ResourceType") // dimen resource is saved as string
-                        double cellWidthInDp = Double.parseDouble(getString(R.dimen.history_table_heading_row_number_width)
-                                .replaceAll("[^\\d.]", ""));
-                        cellWidthInPx = ConversionsHelper.dpToPx(cellWidthInDp);
+                    rowNumber++;
+                    final String dateTime = Timing.convertEpochMillisToFormattedDate(wr.getMillisecondsSinceEpoch());
+                    final String location = wr.getCity().toString();
+                    final String weather = wr.getWeatherConditionToString();
+                    final String[] columns = new String[]{String.valueOf(rowNumber), dateTime, location, weather};
+                    for (int i = 0; i < columns.length; i++) {
+                        String cellContent = columns[i];
+                        int cellWidthInPx = 0;  // 0 dp allows to inherits property from the container (e.g., stretchColumns)
+                        if (i == 0) {  // column containing the row number
+                            @SuppressLint("ResourceType") // dimen resource is saved as string
+                            double cellWidthInDp = Double.parseDouble(getString(R.dimen.history_table_heading_row_number_width)
+                                    .replaceAll("[^\\d.]", ""));
+                            cellWidthInPx = ConversionsHelper.dpToPx(cellWidthInDp);
+                        }
+
+                        activity = getActivity();
+                        if (activity != null) {
+                            final TextView tableCell = new TextView(activity);
+                            tableCell.setText(cellContent);
+                            tableCell.setLayoutParams(new TableRow.LayoutParams(cellWidthInPx, TableRow.LayoutParams.MATCH_PARENT));
+                            tableCell.setGravity(Gravity.CENTER);
+                            tableRow.addView(tableCell);
+                        }
                     }
-                    final TextView tableCell = new TextView(requireContext());
-                    tableCell.setText(cellContent);
-                    tableCell.setLayoutParams(new TableRow.LayoutParams(cellWidthInPx, TableRow.LayoutParams.MATCH_PARENT));
-                    tableCell.setGravity(Gravity.CENTER);
-                    tableRow.addView(tableCell);
+
+                    // Add on click listener to show weather report details
+                    tableRow.setOnClickListener(view_ -> {
+                        new DialogFragmentContainer(WeatherReportFragment.newInstance(wr))
+                                .show(getChildFragmentManager(), null);
+                    });
+
+                    sortedTableRowList.add(tableRow);
                 }
 
-                // Add on click listener to show weather report details
-                tableRow.setOnClickListener(view_ -> {
-                    new DialogFragmentContainer(WeatherReportFragment.newInstance(wr))
-                            .show(getChildFragmentManager(), null);
-                });
-
-                sortedTableRowList.add(tableRow);
             }
 
-            requireActivity().runOnUiThread(() -> {
-                viewBinding.historyReportsTable.removeAllViews();
-                for (TableRow tr : sortedTableRowList) {
-                    viewBinding.historyReportsTable.addView(tr);
-                }
-            });
+            activity = getActivity();
+            if (activity != null) {
+                activity.runOnUiThread(() -> {
+                    viewBinding.historyReportsTable.removeAllViews();
+                    for (TableRow tr : sortedTableRowList) {
+                        viewBinding.historyReportsTable.addView(tr);
+                    }
+                });
+            }
         }).start();
 
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        SharedData.removeValue(SharedData.SharedDataName.USER_PAGE_WITH_HISTORY_FRAGMENT_FILTER_DATE_CHECKED);
+        SharedData.removeValue(SharedData.SharedDataName.USER_PAGE_WITH_HISTORY_FRAGMENT_FILTER_DATE_FROM);
+        SharedData.removeValue(SharedData.SharedDataName.USER_PAGE_WITH_HISTORY_FRAGMENT_FILTER_DATE_TO);
     }
 }

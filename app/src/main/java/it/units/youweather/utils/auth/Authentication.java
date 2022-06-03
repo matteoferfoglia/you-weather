@@ -22,7 +22,7 @@ import java.util.Objects;
 import it.units.youweather.EnvironmentVariables;
 import it.units.youweather.R;
 import it.units.youweather.entities.LoggedInUser;
-import it.units.youweather.utils.SharedPreferences;
+import it.units.youweather.utils.SharedData;
 import it.units.youweather.utils.functionals.Consumer;
 
 /**
@@ -109,7 +109,7 @@ public abstract class Authentication {
     /**
      * Returns the currently logged in user, or null (if the user did not authenticate) and
      * updates the preference
-     * {@link it.units.youweather.utils.SharedPreferences.SharedPreferenceName#LOGGED_IN_USER}
+     * {@link SharedData.SharedDataName#LOGGED_IN_USER}
      *
      * @param applicationContext The application context (the activity handling the sign-in).
      * @return the currently logged-in user or null.
@@ -123,14 +123,13 @@ public abstract class Authentication {
 
         LoggedInUser loggedInUser;
         if (firebaseUser == null) { // unauthenticated
-            SharedPreferences.removeValue(
-                    applicationContext, SharedPreferences.SharedPreferenceName.LOGGED_IN_USER);
+            SharedData.removeValue(
+                    SharedData.SharedDataName.LOGGED_IN_USER);
             loggedInUser = null;
         } else {            // authenticated
             loggedInUser = createLoggedInUserInstanceFromFirebaseUser(firebaseUser);
-            SharedPreferences.setValue(
-                    applicationContext,
-                    SharedPreferences.SharedPreferenceName.LOGGED_IN_USER,
+            SharedData.setValue(
+                    SharedData.SharedDataName.LOGGED_IN_USER,
                     loggedInUser);
         }
         return loggedInUser;
@@ -165,5 +164,6 @@ public abstract class Authentication {
      */
     public static void signOut() {
         firebaseAuth.signOut();
+        SharedData.setValue(SharedData.SharedDataName.LOGGED_IN_USER, false);
     }
 }

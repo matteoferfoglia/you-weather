@@ -12,7 +12,7 @@ import com.firebase.ui.auth.AuthUI;
 import it.units.youweather.R;
 import it.units.youweather.databinding.ActivityLoginBinding;
 import it.units.youweather.entities.LoggedInUser;
-import it.units.youweather.utils.SharedPreferences;
+import it.units.youweather.utils.SharedData;
 import it.units.youweather.utils.auth.Authentication;
 import it.units.youweather.utils.functionals.Consumer;
 
@@ -34,9 +34,8 @@ public class LoginActivity extends AppCompatActivity {
 
             // Create sign-in intent
             Consumer<LoggedInUser> onSuccessfulAuthentication = loggedInUser -> {
-                SharedPreferences.setValue(
-                        getApplicationContext(),
-                        SharedPreferences.SharedPreferenceName.LOGGED_IN_USER,
+                SharedData.setValue(
+                        SharedData.SharedDataName.LOGGED_IN_USER,
                         loggedInUser);
                 startMainActivity();
             };

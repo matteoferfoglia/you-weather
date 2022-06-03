@@ -1,5 +1,6 @@
 package it.units.youweather.ui.logged_in_area;
 
+import android.app.Activity;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
@@ -114,22 +115,25 @@ public class WeatherViewerFragment extends Fragment {
                                             final String minTemperature = new Temperature(mainForecastData.getTemp_min()).getTemperatureWithMeasureUnit();
                                             final String maxTemperature = new Temperature(mainForecastData.getTemp_max()).getTemperatureWithMeasureUnit();
 
-                                            requireActivity().runOnUiThread(() -> {
+                                            Activity activity = getActivity();
+                                            if (activity != null) {
+                                                activity.runOnUiThread(() -> {
 
-                                                if (weatherIcon != null) {
-                                                    viewBinding.weatherConditionIcon.setImageDrawable(weatherIcon);
-                                                }
-                                                viewBinding.cityName.setText(forecast.getCityName());
-                                                viewBinding.weatherDescription.setText(weatherDescription);
-                                                viewBinding.actualTemperature.setText(actualTemperature);
-                                                viewBinding.minTemperature.setText(minTemperature);
-                                                viewBinding.maxTemperature.setText(maxTemperature);
+                                                    if (weatherIcon != null) {
+                                                        viewBinding.weatherConditionIcon.setImageDrawable(weatherIcon);
+                                                    }
+                                                    viewBinding.cityName.setText(forecast.getCityName());
+                                                    viewBinding.weatherDescription.setText(weatherDescription);
+                                                    viewBinding.actualTemperature.setText(actualTemperature);
+                                                    viewBinding.minTemperature.setText(minTemperature);
+                                                    viewBinding.maxTemperature.setText(maxTemperature);
 
-                                                getParentFragmentManager()
-                                                        .beginTransaction()
-                                                        .show(this)
-                                                        .commitNow();
-                                            });
+                                                    getParentFragmentManager()
+                                                            .beginTransaction()
+                                                            .show(this)
+                                                            .commitNow();
+                                                });
+                                            }
                                         },
                                         exception -> Log.e(TAG, "Error while getting forecast", exception))
                                 ;
