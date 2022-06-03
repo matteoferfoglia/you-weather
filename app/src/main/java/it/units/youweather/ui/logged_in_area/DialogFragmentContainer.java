@@ -22,13 +22,6 @@ import it.units.youweather.databinding.FragmentDialogContainerBinding;
 public class DialogFragmentContainer extends DialogFragment {
 
     /**
-     * The name of the input argument with the {@link Fragment}
-     * to be contained in this instance.
-     */
-    private static final String CONTAINED_FRAGMENT_ARG_NAME =
-            DialogFragmentContainer.class.getCanonicalName() + "containedFragment";
-
-    /**
      * The {@link Fragment} contained in this instance.
      */
     private final Fragment containedFragment;
