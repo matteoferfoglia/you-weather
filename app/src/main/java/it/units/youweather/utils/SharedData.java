@@ -54,6 +54,11 @@ public abstract class SharedData {
          * {@link it.units.youweather.ui.logged_in_area.UserPageWithHistoryFragment}.
          */
         USER_PAGE_WITH_HISTORY_FRAGMENT_FILTER_DATE_TO,
+
+        /**
+         * Saves the user's last known position.
+         */
+        USER_LAST_KNOWN_POSITION,
     }
 
     /**

@@ -37,6 +37,8 @@ import it.units.youweather.utils.http.HTTPResponse;
  */
 public class LocationHelper {
 
+    // TODO: refactor
+
     /**
      * TAG for logger.
      */
@@ -126,16 +128,6 @@ public class LocationHelper {
     }
 
     /**
-     * @return the user's current location.
-     * @throws UnavailablePositionException If the position is unavailable.
-     */
-    public Coordinates getUserCurrentLocation() throws UnavailablePositionException {
-        return new Coordinates(
-                userCurrentLocation.getLatitude(),
-                userCurrentLocation.getLongitude());
-    }
-
-    /**
      * Permissions thrown when {@link #userCurrentLocation} is null
      */
     @SuppressWarnings({"serial", "RedundantSuppression"})
@@ -179,10 +171,19 @@ public class LocationHelper {
                 Location newLocation = userCurrentLocation.getCopyOfLocation();
                 lastUpdateOfCurrentLocationContainer.setLocation(newLocation);
                 Objects.requireNonNull(onChange).accept(newLocation);
+                if (newLocation != null) {
+                    SharedData.setValue(SharedData.SharedDataName.USER_LAST_KNOWN_POSITION, newLocation);
+                }
             }
         });
 
+        Location lastKnownSavedLocation = (Location) SharedData.getValue(SharedData.SharedDataName.USER_LAST_KNOWN_POSITION);
         listener.start();
+
+        // If any location is saved, use that until a more recent position will be available
+        if (lastKnownSavedLocation != null) {
+            locationListener.onLocationChanged(lastKnownSavedLocation);
+        }
 
         return () -> {
             listener.interrupt();
