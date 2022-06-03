@@ -16,8 +16,7 @@
         app:layout_constraintBottom_toTopOf="@id/auth_button"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_baseline_wb_sunny_24">
+        app:layout_constraintTop_toTopOf="parent">
 
         <!-- Linear layout to set relative width for the image wrt. its container -->
         <!-- TODO : linear layout needed ? -->
@@ -27,7 +26,8 @@
             android:layout_height="match_parent"
             android:layout_weight="65"
             android:contentDescription="@string/application_logo_content_description"
-            app:srcCompat="@drawable/ic_baseline_wb_sunny_24" /><!-- TODO: set application logo -->
+            app:srcCompat="@drawable/app_icon"
+            tools:ignore="ImageContrastCheck" /><!-- TODO: set application logo -->
 
     </LinearLayout>
 

@@ -102,7 +102,7 @@ public class WeatherReportFragment extends Fragment {
                     imageTmp = Drawable.createFromStream(iconIS, "weatherIcon");
                 } catch (IOException exception) {
                     Log.e(TAG, "Weather icon not showed due to an exception", exception);
-                    imageTmp = ContextCompat.getDrawable(requireContext(), R.drawable.ic_baseline_wb_sunny_24);    // TODO: replace with app icon
+                    imageTmp = ContextCompat.getDrawable(requireContext(), R.drawable.app_icon);
                 }
             }
 
