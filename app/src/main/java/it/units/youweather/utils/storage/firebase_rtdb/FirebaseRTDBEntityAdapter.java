@@ -184,7 +184,7 @@ public class FirebaseRTDBEntityAdapter<T extends DBEntity> extends DBEntityAdapt
         // Try to execute the query and, if after a given amount of time the query execution
         // is not completed yet, abort the execution and run the onError callback
 
-        final int AMOUNT_OF_SECONDS_FOR_FAILURE_DETECTION = 5;
+        final int AMOUNT_OF_SECONDS_FOR_FAILURE_DETECTION = 60;
 
         AtomicBoolean queryExecutionCompleted = new AtomicBoolean(false);
         Executors.newScheduledThreadPool(1).schedule(() -> {
