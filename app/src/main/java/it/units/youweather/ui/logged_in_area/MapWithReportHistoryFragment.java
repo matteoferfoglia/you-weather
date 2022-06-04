@@ -5,7 +5,6 @@ import android.content.Context;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,6 +14,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.fragment.app.Fragment;
+import androidx.preference.PreferenceManager;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -95,6 +95,7 @@ public class MapWithReportHistoryFragment extends Fragment {
         super.onCreate(savedInstanceState);
     }
 
+    @SuppressWarnings("unchecked")// Conversions are checked
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -124,8 +125,6 @@ public class MapWithReportHistoryFragment extends Fragment {
                                     && ((List<?>) weatherReportsObj).size() > 0
                                     && ((List<?>) weatherReportsObj).get(0) instanceof WeatherReportPreview) {
 
-                                // Conversion checked in the previous if
-                                //noinspection unchecked
                                 weatherReportPreviews.addAll((List<WeatherReportPreview>) weatherReportsObj);
 
                                 Log.d(TAG, "Received reports for key "
@@ -264,6 +263,8 @@ public class MapWithReportHistoryFragment extends Fragment {
     private static class CustomMarkerOverlay extends ItemizedOverlay<OverlayItem> {
 
         private final List<OverlayItem> overlayItems = new ArrayList<>();
+
+        @SuppressWarnings("FieldCanBeLocal") // (for now) unused field
         private final MapView mapView;
 
         public CustomMarkerOverlay(Drawable drawable, MapView mapView) {

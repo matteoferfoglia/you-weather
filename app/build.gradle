@@ -92,6 +92,9 @@ dependencies {
 
     /* END OPEN STREET MAP */
 
+    // Androidx preferences
+    implementation 'androidx.preference:preference:1.2.0'
+
 
 }
 
