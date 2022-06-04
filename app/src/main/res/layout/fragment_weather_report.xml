@@ -8,12 +8,14 @@
     tools:context=".ui.logged_in_area.WeatherReportFragment">
 
     <ProgressBar
+        android:id="@+id/progress_loader"
         style="?android:attr/progressBarStyle"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="visible" /><!-- Adapted from https://stackoverflow.com/a/35082220/17402378 -->
 
     <LinearLayout
+        android:id="@+id/weather_viewer_main_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -21,6 +23,7 @@
         android:weightSum="5">
 
         <ImageView
+            android:id="@+id/report_image_or_weather_condition_icon"
             android:layout_width="0dp"
             android:layout_height="@dimen/weather_fragment_height"
             android:layout_gravity="center"
@@ -38,17 +41,20 @@
             android:orientation="vertical">
 
             <TextView
+                android:id="@+id/city_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center" />
 
             <TextView
+                android:id="@+id/coordinates"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:textAlignment="center" />
 
             <TextView
+                android:id="@+id/weather_description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginVertical="@dimen/common_margin"
@@ -56,6 +62,7 @@
                 android:textStyle="bold" />
 
             <TextView
+                android:id="@+id/reported_date_time"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center" />

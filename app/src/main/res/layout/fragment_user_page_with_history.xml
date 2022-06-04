@@ -28,6 +28,7 @@
         app:layout_constraintTop_toBottomOf="@id/report_history_header">
 
         <CheckBox
+            android:id="@+id/checkBox_filter_by_dates"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/history_reports_filter_date_margin_horizontal"
@@ -38,6 +39,7 @@
             app:layout_constraintTop_toBottomOf="@+id/report_history_header" />
 
         <Button
+            android:id="@+id/from_date_filter_button"
             style="?android:spinnerStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -48,6 +50,7 @@
             android:visibility="gone" />
 
         <Button
+            android:id="@+id/to_date_filter_button"
             style="?android:spinnerStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -83,6 +86,7 @@
             tools:ignore="UselessParent">
 
             <TextView
+                android:id="@+id/history_table_row_number"
                 android:layout_width="@dimen/history_table_heading_row_number_width"
                 android:layout_height="wrap_content"
                 android:gravity="center"
@@ -90,18 +94,21 @@
                 tools:ignore="HardcodedText" /><!-- Suppressed hardcoded symbol for row numbering -->
 
             <TextView
+                android:id="@+id/history_table_date_time"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:text="@string/date_time" />
 
             <TextView
+                android:id="@+id/history_table_location"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:text="@string/location" />
 
             <TextView
+                android:id="@+id/history_table_date_time_weather"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:gravity="center"
@@ -111,6 +118,7 @@
     </TableLayout>
 
     <LinearLayout
+        android:id="@+id/loading_layout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:gravity="center"
@@ -119,6 +127,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/scroll_view_history_reports">
 
         <ProgressBar
+            android:id="@+id/progress_loader"
             style="?android:attr/progressBarStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" /><!-- Adapted from https://stackoverflow.com/a/35082220/17402378 -->
@@ -137,11 +146,11 @@
         app:layout_constraintTop_toBottomOf="@+id/history_reports_table_heading">
 
         <TableLayout
+            android:id="@+id/history_reports_table"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:shrinkColumns="0"
-            android:stretchColumns="1,2,3"
-            tools:ignore="UselessLeaf" /> <!-- stretchColumns to give the same width to each column --> <!--Rows added programmatically -->
+            android:stretchColumns="1,2,3" /> <!-- stretchColumns to give the same width to each column --> <!--Rows added programmatically -->
     </ScrollView>
 
     <Button
