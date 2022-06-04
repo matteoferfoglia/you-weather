@@ -10,7 +10,5 @@
         android:gravity="center_vertical"
         android:layout_width="match_parent"
         android:layout_height="30dp" />
-
-    <!-- TODO: dimensions in res/values -->
-    <!-- TODO: try to insert more than one items to check dimensions and margins -->
+    
 </FrameLayout>

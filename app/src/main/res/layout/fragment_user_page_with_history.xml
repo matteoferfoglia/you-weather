@@ -91,7 +91,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:text="#"
-                tools:ignore="HardcodedText" /><!-- Suppressed hardcoded symbol for row numbering --><!-- TODO: is this the correct way to implement table cells? -->
+                tools:ignore="HardcodedText" /><!-- Suppressed hardcoded symbol for row numbering -->
 
             <TextView
                 android:id="@+id/history_table_date_time"
@@ -160,6 +160,6 @@
         android:text="@string/see_on_the_map"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent" /><!-- TODO: use the same margin settings for all buttons in the project -->
+        app:layout_constraintRight_toRightOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -47,7 +47,7 @@
             android:id="@+id/actual_temperature"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAlignment="center" /><!-- TODO: correct case and handle translation -->
+            android:textAlignment="center" />
 
         <TextView
             android:id="@+id/weather_description"
@@ -67,10 +67,6 @@
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <!-- TODO: add labels for max and min -->
-
-            <!-- TODO: fix spaces between components in layout -->
-
             <TextView
                 android:id="@+id/max_temperature"
                 android:layout_width="wrap_content"
@@ -81,4 +77,4 @@
 
     </LinearLayout>
 
-</LinearLayout><!-- TODO: move sizes into resources -->
+</LinearLayout>

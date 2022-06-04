@@ -108,7 +108,9 @@ public class WeatherViewerFragment extends Fragment {
 
                                             // Need to copy variables to make them effectively final before using in another thread
                                             final Drawable weatherIcon = weatherIcon_tmp;
-                                            final String weatherDescription = weatherDescription_tmp;
+                                            final String weatherDescription = weatherDescription_tmp.length() > 0   // Correct case
+                                                    ? Character.toUpperCase(weatherDescription_tmp.charAt(0)) + weatherDescription_tmp.substring(1).toLowerCase()
+                                                    : "";
 
                                             // Temperature conversions
                                             final String actualTemperature = new Temperature(mainForecastData.getTemp()).getTemperatureWithMeasureUnit();
