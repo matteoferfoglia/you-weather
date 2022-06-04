@@ -52,10 +52,6 @@ import it.units.youweather.utils.storage.Query;
  */
 public class HomeFragment extends Fragment {
 
-    // TODO: on a new device, when the user has not granted the permission to use the location
-    //       an error is printed in Logcat and the view does not update even after granting.
-    // TODO: the same happens fot Take A Photo (which does not appear) in the NewReportFragment
-
     /**
      * TAG for logger.
      */
@@ -104,8 +100,6 @@ public class HomeFragment extends Fragment {
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
 
-        // TODO: why  E/RecyclerView: No adapter attached; skipping layout  each time the page is loaded?
-
         viewBinding.searchBar.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -120,7 +114,11 @@ public class HomeFragment extends Fragment {
                                     selectedCity -> hideAppIconAndShowWeatherReports(selectedCity));
                             Utility.runOnUiThread(
                                     getActivity(),
-                                    () -> viewBinding.searchBarResults.setAdapter(cityNamesArrayAdapter));
+                                    () -> {
+                                        viewBinding.searchBarResults.setAdapter(cityNamesArrayAdapter);
+                                        recyclerView.setVisibility(View.VISIBLE);
+                                    }
+                            );
                             Log.d(TAG, "Cities matching the query: " + Arrays.toString(cities));
 
                             if (cities.length == 0 && !anyErrorsRetrievingCity.get()) {
