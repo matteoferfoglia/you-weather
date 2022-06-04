@@ -146,7 +146,15 @@ public abstract class ImagesHelper {
 
         public SerializableBitmap(Bitmap bitmap) {
             final int MAX_NUM_OF_PIXELS = 1_000_000;
-            Bitmap compressedBitmap = compressImageAndGet(Objects.requireNonNull(bitmap), MAX_NUM_OF_PIXELS);
+            if (bitmap == null) {
+                // Create empty bitmap
+                // Adapted from https://stackoverflow.com/a/5664047/17402378
+
+                int width = 1, height = 1;
+                Bitmap.Config conf = Bitmap.Config.ARGB_8888; // see other conf types
+                bitmap = Bitmap.createBitmap(width, height, conf); // this creates a MUTABLE bitmap
+            }
+            Bitmap compressedBitmap = compressImageAndGet(bitmap, MAX_NUM_OF_PIXELS);
             this.base64Bitmap = Base64Helper.encode(convertToByteArray(compressedBitmap));
             this.bitmapConfigName = compressedBitmap.getConfig().name();  // adapted from https://stackoverflow.com/a/34165515/17402378
             this.widthPx = compressedBitmap.getWidth();
