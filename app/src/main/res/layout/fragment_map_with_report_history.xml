@@ -18,6 +18,6 @@
         android:textAlignment="center"
         android:text="@string/filtered_reports_from_to"
         android:visibility="invisible"
-        android:textSize="20sp" />
+        android:textSize="@dimen/fontsize_filtered_dates_on_map" />
 
 </FrameLayout>

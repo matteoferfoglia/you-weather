@@ -12,4 +12,8 @@
     <dimen name="searchicon_in_searchbar_width">40dp</dimen>
     <dimen name="horiz_margin_for_text_row_item_in_dropdown_menu">38dp</dimen>
     <dimen name="weather_condition_icon_height_in_insertion_fragment">125dp</dimen>
+    <dimen name="title_fontsize_for_app_name">34sp</dimen>
+    <dimen name="fontsize_filtered_dates_on_map">18sp</dimen>
+    <dimen name="fontsize_loader_label">12sp</dimen>
+    <dimen name="fontsize_city_name_weather_viewer">18sp</dimen>
 </resources>

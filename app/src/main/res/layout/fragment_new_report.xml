@@ -86,7 +86,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/latitude_and_longitude"
                 android:textAlignment="center"
-                android:textSize="10sp"
+                android:textSize="@dimen/fontsize_loader_label"
                 android:textStyle="italic"
                 app:layout_constraintBottom_toTopOf="@id/weather_condition_label"
                 app:layout_constraintTop_toBottomOf="@+id/location_label"
