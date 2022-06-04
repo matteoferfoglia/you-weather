@@ -11,7 +11,9 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
 
 import java.io.IOException;
@@ -70,12 +72,19 @@ public class NewReportFragment extends Fragment {
      */
     private double longitude;
 
+    /**
+     * View-binding with the view.
+     */
+    private FragmentNewReportBinding viewBinding;
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // TODO : problems with daily/nightly icons
         // Inflate the layout for this fragment
-        FragmentNewReportBinding viewBinding = FragmentNewReportBinding.inflate(getLayoutInflater());
+        viewBinding = FragmentNewReportBinding.inflate(getLayoutInflater());
+
+        showOrHideProgressLoader(true, R.string.waiting_for_location);
 
         // Set user's current location in the view
         try {
@@ -120,8 +129,7 @@ public class NewReportFragment extends Fragment {
 
                                         activity_.runOnUiThread(() -> {
                                             viewBinding.locationName.setAdapter(arrayAdapter);
-                                            viewBinding.waitingForLocationLayout.setVisibility(View.GONE);
-                                            viewBinding.newReportMainLayout.setVisibility(View.VISIBLE);
+                                            showOrHideProgressLoader(false, R.string.blank_string);
                                         });
                                         viewBinding.locationName.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                                             @Override
@@ -222,6 +230,9 @@ public class NewReportFragment extends Fragment {
 
         // Insertion button
         viewBinding.insertNewReportButton.setOnClickListener(view_ -> {
+
+            showOrHideProgressLoader(true, R.string.loading);
+
             new Thread(() -> {
 
                 if (cityMatchingCurrentUserPosition != null) {
@@ -231,8 +242,10 @@ public class NewReportFragment extends Fragment {
                             new Coordinates(latitude, longitude),
                             WeatherCondition.getInstancesForDescription((String) viewBinding.weatherConditionSpinner.getSelectedItem())[0/* TODO: create the real WeatherCondition instance, with the correct icon, and save it */],
                             serializableBitmaps[0]); // TODO: picture needed!!
-                    Runnable unableToPushErrorHandler = () ->
-                            Log.e(TAG, "Unable to push to DB " + weatherReport);
+                    Runnable unableToPushErrorHandler = () -> {
+                        showOrHideProgressLoader(false, R.string.blank_string);
+                        Log.e(TAG, "Unable to push to DB " + weatherReport);
+                    };
                     DBHelper.push(
                             weatherReport,
                             () -> {
@@ -245,6 +258,18 @@ public class NewReportFragment extends Fragment {
                                             Log.d(TAG, "Pushed to DB " + weatherReport);
                                             Toast.makeText(requireContext(), R.string.weather_report_added, Toast.LENGTH_LONG)  // TODO: toast do not require the activity!
                                                     .show();
+
+                                            Activity activity = getActivity();
+                                            if (activity != null) {
+
+                                                // recreate this fragment
+                                                activity.runOnUiThread(() ->
+                                                        getParentFragmentManager()
+                                                                .beginTransaction()
+                                                                .replace(container.getId(), new NewReportFragment())
+                                                                .commitNow());
+                                            }
+
                                         },
                                         unableToPushErrorHandler);
 
@@ -259,21 +284,30 @@ public class NewReportFragment extends Fragment {
                     }
                 }
 
-                Activity activity = getActivity();
-                if (activity != null) {
-
-                    // recreate this fragment
-                    activity.runOnUiThread(() ->
-                            getParentFragmentManager()
-                                    .beginTransaction()
-                                    .detach(this)
-                                    .attach(this)
-                                    .commitNow());  // TODO : not working, reset fragment when a new report is added
-                }
-
             }).start();
         });
 
         return viewBinding.getRoot();
+    }
+
+    /**
+     * Show or hide the progress loader from the view.
+     *
+     * @param showProgressLoader true to show the progress loader (and hide the rest),
+     *                           false for the opposite.
+     * @param textToShowResId    If you want to show the progress loader, this parameter
+     *                           is for the {@link IdRes} of the text to show.
+     */
+    private void showOrHideProgressLoader(boolean showProgressLoader, @StringRes int textToShowResId) {
+        Activity activity = getActivity();
+        if (activity != null) {
+            activity.runOnUiThread(() -> {
+                viewBinding.progressLoaderTextView.setText(textToShowResId);
+                viewBinding.progressLoaderLayout.setVisibility(showProgressLoader ? View.VISIBLE : View.GONE);
+                viewBinding.newReportMainLayout.setVisibility(showProgressLoader ? View.GONE : View.VISIBLE);
+            });
+        } else {
+            Log.e(TAG, "No activity available");
+        }
     }
 }

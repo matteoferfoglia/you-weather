@@ -14,7 +14,7 @@
         android:textAlignment="center" />
 
     <LinearLayout
-        android:id="@+id/waiting_for_location_layout"
+        android:id="@+id/progress_loader_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
@@ -22,6 +22,7 @@
         android:visibility="visible">
 
         <TextView
+            android:id="@+id/progress_loader_textView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="50dp"
