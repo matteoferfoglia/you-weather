@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -230,10 +231,13 @@ public class HomeFragment extends Fragment {
                             + " weather reports for query " + queryWeatherReportsForCityInTimeInterval);
                     int i = 1;
                     WeatherReportPreview mostRecentWr = null;
-                    for (WeatherReportPreview wr : weatherReports) {
-                        Log.d(TAG, "Retrieved weather report " + (i++) + ": " + wr);
-                        mostRecentWr = wr;
+
+                    // Sort: the most recent first
+                    Collections.sort(weatherReports, (b, a) -> (int) (a.getReportedTimeMillisSinceEpoch() - b.getReportedTimeMillisSinceEpoch()));
+                    if (weatherReports.size() > 0) {
+                        mostRecentWr = weatherReports.get(0);
                     }
+
                     if (mostRecentWr != null) {
                         Log.d(TAG, "Most recent weather report (preview) is " + mostRecentWr);
 
