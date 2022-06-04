@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">YouWeather</string>
     <string name="action_sign_in">Login o registrazione</string>
     <string name="signInFailed">Login fallito</string>
     <string name="application_logo_content_description">Logo dell\'applicazione</string>
@@ -8,8 +7,6 @@
     <string name="search_location">Cerca la località</string>
     <string name="most_recent_weather_report_from_other_users">Report meteorologici più recenti</string>
     <string name="new_report">Nuovo report</string>
-    <string name="account">Account</string>
-    <string name="hello">Ciao, %1%s!</string>
     <string name="history_of_your_reports">Cronologia dei report di %1$s</string>
     <string name="location">Luogo</string>
     <string name="date_time">Ora e data</string>
@@ -81,7 +78,6 @@
     <string name="no_results">Nessun risultato</string>
     <string name="take_a_photo">Scatta una foto</string>
     <string name="photo_from_the_user_for_report">Foto scattata dall\'utente per il report di inserimento</string>
-    <string name="take_another_photo">Scatta un\'altra foto e sostituisci</string>
     <string name="no_app_for_action">Non ci sono app per quest\'azione</string>
     <string name="Not_found_city_for_user_position">Nessuna città trovata per la tua posizione</string>
     <string name="cannot_insert_without_location">Impossibile inserire senza posizione</string>
@@ -95,8 +91,6 @@
     <string name="app_icon">Icona dell\'app</string>
     <string name="check_internet_connection">Verifica la tua connessione internet</string>
     <string name="waiting_for_location">Attendo la tua posizione</string>
-    <string name="longitude">Longitudine: %1$f</string>
-    <string name="latitude">Latitudine: %1$f</string>
     <string name="latitude_and_longitude">Latitudine: %1$.6f, Longitudine: %2$.6f</string>
     <string name="weather_report_added">Report aggiunto correttamente</string>
     <string name="error_unable_to_retrieve_data">Impossibile recuperare i dati</string>

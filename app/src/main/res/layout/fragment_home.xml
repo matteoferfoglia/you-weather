@@ -26,7 +26,6 @@
             android:src="@mipmap/ic_launcher" />
 
         <TextView
-            android:id="@+id/app_name"
             style="@style/TextAppearance.AppCompat.Title"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

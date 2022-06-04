@@ -2,7 +2,6 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/weather_condition_icon_and_actual_temp"
     android:layout_width="match_parent"
     android:layout_height="@dimen/weather_fragment_height"
     android:layout_gravity="center"
@@ -11,7 +10,6 @@
     tools:context=".ui.logged_in_area.WeatherViewerFragment">
 
     <ProgressBar
-        android:id="@+id/progress_loader"
         style="?android:attr/progressBarStyle"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -36,7 +34,6 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/city_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAlignment="center"
@@ -44,13 +41,11 @@
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/actual_temperature"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAlignment="center" />
 
         <TextView
-            android:id="@+id/weather_description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAlignment="center"
@@ -61,14 +56,12 @@
             android:layout_height="wrap_content">
 
             <TextView
-                android:id="@+id/min_temperature"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/max_temperature"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:layout_constraintRight_toRightOf="parent"
