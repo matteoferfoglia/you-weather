@@ -46,13 +46,6 @@ import it.units.youweather.utils.storage.DBHelper;
  */
 public class NewReportFragment extends Fragment {
 
-    // TODO: this fragment is very slow to load on real devices (the problem is with the location)
-    // TODO: try to refactor
-
-    // TODO: on a new device, when the user has not granted the permission to use the location
-    //       an error is printed in Logcat and the view does not update even after granting.
-    // TODO: the same happens fot Take A Photo (which does not appear) in the NewReportFragment
-
     /**
      * TAG for the logger.
      */
@@ -98,7 +91,7 @@ public class NewReportFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // TODO : problems with daily/nightly icons
+
         // Inflate the layout for this fragment
         viewBinding = FragmentNewReportBinding.inflate(getLayoutInflater());
 
@@ -108,7 +101,7 @@ public class NewReportFragment extends Fragment {
         try {
             LocationHelper locationHelper = new LocationHelper(requireActivity());
             locationListener = locationHelper.addPositionChangeListener(newLocation -> {
-                if (newLocation != null) {  // TODO: test if coordinates update when location change
+                if (newLocation != null) {
 
                     latitude = newLocation.getLatitude();
                     longitude = newLocation.getLongitude();
@@ -155,7 +148,7 @@ public class NewReportFragment extends Fragment {
                                             @Override
                                             public void onItemSelected(AdapterView<?> parent, View view, int position, long cityIndex) {
                                                 cityMatchingCurrentUserPosition = cities[(int) cityIndex];
-                                                // TODO : what if coordinates do not map to any city?
+
                                                 // Reference to the current selected weather condition
                                                 final AtomicReference<String> currentSelectedWeatherCondition = new AtomicReference<>(null);
 
@@ -190,7 +183,7 @@ public class NewReportFragment extends Fragment {
                                                 final int spinnerPosition_sunny = arrayAdapter.getPosition(ResourceHelper.getResString(R.string.WEATHER800)); // clear sky
                                                 viewBinding.weatherConditionSpinner.setAdapter(arrayAdapter);
                                                 viewBinding.weatherConditionSpinner.setSelection(spinnerPosition_sunny);
-                                                viewBinding.weatherConditionSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {    // TODO
+                                                viewBinding.weatherConditionSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                                                     @Override
                                                     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                                                         currentSelectedWeatherCondition.set(arrayAdapter.getItem((int) id));
@@ -228,8 +221,6 @@ public class NewReportFragment extends Fragment {
             });
         } catch (PermissionsHelper.MissingPermissionsException e) {
             Log.i(TAG, "Missing permissions for location.");
-            // TODO: do not allow to insert anything if missing permissions (hide the textview
-            //       for location and cords and show error message in a text view)
         }
 
         // Get picture from other fragment
@@ -256,8 +247,8 @@ public class NewReportFragment extends Fragment {
                             Authentication.getCurrentlySignedInUserOrNull(requireContext()).getUserId(),
                             cityMatchingCurrentUserPosition,
                             new Coordinates(latitude, longitude),
-                            WeatherCondition.getInstancesForDescription((String) viewBinding.weatherConditionSpinner.getSelectedItem())[0/* TODO: create the real WeatherCondition instance, with the correct icon, and save it */],
-                            serializableBitmaps[0]); // TODO: picture needed!!
+                            WeatherCondition.getInstancesForDescription((String) viewBinding.weatherConditionSpinner.getSelectedItem())[0],
+                            serializableBitmaps[0]);
                     Runnable unableToPushErrorHandler = () -> {
                         showOrHideProgressLoader(false, R.string.blank_string);
                         Log.e(TAG, "Unable to push to DB " + weatherReport);
@@ -272,7 +263,7 @@ public class NewReportFragment extends Fragment {
                                 DBHelper.push(weatherReportPreview,
                                         () -> {
                                             Log.d(TAG, "Pushed to DB " + weatherReport);
-                                            Toast.makeText(requireContext(), R.string.weather_report_added, Toast.LENGTH_LONG)  // TODO: toast do not require the activity!
+                                            Toast.makeText(requireContext(), R.string.weather_report_added, Toast.LENGTH_LONG)
                                                     .show();
 
                                             Activity activity = getActivity();

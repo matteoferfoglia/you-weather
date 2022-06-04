@@ -20,13 +20,15 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
+import java.io.File;
+
 import it.units.youweather.R;
 import it.units.youweather.databinding.FragmentTakeAPhotoBinding;
 import it.units.youweather.utils.ImagesHelper;
 import it.units.youweather.utils.PermissionsHelper;
 import it.units.youweather.utils.ResourceHelper;
 
-public class TakeAPhotoFragment extends Fragment {  // TODO: check if photos are saved in the gallery
+public class TakeAPhotoFragment extends Fragment {
 
     /**
      * TAG for logger.
@@ -81,6 +83,15 @@ public class TakeAPhotoFragment extends Fragment {  // TODO: check if photos are
                                         ImagesHelper.straightImage(Uri.parse(imageRealUrl)));
                         viewBinding.photo.setImageBitmap(capturedImage.getBitmap());
                         viewBinding.photo.setVisibility(View.VISIBLE);
+
+                        File image = new File(imageRealUrl);
+                        if (!image.exists()) {
+                            Log.e(TAG, "Image not existing but not deleted...");
+                        } else {
+                            if (!image.delete()) {
+                                Log.e(TAG, "Unable to delete the image");
+                            }
+                        }
 
                         Bundle exportPictureBundle = new Bundle();
                         exportPictureBundle.putSerializable(CAPTURED_PHOTO_BUNDLE_KEY, capturedImage);

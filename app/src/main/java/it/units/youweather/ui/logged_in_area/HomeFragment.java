@@ -414,7 +414,7 @@ public class HomeFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         if (locationListener != null) {
-            locationListener.stop();    // TODO: test
+            locationListener.stop();
         }
     }
 }
