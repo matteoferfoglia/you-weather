@@ -80,7 +80,6 @@ public class FirebaseRTDBEntityAdapter<T extends DBEntity> extends DBEntityAdapt
                                 "_"));
 
         assert tableListener != null;
-        dbRef.addChildEventListener(tableListener);
 
         this.firebaseRTDBSynchronizer = new FirebaseRTDBSynchronizer(dbRef);
     }
@@ -267,9 +266,6 @@ public class FirebaseRTDBEntityAdapter<T extends DBEntity> extends DBEntityAdapt
         // The system is thought for asynchronous operations.
 
         tableListener = new ChildEventListener() {
-            private void logDataChangedInfo() {
-                Log.i(TAG, "Data changed.");
-            }
 
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {

@@ -249,6 +249,7 @@ public class HomeFragment extends Fragment {
                     if (mostRecentWr != null) {
                         Log.d(TAG, "Most recent weather report (preview) is " + mostRecentWr);
 
+                        WeatherReport.registerThisClassForDB(WeatherReport.class);
                         DBHelper.pullByKey(
                                 mostRecentWr.getWeatherReportDetailsKey(),
                                 WeatherReport.class,
