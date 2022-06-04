@@ -14,12 +14,8 @@ import java.util.concurrent.ConcurrentMap;
  * This class is an helper for saving shared data for the application.
  * Data are saved in a static {@link Map} and are lost when the application ends.
  */
+@SuppressWarnings("unchecked")  // de/serialization of saved data can require unchecked cast
 public abstract class SharedData {
-
-    /**
-     * TAG for logger.
-     */
-    private static final String TAG = SharedData.class.getSimpleName();
 
     private static final ConcurrentMap<SharedDataName, Pair<Class<?>, ?>> sharedDate
             = new ConcurrentHashMap<>();

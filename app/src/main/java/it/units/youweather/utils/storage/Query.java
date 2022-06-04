@@ -48,6 +48,7 @@ public class Query<T> {
             throw new UnsupportedOperationException("Valid classes for field to query are "
                     + Arrays.toString(validClassesForField) + " but found " + minValueInclusive.getClass());
         } else {
+            //noinspection unchecked
             if (((Comparable<T>) Objects.requireNonNull(minValueInclusive)) // all valid classes for queries implement Comparable
                     .compareTo(Objects.requireNonNull(maxValueInclusive)) <= 0) {
                 this.minValueInclusive = Objects.requireNonNull(minValueInclusive);

@@ -32,6 +32,7 @@ public class DBHelper {
      * @return the {@link DBEntityHelper} for the {@link DBEntity} passed as parameter.
      */
     private static <T extends DBEntity> DBEntityHelper<T> getInstance(Class<T> entityClass) {
+        @SuppressWarnings("unchecked")
         DBEntityHelper<T> instance = (DBEntityHelper<T>) entities.get(entityClass);
         if (instance == null) {
             try {

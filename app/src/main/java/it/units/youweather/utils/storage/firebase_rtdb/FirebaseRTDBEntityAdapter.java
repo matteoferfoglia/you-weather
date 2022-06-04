@@ -29,6 +29,7 @@ import it.units.youweather.utils.storage.DBEntity;
 import it.units.youweather.utils.storage.DBEntityAdapter;
 import it.units.youweather.utils.storage.Query;
 
+@SuppressWarnings("unchecked") // de/serialization of instances from/to DB requires casting
 public class FirebaseRTDBEntityAdapter<T extends DBEntity> extends DBEntityAdapter<T> {
 
 
@@ -165,7 +166,7 @@ public class FirebaseRTDBEntityAdapter<T extends DBEntity> extends DBEntityAdapt
 
     /**
      * The database returns a {@link java.util.HashMap} in the
-     * form key-value for each entity (thery are saved in JSON
+     * form key-value for each entity (they are saved in JSON
      * format). This method deserialize one entity.
      *
      * @param aTuple <strong>one</strong> entity retrieved from

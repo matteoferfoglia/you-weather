@@ -25,7 +25,7 @@ import it.units.youweather.utils.Timing;
  *
  * @author Matteo Ferfoglia
  */
-@SuppressWarnings("unused") // used for de/serialization
+@SuppressWarnings({"unused", "BusyWait"}) // methods used for de/serialization
 public class City implements Serializable {
     private static final String TAG = City.class.getSimpleName();
 
@@ -55,7 +55,7 @@ public class City implements Serializable {
      * Scheduler to reset {@link #todaySunrise} and {@link #todaySunrise}
      * when the midnight is reached.
      */
-    private transient ScheduledExecutorService sunriseAndSunsetResetScheduler = null;
+    private final transient ScheduledExecutorService sunriseAndSunsetResetScheduler;
 
     /**
      * Mutex used to wait for the sunrise and the sunset times to be set.

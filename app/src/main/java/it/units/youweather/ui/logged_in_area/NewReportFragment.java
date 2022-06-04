@@ -153,27 +153,25 @@ public class NewReportFragment extends Fragment {
                                                 final AtomicReference<String> currentSelectedWeatherCondition = new AtomicReference<>(null);
 
                                                 // Weather icon setter
-                                                final Runnable weatherIconSetter = () -> {
-                                                    new Thread(() -> {
-                                                        String currentSelectedWeatherConditionLocal = currentSelectedWeatherCondition.get();
-                                                        try {
-                                                            if (currentSelectedWeatherConditionLocal == null) {
-                                                                currentSelectedWeatherConditionLocal = ResourceHelper.getResString(R.string.WEATHER800);
-                                                            }
-                                                            InputStream iconIS = new URL(WeatherCondition
-                                                                    .getIconUrlForDescription(currentSelectedWeatherConditionLocal, cityMatchingCurrentUserPosition))
-                                                                    .openStream();
-                                                            Drawable weatherIcon = Drawable.createFromStream(iconIS, "weatherIcon");
-
-                                                            Utility.runOnUiThread(
-                                                                    activity_,
-                                                                    () -> viewBinding.weatherConditionIcon.setImageDrawable(weatherIcon));
-                                                        } catch (NullPointerException | IOException e) {
-                                                            Log.e(TAG, "Error getting icon for weather condition \""
-                                                                    + currentSelectedWeatherConditionLocal + "\"", e);
+                                                final Runnable weatherIconSetter = () -> new Thread(() -> {
+                                                    String currentSelectedWeatherConditionLocal = currentSelectedWeatherCondition.get();
+                                                    try {
+                                                        if (currentSelectedWeatherConditionLocal == null) {
+                                                            currentSelectedWeatherConditionLocal = ResourceHelper.getResString(R.string.WEATHER800);
                                                         }
-                                                    }).start();
-                                                };
+                                                        InputStream iconIS = new URL(WeatherCondition
+                                                                .getIconUrlForDescription(currentSelectedWeatherConditionLocal, cityMatchingCurrentUserPosition))
+                                                                .openStream();
+                                                        Drawable weatherIcon = Drawable.createFromStream(iconIS, "weatherIcon");
+
+                                                        Utility.runOnUiThread(
+                                                                activity_,
+                                                                () -> viewBinding.weatherConditionIcon.setImageDrawable(weatherIcon));
+                                                    } catch (NullPointerException | IOException e) {
+                                                        Log.e(TAG, "Error getting icon for weather condition \""
+                                                                + currentSelectedWeatherConditionLocal + "\"", e);
+                                                    }
+                                                }).start();
                                                 weatherIconSetter.run();
 
                                                 // Drop-down menu for choosing the weather condition

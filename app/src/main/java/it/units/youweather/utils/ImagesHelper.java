@@ -3,11 +3,11 @@ package it.units.youweather.utils;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
-import android.media.ExifInterface;
 import android.net.Uri;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.exifinterface.media.ExifInterface;
 
 import com.google.firebase.database.Exclude;
 
@@ -120,7 +120,7 @@ public abstract class ImagesHelper {
      * Rotates the given {@link Bitmap} image.
      *
      * @param source The image to rotate.
-     * @param angle  The angle for ratation.
+     * @param angle  The angle for rotation.
      */
     public static Bitmap rotateImage(@NonNull Bitmap source, float angle) {
         Matrix matrix = new Matrix();
@@ -179,7 +179,7 @@ public abstract class ImagesHelper {
             return bitmapConfigName;
         }
 
-        @Exclude    // Firebase tries to serialiaze every getter
+        @Exclude    // Firebase tries to serialize every getter
         public Bitmap getBitmap() {
             byte[] imageAsByteArray = Base64Helper.decode(base64Bitmap);
             Bitmap.Config configBmp = Bitmap.Config.valueOf(bitmapConfigName);

@@ -54,7 +54,7 @@ public class WeatherViewerFragment extends Fragment {
      * The bundle key for which this fragment expects to find the result
      * for the request identified by the key {@link #CITY_TO_BE_SHOWN_REQUEST_KEY}.
      * Conceptually different from {@link #CITY_TO_BE_SHOWN_REQUEST_KEY},
-     * but pratically the same. This is the key to get the result from the
+     * but practically the same. This is the key to get the result from the
      * parent fragment and it is useful if more results are provided for
      * the same {@link #CITY_TO_BE_SHOWN_REQUEST_KEY}; in this case, this
      * fragment receives the city only.

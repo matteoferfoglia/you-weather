@@ -44,6 +44,7 @@ public abstract class ArraysHelper {
      * @param <S>        The generic for each element of the input array.
      * @return the mapped array or null if the array is empty.
      */
+    @SuppressWarnings("unchecked")
     @Nullable
     public static <S, T> T[] map(@NonNull S[] inputArray, @NonNull Function<S, T> mapper) {
         Objects.requireNonNull(mapper);

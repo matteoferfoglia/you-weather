@@ -50,12 +50,12 @@ class FirebaseRTDBSynchronizer {
     /**
      * The {@link ScheduledFuture} to use for cancel the periodic task of this class.
      */
-    private ScheduledFuture<?> completion = null;
+    private final ScheduledFuture<?> completion;
 
     /**
-     * The {@link DatabaseReference} with wich the synchronization must be done.
+     * The {@link DatabaseReference} with which the synchronization must be done.
      */
-    private volatile DatabaseReference dbRef = null;
+    private final DatabaseReference dbRef;
 
     /**
      * Constructor.
