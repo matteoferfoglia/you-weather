@@ -6,7 +6,7 @@
     ".read": "auth.uid != null",
     ".write": "auth.uid != null",
 
-    "it_units_youweather_entities_storage_WeatherReport": {
+    "it_units_youweather_entities_storage_WeatherReportPreview": {
       // use index to improve performance for queries "orderByChild"
       ".indexOn": [
         // name of fields on which queries apply
