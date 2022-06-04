@@ -98,58 +98,55 @@ public class WeatherReportFragment extends Fragment {
                     DBHelper.pullByKey(
                             weatherReportPreview.getWeatherReportDetailsKey(),
                             WeatherReport.class,
-                            (WeatherReport weatherReportDetails) -> {
+                            (WeatherReport weatherReportDetails) -> new Thread(() -> {
 
-                                new Thread(() -> {
+                                this.weatherReport = weatherReportDetails;
 
-                                    this.weatherReport = weatherReportDetails;
-
-                                    Drawable imageTmp = null;
-                                    if (weatherReport.getPicture() != null) {
-                                        imageTmp = new BitmapDrawable(getResources(), weatherReport.getPicture().getBitmap());
-                                    } else {
-                                        try (InputStream iconIS =
-                                                     new URL(weatherReport.getWeatherCondition().getIconUrl()).openStream()) {
-                                            imageTmp = Drawable.createFromStream(iconIS, "weatherIcon");
-                                        } catch (IOException exception) {
-                                            Log.e(TAG, "Weather icon not showed due to an exception", exception);
-                                            imageTmp = ContextCompat.getDrawable(requireContext(), R.mipmap.ic_launcher);
-                                        }
+                                Drawable imageTmp;
+                                if (weatherReport.getPicture() != null) {
+                                    imageTmp = new BitmapDrawable(getResources(), weatherReport.getPicture().getBitmap());
+                                } else {
+                                    try (InputStream iconIS =
+                                                 new URL(weatherReport.getWeatherCondition().getIconUrl()).openStream()) {
+                                        imageTmp = Drawable.createFromStream(iconIS, "weatherIcon");
+                                    } catch (IOException exception) {
+                                        Log.e(TAG, "Weather icon not showed due to an exception", exception);
+                                        imageTmp = ContextCompat.getDrawable(requireContext(), R.mipmap.ic_launcher);
                                     }
+                                }
 
-                                    double reportLatitude = weatherReport.getCoordinates().getLat();
-                                    double reportLongitude = weatherReport.getCoordinates().getLon();
+                                double reportLatitude = weatherReport.getCoordinates().getLat();
+                                double reportLongitude = weatherReport.getCoordinates().getLon();
 
-                                    assert imageTmp != null;
-                                    final Drawable image = imageTmp;    // copy image to effectively final variable
+                                assert imageTmp != null;
+                                final Drawable image = imageTmp;    // copy image to effectively final variable
 
-                                    {
-                                        // Prepare data for the UI thread to minimize its work
+                                {
+                                    // Prepare data for the UI thread to minimize its work
 
-                                        final String cityName = getString(R.string.city, weatherReport.getCity().toString());
-                                        final String weatherDescription = weatherReport.getWeatherCondition().getDescription();
-                                        final String coordinates = getString(R.string.coordinates, reportLatitude, reportLongitude);
-                                        final String reportedDateTime = getString(R.string.reported_on_date, Timing.convertEpochMillisToFormattedDate(weatherReport.getMillisecondsSinceEpoch()));
+                                    final String cityName = getString(R.string.city, weatherReport.getCity().toString());
+                                    final String weatherDescription = weatherReport.getWeatherCondition().getDescription();
+                                    final String coordinates = getString(R.string.latitude_and_longitude, reportLatitude, reportLongitude);
+                                    final String reportedDateTime = getString(R.string.reported_on_date, Timing.convertEpochMillisToFormattedDate(weatherReport.getMillisecondsSinceEpoch()));
 
-                                        Utility.runOnUiThread(
-                                                getActivity(),
-                                                () -> {
-                                                    viewBinding.reportImageOrWeatherConditionIcon.setImageDrawable(image);
-                                                    viewBinding.cityName.setText(cityName);
-                                                    viewBinding.weatherDescription.setText(weatherDescription);
-                                                    viewBinding.coordinates.setText(coordinates);
-                                                    viewBinding.reportedDateTime.setText(reportedDateTime);
+                                    Utility.runOnUiThread(
+                                            getActivity(),
+                                            () -> {
+                                                viewBinding.reportImageOrWeatherConditionIcon.setImageDrawable(image);
+                                                viewBinding.cityName.setText(cityName);
+                                                viewBinding.weatherDescription.setText(weatherDescription);
+                                                viewBinding.coordinates.setText(coordinates);
+                                                viewBinding.reportedDateTime.setText(reportedDateTime);
 
-                                                    viewBinding.weatherViewerMainLayout.setVisibility(View.VISIBLE);
-                                                    viewBinding.progressLoader.setVisibility(View.GONE);
+                                                viewBinding.weatherViewerMainLayout.setVisibility(View.VISIBLE);
+                                                viewBinding.progressLoader.setVisibility(View.GONE);
 
-                                                    viewBinding.reportImageOrWeatherConditionIcon
-                                                            .setOnClickListener(view_ -> showFullScreenWeatherReportImage(viewBinding));
-                                                });
-                                    }
+                                                viewBinding.reportImageOrWeatherConditionIcon
+                                                        .setOnClickListener(view_ -> showFullScreenWeatherReportImage(viewBinding));
+                                            });
+                                }
 
-                                }).start();
-                            },
+                            }).start(),
                             () -> {
                                 Log.e(TAG, "Unable to retrieve details");
                                 Toast.makeText(requireContext().getApplicationContext(), R.string.error_unable_to_retrieve_data, Toast.LENGTH_LONG)

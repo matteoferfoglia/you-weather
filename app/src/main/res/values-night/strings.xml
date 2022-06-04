@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="action_sign_in">Sign in or register</string>
-    <string name="signInFailed">Sign-In failed</string>
-</resources>

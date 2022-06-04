@@ -1,15 +1,14 @@
 <resources>
-    <string name="app_name">YouWeather</string>
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="app_name" translatable="false">YouWeather</string>
     <string name="action_sign_in">Sign in or register</string>
     <string name="signInFailed">Sign-In failed</string>
     <string name="application_logo_content_description">Application logo</string>
     <string name="action_sign_out">Sign out</string>
-    <string name="home">Home</string>
+    <string name="home" translatable="false">Home</string>
     <string name="search_location">Search for a location</string>
     <string name="most_recent_weather_report_from_other_users">Most recent weather report for this location:</string>
     <string name="new_report">New report</string>
-    <string name="account">Account</string>
+    <string name="account" translatable="false">Account</string>
     <string name="hello">Hello, %1$s!</string>
     <string name="history_of_your_reports">History of %1$s\'s reports</string>
     <string name="location">Location</string>
@@ -21,7 +20,6 @@
     <string name="to">To</string>
     <string name="insert_new_report">Insert new report</string>
     <string name="insert">Insert</string>
-    <string name="location_name">Location</string>
 
     <!-- WEATHER CONDITIONS start -->
     <string name="WEATHER200">Thunderstorm with light rain</string>
@@ -98,18 +96,17 @@
     <string name="click_on_a_report_to_see_details">Click on a report to see details</string>
 
     <string name="city">City: %1$s</string>
-    <string name="coordinates">Latitude: %1$.6f, Longitude: %2$.6f</string>
     <string name="reported_on_date">Reported on: %1$s</string>
     <string name="app_icon">App icon</string>
     <string name="check_internet_connection">Check your internet connection</string>
     <string name="waiting_for_location">Waiting for your location</string>
     <string name="longitude">Longitude: %1$f</string>
     <string name="latitude">Latitude: %1$f</string>
-    <string name="latitude_and_longitude">Latitude: %1$f, Longitude: %2$f</string>
+    <string name="latitude_and_longitude">Latitude: %1$.6f, Longitude: %2$.6f</string>
     <string name="weather_report_added">Weather report correctly added</string>
     <string name="error_unable_to_retrieve_data">Unable to retrieve the data</string>
     <string name="loading">Loading</string>
-    <string name="blank_string" />
+    <string name="blank_string" translatable="false" />
     <string name="unable_to_set_sunrise_and_sunset_coordinates_for_city">Unable to set coordinates for city</string>
 
     <!-- TODO: missing translations -->
