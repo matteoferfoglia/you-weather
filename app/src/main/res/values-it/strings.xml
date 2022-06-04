@@ -31,7 +31,7 @@
     <string name="WEATHER301">Pioggerella</string>
     <string name="WEATHER302">Pioggia di forte intensità</string>
     <string name="WEATHER310">Pioggerella di intensità leggera</string>
-    <string name="WEATHER311">Pioggerella</string>
+    <string name="WEATHER311">Pioggerella molto forte</string>
     <string name="WEATHER312">Pioggerella intensa</string>
     <string name="WEATHER313">Pioggia forte</string>
     <string name="WEATHER314">Pioggia molto forte</string>
@@ -39,12 +39,12 @@
     <string name="WEATHER500">Pioggia lieve</string>
     <string name="WEATHER501">Pioggia moderata</string>
     <string name="WEATHER502">Pioggia molto intensa</string>
-    <string name="WEATHER503">Pioggia molto intensa</string>
+    <string name="WEATHER503">Pioggia fortissima</string>
     <string name="WEATHER504">Pioggia estrema</string>
     <string name="WEATHER511">Pioggia ghiacciata</string>
     <string name="WEATHER520">"Pioggia di intensità leggera "</string>
     <string name="WEATHER521">Pioggia</string>
-    <string name="WEATHER522">Pioggia forte</string>
+    <string name="WEATHER522">Pioggia estremamente forte</string>
     <string name="WEATHER531">Pioggia irregolare</string>
     <string name="WEATHER600">Neve leggera</string>
     <string name="WEATHER601">Neve</string>
@@ -61,7 +61,7 @@
     <string name="WEATHER711">Nebbia</string>
     <string name="WEATHER721">Foschia</string>
     <string name="WEATHER731">Vortici di sabbia</string>
-    <string name="WEATHER741">Nebbia</string>
+    <string name="WEATHER741">Molta nebbia</string>
     <string name="WEATHER751">Sabbia</string>
     <string name="WEATHER761">Polvere</string>
     <string name="WEATHER762">Cenere vulcanica</string>
