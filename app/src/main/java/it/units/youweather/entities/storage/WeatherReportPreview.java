@@ -10,6 +10,7 @@ import java.util.Objects;
 
 import it.units.youweather.entities.City;
 import it.units.youweather.entities.LoggedInUser;
+import it.units.youweather.entities.forecast_fields.Coordinates;
 import it.units.youweather.entities.forecast_fields.WeatherCondition;
 import it.units.youweather.utils.Timing;
 import it.units.youweather.utils.storage.DBEntity;
@@ -63,6 +64,11 @@ public class WeatherReportPreview extends DBEntity {
     private volatile String location_time;
 
     /**
+     * The coordinates for this report.
+     */
+    private volatile Coordinates coordinates;
+
+    /**
      * The reported weather condition.
      */
     private volatile WeatherCondition weatherCondition;
@@ -79,6 +85,7 @@ public class WeatherReportPreview extends DBEntity {
         this.reporterUserId = weatherReport.getReporterUserId();
         this.reportedTimeMillisSinceEpoch = weatherReport.getMillisecondsSinceEpoch();
         this.weatherCondition = weatherReport.getWeatherCondition();
+        this.coordinates = weatherReport.getCoordinates();
         this.location_time = mergeCityAndTimeIntoSingleValue(weatherReport.getCity(), reportedTimeMillisSinceEpoch);
     }
 
@@ -104,6 +111,10 @@ public class WeatherReportPreview extends DBEntity {
 
     public String getReporterUserId() {
         return reporterUserId;
+    }
+
+    public Coordinates getCoordinates() {
+        return coordinates;
     }
 
     /**
@@ -169,13 +180,14 @@ public class WeatherReportPreview extends DBEntity {
                 && Objects.equals(locationName, that.locationName)
                 && Objects.equals(reporterUserId, that.reporterUserId)
                 && Objects.equals(location_time, that.location_time)
-                && Objects.equals(weatherCondition, that.weatherCondition);
+                && Objects.equals(weatherCondition, that.weatherCondition)
+                && Objects.equals(coordinates, that.coordinates);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(
                 weatherReportDetailsKey, locationName, reporterUserId,
-                reportedTimeMillisSinceEpoch, location_time, weatherCondition);
+                reportedTimeMillisSinceEpoch, location_time, weatherCondition, coordinates);
     }
 }

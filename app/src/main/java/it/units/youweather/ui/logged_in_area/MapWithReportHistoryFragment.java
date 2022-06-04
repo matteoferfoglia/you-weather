@@ -42,6 +42,7 @@ import it.units.youweather.R;
 import it.units.youweather.databinding.FragmentMapWithReportHistoryBinding;
 import it.units.youweather.entities.forecast_fields.Coordinates;
 import it.units.youweather.entities.storage.WeatherReport;
+import it.units.youweather.entities.storage.WeatherReportPreview;
 import it.units.youweather.ui.MainActivity;
 import it.units.youweather.utils.PermissionsHelper;
 import it.units.youweather.utils.Timing;
@@ -114,22 +115,22 @@ public class MapWithReportHistoryFragment extends Fragment {
 
                             // Retrieve data for parent fragment
 
-                            LinkedList<WeatherReport> weatherReports = new LinkedList<>();
+                            LinkedList<WeatherReportPreview> weatherReportPreviews = new LinkedList<>();
                             Date minDateForReportsToShow = Timing.getTodayDate();
                             Date maxDateForReportsToShow = Timing.getTodayDate();
 
                             Serializable weatherReportsObj = bundle.getSerializable(WEATHER_REPORTS_TO_SHOW_ON_MAP_BUNDLE_KEY);
                             if (weatherReportsObj instanceof List
                                     && ((List<?>) weatherReportsObj).size() > 0
-                                    && ((List<?>) weatherReportsObj).get(0) instanceof WeatherReport) {
+                                    && ((List<?>) weatherReportsObj).get(0) instanceof WeatherReportPreview) {
 
                                 // Conversion checked in the previous if
                                 //noinspection unchecked
-                                weatherReports.addAll((List<WeatherReport>) weatherReportsObj);
+                                weatherReportPreviews.addAll((List<WeatherReportPreview>) weatherReportsObj);
 
                                 Log.d(TAG, "Received reports for key "
                                         + WEATHER_REPORTS_TO_SHOW_ON_MAP_BUNDLE_KEY
-                                        + ": " + weatherReports);
+                                        + ": " + weatherReportPreviews);
                             } else {
                                 Log.d(TAG, "No data received from parent fragment (it may be an empty list or an error)" +
                                         " for key " + WEATHER_REPORTS_TO_SHOW_ON_MAP_BUNDLE_KEY);
@@ -179,7 +180,7 @@ public class MapWithReportHistoryFragment extends Fragment {
                                     AppCompatResources.getDrawable(requireContext(), R.drawable.ic_baseline_push_pin_48),
                                     mapView);
 
-                            for (WeatherReport wr : weatherReports) {
+                            for (WeatherReportPreview wr : weatherReportPreviews) {
                                 Coordinates coordinates = wr.getCoordinates();
                                 GeoPoint geoPoint = new GeoPoint(coordinates.getLat(), coordinates.getLon());
                                 OverlayItem overlayItem = new OverlayItem(wr.toString(), wr.toString(), geoPoint);
