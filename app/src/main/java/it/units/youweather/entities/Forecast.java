@@ -67,7 +67,7 @@ public class Forecast implements Serializable {
      * @return the date-time of the data calculation.
      */
     public String getDataCalculationDateTime() {
-        return Timing.convertEpochMillisToFormattedDate(dt);    // TODO: test
+        return Timing.convertEpochMillisToFormattedDate(dt);
     }
 
     public long getCityId() {
@@ -75,7 +75,7 @@ public class Forecast implements Serializable {
     }
 
     public String getCityName() {
-        return name; // TODO: translate in the correct language
+        return name;
     }
 
     /**

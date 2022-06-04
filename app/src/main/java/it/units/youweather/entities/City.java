@@ -87,7 +87,7 @@ public class City implements Serializable {
             final long SECONDS_IN_A_DAY = 3600 * 24;
 
             Log.d(TAG, "Since midnight: " + secondsSinceMidnight
-                    + " s, to nex midnight: " + secondsToMidnight); // TODO: check correctness with Locale?
+                    + " s, to nex midnight: " + secondsToMidnight);
 
             sunriseAndSunsetResetScheduler.scheduleAtFixedRate(
                     this::setSunriseAndSunsetTimesForToday,

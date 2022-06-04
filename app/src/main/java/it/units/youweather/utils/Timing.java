@@ -24,9 +24,9 @@ public abstract class Timing {
      */
     public static String convertEpochMillisToFormattedDate(long secondsSinceEpoch) {
         Date date = new Date(secondsSinceEpoch);
-        SimpleDateFormat sdf = new SimpleDateFormat("EEEE, d MMMM, yyyy hh:mm", Locale.getDefault());
+        SimpleDateFormat sdf = new SimpleDateFormat("EEEE, d MMMM, yyyy HH:mm", Locale.getDefault());
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-        return sdf.format(date);
+        return sdf.format(date) + " UTC";
     }
 
     /**
