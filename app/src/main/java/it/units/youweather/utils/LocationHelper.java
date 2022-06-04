@@ -38,8 +38,6 @@ import it.units.youweather.utils.http.HTTPResponse;
  */
 public class LocationHelper {
 
-    // TODO: refactor
-
     /**
      * TAG for logger.
      */
@@ -147,7 +145,7 @@ public class LocationHelper {
      * method is invoked, the thread invoking this "wait" procedure will
      * stop to listen to position change.
      */
-    public Stoppable addPositionChangeListener(@NonNull Consumer<Location> onChange) {   // TODO: test
+    public Stoppable addPositionChangeListener(@NonNull Consumer<Location> onChange) {
 
         final LocationContainer lastUpdateOfCurrentLocationContainer =
                 new LocationContainer(userCurrentLocation.getCopyOfLocation());
@@ -155,7 +153,7 @@ public class LocationHelper {
         final AtomicBoolean isStillListening = new AtomicBoolean(true);
 
         Thread listener = new Thread(() -> {
-            while (isStillListening.get()) { // loop until the listener is still listening for changes   // TODO: test and refactor
+            while (isStillListening.get()) { // loop until the listener is still listening for changes
                 synchronized (lock) {
                     while (Objects.equals(lastUpdateOfCurrentLocationContainer, userCurrentLocation)) {
                         try {

@@ -137,9 +137,8 @@ public abstract class ImagesHelper {
      * The image is serialized with the Base64 encoding.
      */
     public static class SerializableBitmap implements Serializable {
-        private String base64Bitmap;
-        // TODO: need compression?
 
+        private String base64Bitmap;
         private int widthPx;
         private int heightPx;
         private String bitmapConfigName;

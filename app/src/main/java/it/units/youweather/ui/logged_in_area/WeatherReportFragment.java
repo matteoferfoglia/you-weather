@@ -50,10 +50,6 @@ public class WeatherReportFragment extends Fragment {
      */
     private static final String TAG = WeatherViewerFragment.class.getSimpleName();
 
-    // TODO: Rename and change types of parametersù
-
-    // TODO: make layout scrollable
-
     private WeatherReport weatherReport;
     private FragmentWeatherReportBinding viewBinding;
 
@@ -98,7 +94,7 @@ public class WeatherReportFragment extends Fragment {
 
                     WeatherReportPreview weatherReportPreview = (WeatherReportPreview) weatherReportInputParamObj;
 
-                    DBEntity.registerThisClassForDB(WeatherReport.class); // TODO: should not be needed
+                    DBEntity.registerThisClassForDB(WeatherReport.class);
                     DBHelper.pullByKey(
                             weatherReportPreview.getWeatherReportDetailsKey(),
                             WeatherReport.class,

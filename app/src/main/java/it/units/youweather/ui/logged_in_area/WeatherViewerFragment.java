@@ -58,7 +58,7 @@ public class WeatherViewerFragment extends Fragment {
      * parent fragment and it is useful if more results are provided for
      * the same {@link #CITY_TO_BE_SHOWN_REQUEST_KEY}; in this case, this
      * fragment receives the city only.
-     */// TODO : fix and improve Javadoc
+     */
     public static final String CITY_TO_BE_SHOWN_BUNDLE_KEY = "cityToBeShownRequestKey";
 
     private static final String TAG = WeatherViewerFragment.class.getSimpleName();
@@ -80,7 +80,7 @@ public class WeatherViewerFragment extends Fragment {
                         .findViewById(R.id.nav_host_fragment_container_activity_main))
                         .getFragment();
         assert CITY_TO_BE_SHOWN_REQUEST_KEY != null;
-        fragmentContainer.getParentFragmentManager()    // TODO : using requireContext().getSupportFragmentManager() directly?
+        fragmentContainer.getParentFragmentManager()
                 .setFragmentResultListener(CITY_TO_BE_SHOWN_REQUEST_KEY, this,
                         (requestKey, bundle) -> {
                             Serializable dataFromOtherFragment = bundle.getSerializable(CITY_TO_BE_SHOWN_BUNDLE_KEY);

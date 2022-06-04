@@ -57,7 +57,7 @@ public abstract class Timing {
      * @return The locale date-time (as {@link String}) at the current instant.
      */
     public static String getCurrentLocaleDateTime() {
-        return convertMillisSinceEpochToLocale(Timing.getMillisSinceEpoch());   // TODO: check correct date and (legal) time
+        return convertMillisSinceEpochToLocale(Timing.getMillisSinceEpoch());
     }
 
     /**

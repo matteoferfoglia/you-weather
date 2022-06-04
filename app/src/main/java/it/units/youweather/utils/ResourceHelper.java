@@ -21,8 +21,6 @@ public abstract class ResourceHelper {
     @SuppressLint("StaticFieldLeak") // Saves the Application Context
     private volatile static Context _context;
 
-    // TODO: is this class actually needed?
-
     /**
      * Register this class for the activity whose {@link Context} is passed
      * as argument.

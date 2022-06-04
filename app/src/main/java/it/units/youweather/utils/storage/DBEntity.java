@@ -65,7 +65,7 @@ public abstract class DBEntity implements Serializable {
      * Register this class to be used with the database.
      */
     public static void registerThisClassForDB(@NonNull Class<? extends DBEntity> clazz) {
-        if (!registeredClasses.contains(clazz)) {   // TODO: try to remove this method
+        if (!registeredClasses.contains(clazz)) {
             DBHelper.registerEntityClass(clazz,
                     createdEntity -> Log.d(TAG, "CREATED " + createdEntity),
                     removedEntity -> Log.d(TAG, "REMOVED " + removedEntity),

@@ -18,12 +18,6 @@ import it.units.youweather.utils.ResourceHelper;
 
 public class MainActivity extends AppCompatActivity {
 
-    // TODO: when switching among fragments (using the menu), fragments reset.
-    //       Avoid this behavoiur. If I am inserting a new report and then I
-    //       switch to the home fragment, when later i go back to the insertion fragment
-    //       I'd like to find back what I was inserting (actually, the insertion fragment
-    //       is particular, because location must always update).
-
     private BottomNavigationView bottomNavigationMenuView;
 
     @Override

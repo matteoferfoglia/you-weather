@@ -36,5 +36,5 @@ public class EnvironmentVariables {
      * Temperature measure unit.
      */
     public static final Temperature.TEMPERATURE_MEASURE_UNIT TEMPERATURE_MEASURE_UNIT
-            = Temperature.TEMPERATURE_MEASURE_UNIT.CELSIUS; // TODO: should be customizable (e.g., settable user preference)
+            = Temperature.TEMPERATURE_MEASURE_UNIT.CELSIUS;
 }

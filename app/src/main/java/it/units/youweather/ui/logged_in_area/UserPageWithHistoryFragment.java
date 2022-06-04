@@ -54,8 +54,6 @@ import it.units.youweather.utils.storage.DBHelper;
  */
 public class UserPageWithHistoryFragment extends Fragment {
 
-    // TODO : try to refactor this class
-
     /**
      * The TAG for the logger.
      */

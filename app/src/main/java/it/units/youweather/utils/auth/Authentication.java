@@ -118,9 +118,6 @@ public abstract class Authentication {
         Objects.requireNonNull(applicationContext);
         FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
 
-        // TODO : use firebaseUser.reload() to check if the user is still signed in
-        //          (or, e.g., if he/she was removed from the auth database)
-
         LoggedInUser loggedInUser;
         if (firebaseUser == null) { // unauthenticated
             SharedData.removeValue(
