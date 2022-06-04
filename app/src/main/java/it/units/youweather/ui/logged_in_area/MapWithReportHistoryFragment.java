@@ -163,13 +163,12 @@ public class MapWithReportHistoryFragment extends Fragment {
                                 maxDateForReportsToShow = null;
                             }
 
-                            if (minDateForReportsToShow != null || maxDateForReportsToShow != null) {
-                                // Show date interval for which reports are shown
-                                viewBinding.filteredDatesTextView.setText(getString(
-                                        R.string.filtered_reports_from_to,
-                                        minDateForReportsToShow == null ? getString(R.string.ever) : Timing.getShortFormattedDate(minDateForReportsToShow),
-                                        maxDateForReportsToShow == null ? Timing.getShortFormattedDate(Timing.getTodayDate()) : Timing.getShortFormattedDate(maxDateForReportsToShow)));
-                            }
+                            // Show date interval for which reports are shown
+                            viewBinding.filteredDatesTextView.setText(getString(
+                                    R.string.filtered_reports_from_to,
+                                    minDateForReportsToShow == null ? getString(R.string.ever) : Timing.getShortFormattedDate(minDateForReportsToShow),
+                                    maxDateForReportsToShow == null ? Timing.getShortFormattedDate(Timing.getTodayDate()) : Timing.getShortFormattedDate(maxDateForReportsToShow)));
+                            viewBinding.filteredDatesTextView.setVisibility(View.VISIBLE);
 
 
                             // Add markers on the map

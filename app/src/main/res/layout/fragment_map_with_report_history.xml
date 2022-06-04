@@ -14,7 +14,8 @@
         android:id="@+id/filteredDatesTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal | bottom"
+        android:layout_gravity="center|bottom"
+        android:textAlignment="center"
         android:text="@string/filtered_reports_from_to"
         android:visibility="invisible"
         android:textSize="20sp" />
