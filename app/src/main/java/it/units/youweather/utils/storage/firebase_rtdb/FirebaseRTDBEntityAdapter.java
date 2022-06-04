@@ -80,7 +80,6 @@ public class FirebaseRTDBEntityAdapter<T extends DBEntity> extends DBEntityAdapt
                                 "_"));
 
         assert tableListener != null;
-
         this.firebaseRTDBSynchronizer = new FirebaseRTDBSynchronizer(dbRef);
     }
 
@@ -112,8 +111,10 @@ public class FirebaseRTDBEntityAdapter<T extends DBEntity> extends DBEntityAdapt
     public void pull(@NonNull Consumer<List<T>> onSuccess, @Nullable Runnable onError) {
         Log.d(TAG, "pull method execution started");
 
-        ValueEventListener querySingleValueEventListener = getSingleValueEventListenerForQuery(onSuccess, onError);
-        dbRef.addListenerForSingleValueEvent(querySingleValueEventListener);
+        new Thread(() -> {
+            ValueEventListener querySingleValueEventListener = getSingleValueEventListenerForQuery(onSuccess, onError);
+            dbRef.addListenerForSingleValueEvent(querySingleValueEventListener);
+        }).start();
 
         Log.d(TAG, "pull method execution terminated");
     }
@@ -128,6 +129,7 @@ public class FirebaseRTDBEntityAdapter<T extends DBEntity> extends DBEntityAdapt
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 new Thread(() -> {
+
                     Map<String, Object> content = (Map<String, Object>) snapshot.getValue();
                     if (content == null) {
                         content = new LinkedHashMap<>(0);
@@ -145,16 +147,18 @@ public class FirebaseRTDBEntityAdapter<T extends DBEntity> extends DBEntityAdapt
 
                     List<T> results = new LinkedList<>(deserializedContent.values());
                     Objects.requireNonNull(onSuccess).accept(results);
-                }).start();
 
+                }).start();
 
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                if (onError != null) {
-                    onError.run();
-                }
+                new Thread(() -> {
+                    if (onError != null) {
+                        onError.run();
+                    }
+                }).start();
             }
         };
     }
@@ -178,48 +182,52 @@ public class FirebaseRTDBEntityAdapter<T extends DBEntity> extends DBEntityAdapt
     public <S> void pull(@NonNull Query<S> query, @NonNull Consumer<List<T>> onSuccess, @Nullable Runnable onError) {
         Log.d(TAG, "pull query method execution started");
 
-        S queryMinValue = Objects.requireNonNull(query).getMinValueInclusive();
-        Class<S> fieldForQueryClass = (Class<S>) queryMinValue.getClass();
+        new Thread(() -> {
 
-        com.google.firebase.database.Query q = dbRef.orderByChild(query.getField().getName());
-        if (queryMinValue instanceof String) {
-            q = q.startAt((String) query.getMinValueInclusive())
-                    .endAt((String) query.getMaxValueInclusive());
-        } else if (queryMinValue instanceof Double) {
-            q = q.startAt((Double) query.getMinValueInclusive())
-                    .endAt((Double) query.getMaxValueInclusive());
-        } else if (queryMinValue instanceof Boolean) {
-            q = q.startAt((Boolean) query.getMinValueInclusive())
-                    .endAt((Boolean) query.getMaxValueInclusive());
-        } else {
-            throw new IllegalArgumentException("Invalid class " + fieldForQueryClass
-                    + ". You can use only: "
-                    + String.class + ", " + Double.class + ", " + Boolean.class);
-        }
+            S queryMinValue = Objects.requireNonNull(query).getMinValueInclusive();
+            Class<S> fieldForQueryClass = (Class<S>) queryMinValue.getClass();
 
-
-        // Try to execute the query and, if after a given amount of time the query execution
-        // is not completed yet, abort the execution and run the onError callback
-
-        final int AMOUNT_OF_SECONDS_FOR_FAILURE_DETECTION = 60;
-
-        AtomicBoolean queryExecutionCompleted = new AtomicBoolean(false);
-        Executors.newScheduledThreadPool(1).schedule(() -> {
-            synchronized (queryExecutionCompleted) {
-                if (!queryExecutionCompleted.get() && onError != null) {
-                    onError.run();
-                    queryExecutionCompleted.set(true);
-                }
+            com.google.firebase.database.Query q = dbRef.orderByChild(query.getField().getName());
+            if (queryMinValue instanceof String) {
+                q = q.startAt((String) query.getMinValueInclusive())
+                        .endAt((String) query.getMaxValueInclusive());
+            } else if (queryMinValue instanceof Double) {
+                q = q.startAt((Double) query.getMinValueInclusive())
+                        .endAt((Double) query.getMaxValueInclusive());
+            } else if (queryMinValue instanceof Boolean) {
+                q = q.startAt((Boolean) query.getMinValueInclusive())
+                        .endAt((Boolean) query.getMaxValueInclusive());
+            } else {
+                throw new IllegalArgumentException("Invalid class " + fieldForQueryClass
+                        + ". You can use only: "
+                        + String.class + ", " + Double.class + ", " + Boolean.class);
             }
-        }, AMOUNT_OF_SECONDS_FOR_FAILURE_DETECTION, TimeUnit.SECONDS);
-        q.addListenerForSingleValueEvent(getSingleValueEventListenerForQuery(results -> {
-            synchronized (queryExecutionCompleted) {
-                if (!queryExecutionCompleted.get()) {
-                    queryExecutionCompleted.set(true);
-                    onSuccess.accept(results);
+
+
+            // Try to execute the query and, if after a given amount of time the query execution
+            // is not completed yet, abort the execution and run the onError callback
+
+            final int AMOUNT_OF_SECONDS_FOR_FAILURE_DETECTION = 60;
+
+            AtomicBoolean queryExecutionCompleted = new AtomicBoolean(false);
+            Executors.newScheduledThreadPool(1).schedule(() -> {
+                synchronized (queryExecutionCompleted) {
+                    if (!queryExecutionCompleted.get() && onError != null) {
+                        onError.run();
+                        queryExecutionCompleted.set(true);
+                    }
                 }
-            }
-        }, onError));
+            }, AMOUNT_OF_SECONDS_FOR_FAILURE_DETECTION, TimeUnit.SECONDS);
+            q.addListenerForSingleValueEvent(getSingleValueEventListenerForQuery(results -> {
+                synchronized (queryExecutionCompleted) {
+                    if (!queryExecutionCompleted.get()) {
+                        queryExecutionCompleted.set(true);
+                        onSuccess.accept(results);
+                    }
+                }
+            }, onError));
+
+        }).start();
 
         Log.d(TAG, "pull query method execution terminated:" +
                 " it will asynchronously download the data for the query");
@@ -239,20 +247,24 @@ public class FirebaseRTDBEntityAdapter<T extends DBEntity> extends DBEntityAdapt
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        Map<String, Object> entityRetrievedFromDB = (Map<String, Object>) snapshot.getValue(); // map representing the tuple, having field names as keys
-                        if (entityRetrievedFromDB != null) {
-                            Log.d(TAG, "Retrieved entity with key " + key);
-                            Objects.requireNonNull(onSuccess)
-                                    .accept(deserializeEntityFromFirebaseRTDB(entityRetrievedFromDB));
-                        } else {
-                            onErrorHandler.run();
-                        }
+                        new Thread(() -> {
+                            Map<String, Object> entityRetrievedFromDB = (Map<String, Object>) snapshot.getValue(); // map representing the tuple, having field names as keys
+                            if (entityRetrievedFromDB != null) {
+                                Log.d(TAG, "Retrieved entity with key " + key);
+                                Objects.requireNonNull(onSuccess)
+                                        .accept(deserializeEntityFromFirebaseRTDB(entityRetrievedFromDB));
+                            } else {
+                                onErrorHandler.run();
+                            }
+                        }).start();
                     }
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
-                        Log.e(TAG, "Error: " + error);
-                        onErrorHandler.run();
+                        new Thread(() -> {
+                            Log.e(TAG, "Error: " + error);
+                            onErrorHandler.run();
+                        }).start();
                     }
                 });
 
@@ -314,7 +326,6 @@ public class FirebaseRTDBEntityAdapter<T extends DBEntity> extends DBEntityAdapt
     public void forget(DBEntity tuple) {
         firebaseRTDBSynchronizer.stopObserve(tuple);
     }
-
 
     @Override
     public void remove(DBEntity tuple) {
