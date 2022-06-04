@@ -1,7 +1,6 @@
 package it.units.youweather.ui.logged_in_area;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.Dialog;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -26,6 +25,7 @@ import it.units.youweather.R;
 import it.units.youweather.databinding.FragmentWeatherReportBinding;
 import it.units.youweather.entities.storage.WeatherReport;
 import it.units.youweather.utils.Timing;
+import it.units.youweather.utils.Utility;
 
 /**
  * {@link Fragment} used to show a {@link it.units.youweather.entities.storage.WeatherReport}.
@@ -112,19 +112,18 @@ public class WeatherReportFragment extends Fragment {
             assert imageTmp != null;
             final Drawable image = imageTmp;    // copy image to effectively final variable
 
-            Activity activity = getActivity();
-            if (activity != null) {
-                activity.runOnUiThread(() -> {
-                    viewBinding.reportImageOrWeatherConditionIcon.setImageDrawable(image);
-                    viewBinding.cityName.setText(getString(R.string.city, weatherReport.getCity().toString()));
-                    viewBinding.weatherDescription.setText(weatherReport.getWeatherCondition().getDescription());
-                    viewBinding.coordinates.setText(getString(R.string.coordinates, reportLatitude, reportLongitude));
-                    viewBinding.reportedDateTime.setText(getString(R.string.reported_on_date, Timing.convertEpochMillisToFormattedDate(weatherReport.getMillisecondsSinceEpoch())));
+            Utility.runOnUiThread(
+                    getActivity(),
+                    () -> {
+                        viewBinding.reportImageOrWeatherConditionIcon.setImageDrawable(image);
+                        viewBinding.cityName.setText(getString(R.string.city, weatherReport.getCity().toString()));
+                        viewBinding.weatherDescription.setText(weatherReport.getWeatherCondition().getDescription());
+                        viewBinding.coordinates.setText(getString(R.string.coordinates, reportLatitude, reportLongitude));
+                        viewBinding.reportedDateTime.setText(getString(R.string.reported_on_date, Timing.convertEpochMillisToFormattedDate(weatherReport.getMillisecondsSinceEpoch())));
 
-                    viewBinding.weatherViewerMainLayout.setVisibility(View.VISIBLE);
-                    viewBinding.progressLoader.setVisibility(View.GONE);
-                });
-            }
+                        viewBinding.weatherViewerMainLayout.setVisibility(View.VISIBLE);
+                        viewBinding.progressLoader.setVisibility(View.GONE);
+                    });
 
         }).start();
 

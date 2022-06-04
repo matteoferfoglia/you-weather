@@ -40,6 +40,7 @@ import it.units.youweather.utils.PermissionsHelper;
 import it.units.youweather.utils.ResourceHelper;
 import it.units.youweather.utils.Stoppable;
 import it.units.youweather.utils.Timing;
+import it.units.youweather.utils.Utility;
 import it.units.youweather.utils.auth.Authentication;
 import it.units.youweather.utils.functionals.Consumer;
 import it.units.youweather.utils.storage.DBHelper;
@@ -86,6 +87,14 @@ public class HomeFragment extends Fragment {
     }
 
     @Override
+    public void onStop() {
+        super.onStop();
+        if (locationListener != null) {    // release resources eventually owned by the listener
+            locationListener.stop();
+        }
+    }
+
+    @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
@@ -108,29 +117,19 @@ public class HomeFragment extends Fragment {
                                     viewBinding.searchBarResults,
                                     viewBinding.searchBar,
                                     selectedCity -> hideAppIconAndShowWeatherReports(selectedCity));
-                            Activity activity = getActivity();
-                            if (activity != null) {
-                                activity.runOnUiThread(() ->
-                                        viewBinding.searchBarResults.setAdapter(cityNamesArrayAdapter));
-                            }
+                            Utility.runOnUiThread(
+                                    getActivity(),
+                                    () -> viewBinding.searchBarResults.setAdapter(cityNamesArrayAdapter));
                             Log.d(TAG, "Cities matching the query: " + Arrays.toString(cities));
 
                             if (cities.length == 0 && !anyErrorsRetrievingCity.get()) {
                                 final String errorMsg = ResourceHelper.getResString(R.string.no_results);
-                                activity = getActivity();
-                                if (activity != null) {
-                                    activity.runOnUiThread(() ->
-                                            Toast.makeText(requireContext(), errorMsg, Toast.LENGTH_LONG)
-                                                    .show());
-                                }
+                                Toast.makeText(requireContext().getApplicationContext(), errorMsg, Toast.LENGTH_LONG)
+                                        .show();
                             }
                         },
                         errorMsgIdRes -> {
-                            Activity activity = getActivity();
-                            if (activity != null) {
-                                activity.runOnUiThread(() ->
-                                        Toast.makeText(requireContext(), errorMsgIdRes, Toast.LENGTH_LONG).show());
-                            }
+                            Toast.makeText(requireContext().getApplicationContext(), errorMsgIdRes, Toast.LENGTH_LONG).show();
                             anyErrorsRetrievingCity.set(true);
                         });
                 return false;
@@ -147,11 +146,9 @@ public class HomeFragment extends Fragment {
                     .addPositionChangeListener(location -> {
                         if (location != null) {
                             this.userLocation = location;
-                            Activity activity = getActivity();
-                            if (activity != null) {
-                                activity.runOnUiThread(() ->
-                                        viewBinding.useCurrentPositionButton.setVisibility(View.VISIBLE));
-                            }
+                            Utility.runOnUiThread(
+                                    getActivity(),
+                                    () -> viewBinding.useCurrentPositionButton.setVisibility(View.VISIBLE));
                         }
                     });
         } catch (PermissionsHelper.MissingPermissionsException e) {
@@ -168,22 +165,17 @@ public class HomeFragment extends Fragment {
                                     userLocation.getLatitude(),
                                     userLocation.getLongitude()),
                             errorMsgIdRes -> {
-                                Activity activity = getActivity();
-                                if (activity != null) {
-                                    activity.runOnUiThread(() ->
-                                            Toast.makeText(requireContext(), errorMsgIdRes, Toast.LENGTH_LONG).show());
-                                }
+                                Toast.makeText(requireContext().getApplicationContext(), errorMsgIdRes, Toast.LENGTH_LONG)
+                                        .show();
                                 anyErrorRetrievingLocation.set(true);
                             });
                     if (citiesForCurrentUserPosition.length > 0) {
                         City city = citiesForCurrentUserPosition[0];
                         hideAppIconAndShowWeatherReports(city);
                     } else {
-                        Activity activity = getActivity();
-                        if (activity != null && !anyErrorRetrievingLocation.get()) {
-                            activity.runOnUiThread(() ->
-                                    Toast.makeText(requireContext(), R.string.Not_found_city_for_user_position, Toast.LENGTH_LONG)
-                                            .show());
+                        if (!anyErrorRetrievingLocation.get()) {
+                            Toast.makeText(requireContext().getApplicationContext(), R.string.Not_found_city_for_user_position, Toast.LENGTH_LONG)
+                                    .show();
                         }
                     }
                 }).start());
@@ -198,22 +190,22 @@ public class HomeFragment extends Fragment {
      * @param city The {@link City} for which the weather reports have to be shown.
      */
     private void hideAppIconAndShowWeatherReports(@NonNull City city) {
-        Activity activity = getActivity();
-        if (activity != null) {
-            activity.runOnUiThread(() -> {
-                viewBinding.applicationLogo.setVisibility(View.GONE);
-                viewBinding.weatherViewers.setVisibility(View.VISIBLE);
+        Utility.runOnUiThread(
+                getActivity(),
+                () -> {
+                    viewBinding.applicationLogo.setVisibility(View.GONE);
+                    viewBinding.weatherViewers.setVisibility(View.VISIBLE);
 
-                // Clear the old query and the old weather reports
-                viewBinding.searchBar.setQuery("", false);  // remove the old query
-                viewBinding.searchBar.clearFocus();
-                viewBinding.weatherReportByOtherUserTextview.setVisibility(View.GONE);
-                viewBinding.fragmentWeatherViewerReportByOtherUsers.setVisibility(View.GONE);
-            });
-            showWeatherForCity(getFragmentManager(requireView()), city);
-            showReportFromOtherUsersForTodayAtGivenCity(city);
-        }
+                    // Clear the old query and the old weather reports
+                    viewBinding.searchBar.setQuery("", false);  // remove the old query
+                    viewBinding.searchBar.clearFocus();
+                    viewBinding.weatherReportByOtherUserTextview.setVisibility(View.GONE);
+                    viewBinding.fragmentWeatherViewerReportByOtherUsers.setVisibility(View.GONE);
+                });
+        showWeatherForCity(getFragmentManager(requireView()), city);
+        showReportFromOtherUsersForTodayAtGivenCity(city);
     }
+
 
     /**
      * Shows the {@link WeatherReport} provided by some other user for today at
@@ -223,12 +215,8 @@ public class HomeFragment extends Fragment {
 
         final Runnable queryEvaluationErrorHandler = () -> {
             Log.e(TAG, "Error in evaluation of your query");
-            Activity activity = getActivity();
-            if (activity != null) {
-                activity.runOnUiThread(() ->
-                        Toast.makeText(requireContext(), R.string.error_unable_to_retrieve_data, Toast.LENGTH_LONG)
-                                .show());
-            }
+            Toast.makeText(requireContext().getApplicationContext(), R.string.error_unable_to_retrieve_data, Toast.LENGTH_LONG)
+                    .show();
         };
 
         Date today = Timing.getTodayDate();
@@ -253,20 +241,18 @@ public class HomeFragment extends Fragment {
                         DBHelper.pullByKey(
                                 mostRecentWr.getWeatherReportDetailsKey(),
                                 WeatherReport.class,
-                                (WeatherReport weatherReportDetails) -> {
-                                    Activity activity = getActivity();
-                                    if (activity != null) {
-                                        activity.runOnUiThread(() -> {
-                                            FragmentTransaction ft = getChildFragmentManager().beginTransaction();
-                                            ft.add(
-                                                    viewBinding.fragmentWeatherViewerReportByOtherUsers.getId(),
-                                                    WeatherReportFragment.newInstance(weatherReportDetails))
-                                                    .commitNow();
-                                            viewBinding.fragmentWeatherViewerReportByOtherUsers.setVisibility(View.VISIBLE);
-                                            viewBinding.weatherReportByOtherUserTextview.setVisibility(View.VISIBLE);
-                                        });
-                                    }
-                                },
+                                (WeatherReport weatherReportDetails) ->
+                                        Utility.runOnUiThread(
+                                                getActivity(),
+                                                () -> {
+                                                    FragmentTransaction ft = getChildFragmentManager().beginTransaction();
+                                                    ft.add(
+                                                            viewBinding.fragmentWeatherViewerReportByOtherUsers.getId(),
+                                                            WeatherReportFragment.newInstance(weatherReportDetails))
+                                                            .commitNow();
+                                                    viewBinding.fragmentWeatherViewerReportByOtherUsers.setVisibility(View.VISIBLE);
+                                                    viewBinding.weatherReportByOtherUserTextview.setVisibility(View.VISIBLE);
+                                                }),
                                 queryEvaluationErrorHandler);
                     } else {
                         Log.d(TAG, "No user weather report for query " + queryWeatherReportsForCityInTimeInterval);

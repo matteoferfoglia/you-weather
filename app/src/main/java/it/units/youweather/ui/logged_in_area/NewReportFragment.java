@@ -35,6 +35,7 @@ import it.units.youweather.utils.ImagesHelper;
 import it.units.youweather.utils.LocationHelper;
 import it.units.youweather.utils.PermissionsHelper;
 import it.units.youweather.utils.ResourceHelper;
+import it.units.youweather.utils.Stoppable;
 import it.units.youweather.utils.auth.Authentication;
 import it.units.youweather.utils.storage.DBHelper;
 
@@ -77,6 +78,22 @@ public class NewReportFragment extends Fragment {
      */
     private FragmentNewReportBinding viewBinding;
 
+    /**
+     * Location listener for location features. To be stopped because
+     * it might own this activity leading to memory leak after closing
+     * the activity.
+     */
+    private Stoppable locationListener;
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        if (locationListener != null) {
+            locationListener.stop();    // to be stopped because it might own this activity and lead to memory leak
+        }
+    }
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -89,7 +106,7 @@ public class NewReportFragment extends Fragment {
         // Set user's current location in the view
         try {
             LocationHelper locationHelper = new LocationHelper(requireActivity());
-            locationHelper.addPositionChangeListener(newLocation -> {
+            locationListener = locationHelper.addPositionChangeListener(newLocation -> {
                 if (newLocation != null) {  // TODO: test if coordinates update when location change
 
                     latitude = newLocation.getLatitude();

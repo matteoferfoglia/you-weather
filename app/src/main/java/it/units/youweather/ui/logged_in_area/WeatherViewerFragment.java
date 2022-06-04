@@ -1,6 +1,5 @@
 package it.units.youweather.ui.logged_in_area;
 
-import android.app.Activity;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
@@ -26,6 +25,7 @@ import it.units.youweather.entities.forecast_fields.Coordinates;
 import it.units.youweather.entities.forecast_fields.MainForecastData;
 import it.units.youweather.entities.forecast_fields.WeatherCondition;
 import it.units.youweather.utils.LocationHelper;
+import it.units.youweather.utils.Utility;
 
 /**
  * Fragment used to show the weather for a specific location.
@@ -117,25 +117,24 @@ public class WeatherViewerFragment extends Fragment {
                                             final String minTemperature = new Temperature(mainForecastData.getTemp_min()).getTemperatureWithMeasureUnit();
                                             final String maxTemperature = new Temperature(mainForecastData.getTemp_max()).getTemperatureWithMeasureUnit();
 
-                                            Activity activity = getActivity();
-                                            if (activity != null) {
-                                                activity.runOnUiThread(() -> {
+                                            Utility.runOnUiThread(
+                                                    getActivity(),
+                                                    () -> {
 
-                                                    if (weatherIcon != null) {
-                                                        viewBinding.weatherConditionIcon.setImageDrawable(weatherIcon);
-                                                    }
-                                                    viewBinding.cityName.setText(forecast.getCityName());
-                                                    viewBinding.weatherDescription.setText(weatherDescription);
-                                                    viewBinding.actualTemperature.setText(actualTemperature);
-                                                    viewBinding.minTemperature.setText(minTemperature);
-                                                    viewBinding.maxTemperature.setText(maxTemperature);
+                                                        if (weatherIcon != null) {
+                                                            viewBinding.weatherConditionIcon.setImageDrawable(weatherIcon);
+                                                        }
+                                                        viewBinding.cityName.setText(forecast.getCityName());
+                                                        viewBinding.weatherDescription.setText(weatherDescription);
+                                                        viewBinding.actualTemperature.setText(actualTemperature);
+                                                        viewBinding.minTemperature.setText(minTemperature);
+                                                        viewBinding.maxTemperature.setText(maxTemperature);
 
-                                                    getParentFragmentManager()
-                                                            .beginTransaction()
-                                                            .show(this)
-                                                            .commitNow();
-                                                });
-                                            }
+                                                        getParentFragmentManager()
+                                                                .beginTransaction()
+                                                                .show(this)
+                                                                .commitNow();
+                                                    });
                                         },
                                         exception -> Log.e(TAG, "Error while getting forecast", exception))
                                 ;

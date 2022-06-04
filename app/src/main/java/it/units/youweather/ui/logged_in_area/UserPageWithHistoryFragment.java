@@ -39,6 +39,7 @@ import it.units.youweather.entities.storage.WeatherReportPreview;
 import it.units.youweather.utils.ConversionsHelper;
 import it.units.youweather.utils.SharedData;
 import it.units.youweather.utils.Timing;
+import it.units.youweather.utils.Utility;
 import it.units.youweather.utils.auth.Authentication;
 import it.units.youweather.utils.functionals.Consumer;
 import it.units.youweather.utils.functionals.Predicate;
@@ -373,11 +374,8 @@ public class UserPageWithHistoryFragment extends Fragment {
                             String errorMsg = getString(R.string.Unable_to_retrieve_entities_from_DB)
                                     + ". " + getString(R.string.check_internet_connection);
                             Log.e(TAG, errorMsg);
-                            Activity activity = getActivity();
-                            if (activity != null) {
-                                activity.runOnUiThread(() ->
-                                        Toast.makeText(requireContext(), errorMsg, Toast.LENGTH_LONG).show());
-                            }
+                            Toast.makeText(requireContext().getApplicationContext(), errorMsg, Toast.LENGTH_LONG)
+                                    .show();
                         });
             } catch (NoSuchFieldException e) {
                 Log.e(TAG, "Unknown reporter", e);
@@ -432,21 +430,15 @@ public class UserPageWithHistoryFragment extends Fragment {
                                 wr.getWeatherReportDetailsKey(),    // TODO: refactor (similar in HomeFragment)
                                 WeatherReport.class,
                                 (WeatherReport weatherReportDetails) -> {
-                                    Activity activity_ = getActivity();
-                                    if (activity_ != null) {    // TODO: refactor: often use this "pattern" to check if an activity is available
-                                        activity_.runOnUiThread(() ->
-                                                new DialogFragmentContainer(WeatherReportFragment.newInstance(weatherReportDetails))
-                                                        .show(getChildFragmentManager(), null));
-                                    }
+                                    Utility.runOnUiThread(
+                                            getActivity(),
+                                            () -> new DialogFragmentContainer(WeatherReportFragment.newInstance(weatherReportDetails))
+                                                    .show(getChildFragmentManager(), null));
                                 },
                                 () -> {
-                                    Activity activity_ = getActivity();
-                                    if (activity_ != null) {    // TODO: refactor: often use this "pattern" to check if an activity is available
-                                        activity_.runOnUiThread(() -> {
-                                            Log.e(TAG, "Unable to retrieve details");
-                                            Toast.makeText(requireContext(), R.string.error_unable_to_retrieve_data, Toast.LENGTH_LONG).show();
-                                        });
-                                    }
+                                    Log.e(TAG, "Unable to retrieve details");
+                                    Toast.makeText(requireContext().getApplicationContext(), R.string.error_unable_to_retrieve_data, Toast.LENGTH_LONG)
+                                            .show();
                                 });
 
                     });
@@ -456,17 +448,17 @@ public class UserPageWithHistoryFragment extends Fragment {
 
             }
 
-            activity = getActivity();
-            if (activity != null) {
-                activity.runOnUiThread(() -> {
-                    viewBinding.historyReportsTable.removeAllViews();
-                    for (TableRow tr : sortedTableRowList) {
-                        viewBinding.historyReportsTable.addView(tr);
-                    }
-                    viewBinding.loadingLayout.setVisibility(View.GONE);
-                    viewBinding.scrollViewHistoryReports.setVisibility(View.VISIBLE);
-                });
-            }
+            Utility.runOnUiThread(
+                    getActivity(),
+                    () -> {
+                        viewBinding.historyReportsTable.removeAllViews();
+                        for (TableRow tr : sortedTableRowList) {
+                            viewBinding.historyReportsTable.addView(tr);
+                        }
+                        viewBinding.loadingLayout.setVisibility(View.GONE);
+                        viewBinding.scrollViewHistoryReports.setVisibility(View.VISIBLE);
+                    });
+
         }).start();
 
     }
