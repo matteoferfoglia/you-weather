@@ -41,8 +41,6 @@ import it.units.youweather.utils.Utility;
  */
 public class WeatherViewerFragment extends Fragment {
 
-    // TODO: make layout scrollable
-
     /**
      * The request key used to implement the communication mechanism with
      * the parent fragment: the latter has to send to this fragment the
@@ -129,6 +127,8 @@ public class WeatherViewerFragment extends Fragment {
                                                         viewBinding.actualTemperature.setText(actualTemperature);
                                                         viewBinding.minTemperature.setText(minTemperature);
                                                         viewBinding.maxTemperature.setText(maxTemperature);
+
+                                                        viewBinding.progressLoader.setVisibility(View.GONE);
 
                                                         getParentFragmentManager()
                                                                 .beginTransaction()

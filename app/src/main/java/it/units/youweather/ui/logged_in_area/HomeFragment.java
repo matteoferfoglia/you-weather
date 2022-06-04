@@ -237,23 +237,19 @@ public class HomeFragment extends Fragment {
                     if (mostRecentWr != null) {
                         Log.d(TAG, "Most recent weather report (preview) is " + mostRecentWr);
 
-                        WeatherReport.registerThisClassForDB(WeatherReport.class);
-                        DBHelper.pullByKey(
-                                mostRecentWr.getWeatherReportDetailsKey(),
-                                WeatherReport.class,
-                                (WeatherReport weatherReportDetails) ->
-                                        Utility.runOnUiThread(
-                                                getActivity(),
-                                                () -> {
-                                                    FragmentTransaction ft = getChildFragmentManager().beginTransaction();
-                                                    ft.add(
-                                                            viewBinding.fragmentWeatherViewerReportByOtherUsers.getId(),
-                                                            WeatherReportFragment.newInstance(weatherReportDetails))
-                                                            .commitNow();
-                                                    viewBinding.fragmentWeatherViewerReportByOtherUsers.setVisibility(View.VISIBLE);
-                                                    viewBinding.weatherReportByOtherUserTextview.setVisibility(View.VISIBLE);
-                                                }),
-                                queryEvaluationErrorHandler);
+                        WeatherReportPreview finalMostRecentWr = mostRecentWr;      // make variable effectively final
+                        Utility.runOnUiThread(
+                                getActivity(),
+                                () -> {
+                                    FragmentTransaction ft = getChildFragmentManager().beginTransaction();
+                                    ft.add(
+                                            viewBinding.fragmentWeatherViewerReportByOtherUsers.getId(),
+                                            WeatherReportFragment.newInstance(finalMostRecentWr))
+                                            .commitNow();
+                                    viewBinding.fragmentWeatherViewerReportByOtherUsers.setVisibility(View.VISIBLE);
+                                    viewBinding.weatherReportByOtherUserTextview.setVisibility(View.VISIBLE);
+                                });
+
                     } else {
                         Log.d(TAG, "No user weather report for query " + queryWeatherReportsForCityInTimeInterval);
                     }

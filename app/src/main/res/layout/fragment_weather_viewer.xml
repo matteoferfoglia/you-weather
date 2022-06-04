@@ -10,6 +10,14 @@
     android:weightSum="2"
     tools:context=".ui.logged_in_area.WeatherViewerFragment">
 
+    <ProgressBar
+        android:id="@+id/progress_loader"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="visible" /><!-- Adapted from https://stackoverflow.com/a/35082220/17402378 -->
+
+
     <ImageView
         android:id="@+id/weather_condition_icon"
         android:layout_width="0dp"

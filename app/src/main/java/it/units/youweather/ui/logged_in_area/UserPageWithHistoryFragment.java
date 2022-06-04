@@ -43,7 +43,6 @@ import it.units.youweather.utils.Utility;
 import it.units.youweather.utils.auth.Authentication;
 import it.units.youweather.utils.functionals.Consumer;
 import it.units.youweather.utils.functionals.Predicate;
-import it.units.youweather.utils.storage.DBEntity;
 import it.units.youweather.utils.storage.DBHelper;
 
 /**
@@ -424,24 +423,11 @@ public class UserPageWithHistoryFragment extends Fragment {
                     }
 
                     // Add on click listener to show weather report details
-                    tableRow.setOnClickListener(view_ -> {
-                        DBEntity.registerThisClassForDB(WeatherReport.class); // TODO: should not be needed
-                        DBHelper.pullByKey(
-                                wr.getWeatherReportDetailsKey(),    // TODO: refactor (similar in HomeFragment)
-                                WeatherReport.class,
-                                (WeatherReport weatherReportDetails) -> {
-                                    Utility.runOnUiThread(
-                                            getActivity(),
-                                            () -> new DialogFragmentContainer(WeatherReportFragment.newInstance(weatherReportDetails))
-                                                    .show(getChildFragmentManager(), null));
-                                },
-                                () -> {
-                                    Log.e(TAG, "Unable to retrieve details");
-                                    Toast.makeText(requireContext().getApplicationContext(), R.string.error_unable_to_retrieve_data, Toast.LENGTH_LONG)
-                                            .show();
-                                });
-
-                    });
+                    tableRow.setOnClickListener(view_ ->
+                            Utility.runOnUiThread(
+                                    getActivity(),
+                                    () -> new DialogFragmentContainer(WeatherReportFragment.newInstance(wr))
+                                            .show(getChildFragmentManager(), null)));
 
                     sortedTableRowList.add(tableRow);
                 }

@@ -350,7 +350,7 @@ public class LocationHelper {
     }
 
     /**
-     * This method is similar to {@link #getCitiesFromCoordinates(Coordinates)},
+     * This method is similar to {@link #getCitiesFromCoordinates(Coordinates, Consumer)},
      * but this one performs all the operation on a separate thread (this means that
      * the invoker thread returns immediately), and then, instead of returning the
      * {@link City} array, consumes it according to the given {@link Consumer}.
