@@ -39,7 +39,8 @@ public class DialogFragmentContainer extends DialogFragment {
         FragmentDialogContainerBinding viewBinding = FragmentDialogContainerBinding.inflate(inflater);
 
         FragmentTransaction ft = getChildFragmentManager().beginTransaction();
-        ft.add(viewBinding.fragmentContainerView.getId(), containedFragment).commitNow();
+        ft.replace(viewBinding.fragmentContainerView.getId(), containedFragment)
+                .commitNow();
 
         return viewBinding.getRoot();
     }

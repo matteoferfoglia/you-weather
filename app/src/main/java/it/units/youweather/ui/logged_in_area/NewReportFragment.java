@@ -260,7 +260,8 @@ public class NewReportFragment extends Fragment {
                                                     .show();
 
                                             Activity activity = getActivity();
-                                            if (activity != null) {
+                                            if (activity != null
+                                                    && getParentFragmentManager().getFragments().contains(this) /*check the fragment has not changed for external reasons*/) {
 
                                                 // recreate this fragment
                                                 activity.runOnUiThread(() ->
