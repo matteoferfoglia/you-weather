@@ -91,7 +91,6 @@ public class FirebaseRTDBEntityAdapter<T extends DBEntity> extends DBEntityAdapt
 
         String newTupleId = Objects.requireNonNull(dbRef.push().getKey());
         newTuple.setId(newTupleId);
-        firebaseRTDBSynchronizer.observeNewEntity(newTuple);
         dbRef.child(newTupleId)
                 .setValue(newTuple)     // create a new tuple with the content
                 .addOnCompleteListener(task -> {
