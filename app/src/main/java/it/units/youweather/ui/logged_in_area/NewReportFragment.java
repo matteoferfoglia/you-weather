@@ -28,6 +28,7 @@ import it.units.youweather.entities.City;
 import it.units.youweather.entities.forecast_fields.Coordinates;
 import it.units.youweather.entities.forecast_fields.WeatherCondition;
 import it.units.youweather.entities.storage.WeatherReport;
+import it.units.youweather.entities.storage.WeatherReportPreview;
 import it.units.youweather.utils.ImagesHelper;
 import it.units.youweather.utils.LocationHelper;
 import it.units.youweather.utils.PermissionsHelper;
@@ -230,14 +231,25 @@ public class NewReportFragment extends Fragment {
                             new Coordinates(latitude, longitude),
                             WeatherCondition.getInstancesForDescription((String) viewBinding.weatherConditionSpinner.getSelectedItem())[0/* TODO: create the real WeatherCondition instance, with the correct icon, and save it */],
                             serializableBitmaps[0]); // TODO: picture needed!!
+                    Runnable unableToPushErrorHandler = () ->
+                            Log.e(TAG, "Unable to push to DB " + weatherReport);
                     DBHelper.push(
                             weatherReport,
                             () -> {
-                                Log.d(TAG, "Pushed to DB " + weatherReport);
-                                Toast.makeText(requireContext(), R.string.weather_report_added, Toast.LENGTH_LONG)
-                                        .show();
+
+                                WeatherReportPreview weatherReportPreview =
+                                        new WeatherReportPreview(weatherReport.getId(), weatherReport);
+
+                                DBHelper.push(weatherReportPreview,
+                                        () -> {
+                                            Log.d(TAG, "Pushed to DB " + weatherReport);
+                                            Toast.makeText(requireContext(), R.string.weather_report_added, Toast.LENGTH_LONG)  // TODO: toast do not require the activity!
+                                                    .show();
+                                        },
+                                        unableToPushErrorHandler);
+
                             },
-                            () -> Log.e(TAG, "Unable to push to DB " + weatherReport));
+                            unableToPushErrorHandler);
                 } else {
                     Activity activity = getActivity();
                     if (activity != null) {

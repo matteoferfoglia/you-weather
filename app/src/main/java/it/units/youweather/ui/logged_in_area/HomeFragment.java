@@ -33,6 +33,7 @@ import it.units.youweather.databinding.FragmentHomeBinding;
 import it.units.youweather.entities.City;
 import it.units.youweather.entities.forecast_fields.Coordinates;
 import it.units.youweather.entities.storage.WeatherReport;
+import it.units.youweather.entities.storage.WeatherReportPreview;
 import it.units.youweather.ui.LoginActivity;
 import it.units.youweather.utils.LocationHelper;
 import it.units.youweather.utils.PermissionsHelper;
@@ -219,43 +220,58 @@ public class HomeFragment extends Fragment {
      * the given {@link City}.
      */
     private void showReportFromOtherUsersForTodayAtGivenCity(@NonNull City city) {
+
+        final Runnable queryEvaluationErrorHandler = () -> {
+            Log.e(TAG, "Error in evaluation of your query");
+            Activity activity = getActivity();
+            if (activity != null) {
+                activity.runOnUiThread(() ->
+                        Toast.makeText(requireContext(), R.string.error_unable_to_retrieve_data, Toast.LENGTH_LONG)
+                                .show());
+            }
+        };
+
         Date today = Timing.getTodayDate();
         Query<?> queryWeatherReportsForCityInTimeInterval =
-                WeatherReport.createQueryOnCityAndTime(city, Timing.getStartOfDay(today), Timing.getEndOfDay(today));
+                WeatherReportPreview.createQueryOnCityAndTime(city, Timing.getStartOfDay(today), Timing.getEndOfDay(today));
         DBHelper.pull(
                 queryWeatherReportsForCityInTimeInterval,
-                WeatherReport.class,
-                (List<WeatherReport> weatherReports) -> {
+                WeatherReportPreview.class,
+                (List<WeatherReportPreview> weatherReports) -> {
                     Log.d(TAG, "Retrieved " + weatherReports.size()
                             + " weather reports for query " + queryWeatherReportsForCityInTimeInterval);
                     int i = 1;
-                    WeatherReport mostRecentWr = null;
-                    for (WeatherReport wr : weatherReports) {
+                    WeatherReportPreview mostRecentWr = null;
+                    for (WeatherReportPreview wr : weatherReports) {
                         Log.d(TAG, "Retrieved weather report " + (i++) + ": " + wr);
                         mostRecentWr = wr;
                     }
                     if (mostRecentWr != null) {
-                        Log.d(TAG, "Most recent weather report is " + mostRecentWr);
-                        WeatherReport finalMostRecentWr = mostRecentWr; // copy to effectively final
+                        Log.d(TAG, "Most recent weather report (preview) is " + mostRecentWr);
 
-                        Activity activity = getActivity();
-                        if (activity != null) {
-                            activity.runOnUiThread(() -> {
-                                FragmentTransaction ft = getChildFragmentManager().beginTransaction();
-                                ft.add(
-                                        viewBinding.fragmentWeatherViewerReportByOtherUsers.getId(),
-                                        WeatherReportFragment.newInstance(finalMostRecentWr))
-                                        .commitNow();
-                                viewBinding.fragmentWeatherViewerReportByOtherUsers.setVisibility(View.VISIBLE);
-                                viewBinding.weatherReportByOtherUserTextview.setVisibility(View.VISIBLE);
-                            });
-                        }
+                        DBHelper.pullByKey(
+                                mostRecentWr.getWeatherReportDetailsKey(),
+                                WeatherReport.class,
+                                (WeatherReport weatherReportDetails) -> {
+                                    Activity activity = getActivity();
+                                    if (activity != null) {
+                                        activity.runOnUiThread(() -> {
+                                            FragmentTransaction ft = getChildFragmentManager().beginTransaction();
+                                            ft.add(
+                                                    viewBinding.fragmentWeatherViewerReportByOtherUsers.getId(),
+                                                    WeatherReportFragment.newInstance(weatherReportDetails))
+                                                    .commitNow();
+                                            viewBinding.fragmentWeatherViewerReportByOtherUsers.setVisibility(View.VISIBLE);
+                                            viewBinding.weatherReportByOtherUserTextview.setVisibility(View.VISIBLE);
+                                        });
+                                    }
+                                },
+                                queryEvaluationErrorHandler);
                     } else {
                         Log.d(TAG, "No user weather report for query " + queryWeatherReportsForCityInTimeInterval);
                     }
-                },
-                () -> Log.e(TAG, "Error in evaluation of query "
-                        + queryWeatherReportsForCityInTimeInterval));
+                }, queryEvaluationErrorHandler
+        );
     }
 
     /**

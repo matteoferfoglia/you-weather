@@ -22,7 +22,6 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -36,14 +35,15 @@ import java.util.concurrent.ConcurrentHashMap;
 import it.units.youweather.R;
 import it.units.youweather.databinding.FragmentUserPageWithHistoryBinding;
 import it.units.youweather.entities.storage.WeatherReport;
+import it.units.youweather.entities.storage.WeatherReportPreview;
 import it.units.youweather.utils.ConversionsHelper;
 import it.units.youweather.utils.SharedData;
 import it.units.youweather.utils.Timing;
 import it.units.youweather.utils.auth.Authentication;
 import it.units.youweather.utils.functionals.Consumer;
 import it.units.youweather.utils.functionals.Predicate;
+import it.units.youweather.utils.storage.DBEntity;
 import it.units.youweather.utils.storage.DBHelper;
-import it.units.youweather.utils.storage.Query;
 
 /**
  * Fragment containing user's info and the history of her/his
@@ -66,12 +66,12 @@ public class UserPageWithHistoryFragment extends Fragment {
     /**
      * {@link List} of all weather reports downloaded from the database.
      */
-    private volatile List<WeatherReport> weatherReports = new LinkedList<>();
+    private volatile List<WeatherReportPreview> weatherReports = new LinkedList<>();
 
     /**
      * {@link List} of showed weather reports.
      */
-    private volatile LinkedList<WeatherReport> shownWeatherReports = new LinkedList<>();
+    private volatile LinkedList<WeatherReportPreview> shownWeatherReports = new LinkedList<>();
 
     /**
      * {@link Map} of all {@link DatePickerDialog}s allowing the user to select a date,
@@ -187,10 +187,10 @@ public class UserPageWithHistoryFragment extends Fragment {
         }
 
         Button[] filterByDateButtonArray = new Button[]{viewBinding.fromDateFilterButton, viewBinding.toDateFilterButton};
-        Consumer<Predicate<WeatherReport>> filterWeatherReportsByDateAndPopulateHistoryTable =
+        Consumer<Predicate<WeatherReportPreview>> filterWeatherReportsByDateAndPopulateHistoryTable =
                 keepWeatherReportPredicate -> {
                     shownWeatherReports.clear();
-                    for (WeatherReport wr : Objects.requireNonNull(weatherReports)) {
+                    for (WeatherReportPreview wr : Objects.requireNonNull(weatherReports)) {
                         if (keepWeatherReportPredicate.test(wr)) {
                             shownWeatherReports.add(wr);
                         }
@@ -232,7 +232,7 @@ public class UserPageWithHistoryFragment extends Fragment {
      * @param filterWeatherReportsByDateAndPopulateHistoryTable The {@link Consumer} specifying how to filter weather reports by dates.
      */
     private void initDatePickersForFilteringButtons(
-            Consumer<Predicate<WeatherReport>> filterWeatherReportsByDateAndPopulateHistoryTable) {
+            Consumer<Predicate<WeatherReportPreview>> filterWeatherReportsByDateAndPopulateHistoryTable) {
         Date today = Timing.getTodayDate();
         initDatePickerForButton(viewBinding.fromDateFilterButton,
                 date -> fromDateFilterAction(filterWeatherReportsByDateAndPopulateHistoryTable, date),
@@ -254,7 +254,7 @@ public class UserPageWithHistoryFragment extends Fragment {
      *                                                          the weather reports to show.
      */
     private void toDateFilterAction(
-            @NonNull Consumer<Predicate<WeatherReport>> filterWeatherReportsByDateAndPopulateHistoryTable,
+            @NonNull Consumer<Predicate<WeatherReportPreview>> filterWeatherReportsByDateAndPopulateHistoryTable,
             @NonNull Date toDate) {
         maxDateFiltered = Timing.getEndOfDay(Objects.requireNonNull(toDate));
         SharedData.setValue(SharedData.SharedDataName.USER_PAGE_WITH_HISTORY_FRAGMENT_FILTER_DATE_TO, toDate);
@@ -308,7 +308,7 @@ public class UserPageWithHistoryFragment extends Fragment {
      *                                                          the weather reports to show.
      */
     private void fromDateFilterAction(
-            @NonNull Consumer<Predicate<WeatherReport>> filterWeatherReportsByDateAndPopulateHistoryTable,
+            @NonNull Consumer<Predicate<WeatherReportPreview>> filterWeatherReportsByDateAndPopulateHistoryTable,
             @NonNull Date fromDate) {
         minDateFiltered = Timing.getStartOfDay(Objects.requireNonNull(fromDate));
         SharedData.setValue(SharedData.SharedDataName.USER_PAGE_WITH_HISTORY_FRAGMENT_FILTER_DATE_FROM, fromDate);
@@ -327,10 +327,10 @@ public class UserPageWithHistoryFragment extends Fragment {
      * table only reports for the selected dates.
      */
     @NonNull
-    private Predicate<WeatherReport> getReportFilteredPredicate() {
+    private Predicate<WeatherReportPreview> getReportFilteredPredicate() {
         return weatherReport ->
-                (minDateFiltered == null || weatherReport.getMillisecondsSinceEpoch() >= minDateFiltered.getTime())
-                        && (maxDateFiltered == null || weatherReport.getMillisecondsSinceEpoch() <= maxDateFiltered.getTime());
+                (minDateFiltered == null || weatherReport.getReportedTimeMillisSinceEpoch() >= minDateFiltered.getTime())
+                        && (maxDateFiltered == null || weatherReport.getReportedTimeMillisSinceEpoch() <= maxDateFiltered.getTime());
     }
 
     @Override
@@ -357,16 +357,13 @@ public class UserPageWithHistoryFragment extends Fragment {
      */
     private void getReportsFromDBAndPopulateView() {
         new Thread(() -> {
-            WeatherReport.registerThisClassForDB();
-
             try {
-                Field usernameField = WeatherReport.class.getDeclaredField("reporterUserId");
                 DBHelper.pull(
-                        new Query<>(usernameField, Authentication.getCurrentlySignedInUserOrNull(requireContext()).getUserId()),
-                        WeatherReport.class,
+                        WeatherReportPreview.createQueryToRetrieveByUserId(Authentication.getCurrentlySignedInUserOrNull(requireContext()).getUserId()),
+                        WeatherReportPreview.class,
                         retrievedWeatherReports -> {
                             weatherReports = new LinkedList<>(Objects.requireNonNull(retrievedWeatherReports));
-                            Collections.sort(weatherReports, (a, b) -> (int) (a.getMillisecondsSinceEpoch() - b.getMillisecondsSinceEpoch()));
+                            Collections.sort(weatherReports, (a, b) -> (int) (a.getReportedTimeMillisSinceEpoch() - b.getReportedTimeMillisSinceEpoch()));
                             Log.i(TAG, retrievedWeatherReports.size() + " elements retrieved from the DB");
                             shownWeatherReports = new LinkedList<>(weatherReports);
                             sendDataToMapFragment();
@@ -400,16 +397,16 @@ public class UserPageWithHistoryFragment extends Fragment {
 
             Activity activity;
             int rowNumber = 0;
-            for (WeatherReport wr : Objects.requireNonNull(shownWeatherReports)) {
+            for (WeatherReportPreview wr : Objects.requireNonNull(shownWeatherReports)) {
                 activity = getActivity();
                 if (activity != null) {
                     final TableRow tableRow = new TableRow(activity);
                     tableRow.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.MATCH_PARENT));
 
                     rowNumber++;
-                    final String dateTime = Timing.convertEpochMillisToFormattedDate(wr.getMillisecondsSinceEpoch());
-                    final String location = wr.getCity().toString();
-                    final String weather = wr.getWeatherConditionToString();
+                    final String dateTime = Timing.convertEpochMillisToFormattedDate(wr.getReportedTimeMillisSinceEpoch());
+                    final String location = wr.getLocationName();
+                    final String weather = wr.getWeatherCondition().getDescription();
                     final String[] columns = new String[]{String.valueOf(rowNumber), dateTime, location, weather};
                     for (int i = 0; i < columns.length; i++) {
                         String cellContent = columns[i];
@@ -430,8 +427,28 @@ public class UserPageWithHistoryFragment extends Fragment {
 
                     // Add on click listener to show weather report details
                     tableRow.setOnClickListener(view_ -> {
-                        new DialogFragmentContainer(WeatherReportFragment.newInstance(wr))
-                                .show(getChildFragmentManager(), null);
+                        DBEntity.registerThisClassForDB(WeatherReport.class); // TODO: should not be needed
+                        DBHelper.pullByKey(
+                                wr.getWeatherReportDetailsKey(),    // TODO: refactor (similar in HomeFragment)
+                                WeatherReport.class,
+                                (WeatherReport weatherReportDetails) -> {
+                                    Activity activity_ = getActivity();
+                                    if (activity_ != null) {    // TODO: refactor: often use this "pattern" to check if an activity is available
+                                        activity_.runOnUiThread(() ->
+                                                new DialogFragmentContainer(WeatherReportFragment.newInstance(weatherReportDetails))
+                                                        .show(getChildFragmentManager(), null));
+                                    }
+                                },
+                                () -> {
+                                    Activity activity_ = getActivity();
+                                    if (activity_ != null) {    // TODO: refactor: often use this "pattern" to check if an activity is available
+                                        activity_.runOnUiThread(() -> {
+                                            Log.e(TAG, "Unable to retrieve details");
+                                            Toast.makeText(requireContext(), R.string.error_unable_to_retrieve_data, Toast.LENGTH_LONG).show();
+                                        });
+                                    }
+                                });
+
                     });
 
                     sortedTableRowList.add(tableRow);

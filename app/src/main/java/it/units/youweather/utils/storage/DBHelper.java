@@ -111,10 +111,22 @@ public class DBHelper {
     }
 
     /**
+     * Retrieves a tuple by key from the entity whose class is specified as parameter.
+     */
+    public static <T extends DBEntity> void pullByKey(
+            @NonNull String tupleKey,
+            @NonNull Class<T> clazz,
+            @NonNull Consumer<T> onSuccess,
+            @Nullable Runnable onError) {
+        getInstance(Objects.requireNonNull(clazz))
+                .pull(Objects.requireNonNull(tupleKey), Objects.requireNonNull(onSuccess), onError);
+    }
+
+    /**
      * Exception to be thrown if a {@link DBEntity} class has been used
      * as entity class without initializing it before.
      */
-    private static class UnregisteredEntity extends RuntimeException {
+    public static class UnregisteredEntity extends RuntimeException {
         UnregisteredEntity(Class<? extends DBEntity> entityClass) throws NoSuchMethodException {
             super("The class " + entityClass.getCanonicalName() + " is not registered as DB entity. " +
                     " Make sure to have invoked the method "

@@ -107,6 +107,7 @@
     <string name="latitude">Latitude: %1$f</string>
     <string name="latitude_and_longitude">Latitude: %1$f, Longitude: %2$f</string>
     <string name="weather_report_added">Weather report correctly added</string>
+    <string name="error_unable_to_retrieve_data">Unable to retrieve the data</string>
 
     <!-- TODO: missing translations -->
 </resources>

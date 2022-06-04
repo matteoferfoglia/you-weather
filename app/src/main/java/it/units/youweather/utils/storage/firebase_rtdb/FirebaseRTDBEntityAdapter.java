@@ -53,6 +53,12 @@ public class FirebaseRTDBEntityAdapter<T extends DBEntity> extends DBEntityAdapt
     private final FirebaseRTDBSynchronizer firebaseRTDBSynchronizer;
 
     /**
+     * {@link Gson Json helper} instance used for de/serialization of
+     * fields from the database.
+     */
+    private static final Gson gson = new Gson();
+
+    /**
      * Constructor.
      * See {@link DBEntityAdapter} for parameters description.
      */
@@ -131,10 +137,9 @@ public class FirebaseRTDBEntityAdapter<T extends DBEntity> extends DBEntityAdapt
 
                     // De-serialization of the object
                     Map<String, T> deserializedContent = new LinkedHashMap<>(); // data form DB
-                    Gson gson = new Gson();
                     for (Map.Entry<String, Object> aTuple : content.entrySet()) {
-                        String json = gson.toJson(aTuple.getValue());
-                        deserializedContent.put(aTuple.getKey(), gson.fromJson(json, (Type) getDbEntityClass()));
+                        Map<String, Object> oneTuple = (Map<String, Object>) aTuple.getValue(); // tuples in DB saved as Map (JSON-formatted), where keys are field names
+                        deserializedContent.put(aTuple.getKey(), deserializeEntityFromFirebaseRTDB(oneTuple));
                     }
 
                     Log.d(TAG, "DB event listener - onDataChanged : "
@@ -154,6 +159,21 @@ public class FirebaseRTDBEntityAdapter<T extends DBEntity> extends DBEntityAdapt
                 }
             }
         };
+    }
+
+    /**
+     * The database returns a {@link java.util.HashMap} in the
+     * form key-value for each entity (thery are saved in JSON
+     * format). This method deserialize one entity.
+     *
+     * @param aTuple <strong>one</strong> entity retrieved from
+     *               Firebase RTDB, represented as a {@link Map}
+     *               having field names as keys.
+     * @return The deserialized entity.
+     */
+    private T deserializeEntityFromFirebaseRTDB(Map<String, Object> aTuple) {
+        String json = gson.toJson(aTuple);
+        return gson.fromJson(json, (Type) getDbEntityClass());
     }
 
     @Override
@@ -205,6 +225,40 @@ public class FirebaseRTDBEntityAdapter<T extends DBEntity> extends DBEntityAdapt
 
         Log.d(TAG, "pull query method execution terminated:" +
                 " it will asynchronously download the data for the query");
+    }
+
+    @Override
+    public void pull(@NonNull String key, @NonNull Consumer<T> onSuccess, @Nullable Runnable onError) {
+        Log.d(TAG, "pull method execution started");
+
+        Runnable onErrorHandler = () -> {
+            if (onError != null) {
+                onError.run();
+            }
+        };
+
+        dbRef.child(Objects.requireNonNull(key))
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        Map<String, Object> entityRetrievedFromDB = (Map<String, Object>) snapshot.getValue(); // map representing the tuple, having field names as keys
+                        if (entityRetrievedFromDB != null) {
+                            Log.d(TAG, "Retrieved entity with key " + key);
+                            Objects.requireNonNull(onSuccess)
+                                    .accept(deserializeEntityFromFirebaseRTDB(entityRetrievedFromDB));
+                        } else {
+                            onErrorHandler.run();
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Log.e(TAG, "Error: " + error);
+                        onErrorHandler.run();
+                    }
+                });
+
+        Log.d(TAG, "pull method execution terminated");
     }
 
     @Override

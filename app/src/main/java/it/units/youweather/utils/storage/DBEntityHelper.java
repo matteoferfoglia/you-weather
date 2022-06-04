@@ -66,6 +66,17 @@ interface DBEntityHelper<T extends DBEntity> {
     <S> void pull(@NonNull Query<S> query,
                   @NonNull Consumer<List<T>> onSuccess, @Nullable Runnable onError);
 
+
+    /**
+     * Retrieve the entity of the specified {@link Class} having the specified key.
+     *
+     * @param key       The key of the tuple in the database.
+     * @param onSuccess The {@link Consumer} that will accept all the retrieved entity
+     *                  in case of success.
+     * @param onError   The {@link Runnable} to be run in case of error.
+     */
+    void pull(@NonNull String key, @NonNull Consumer<T> onSuccess, @Nullable Runnable onError);
+
     /**
      * This method makes the instance to start to observe the entity associated
      * with the generic of the instance in the database and take actions if any
