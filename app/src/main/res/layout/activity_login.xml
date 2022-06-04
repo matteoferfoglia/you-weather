@@ -40,6 +40,6 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/applicationLogoContainer"
-        android:layout_marginBottom="100dp" />
+        android:layout_marginBottom="@dimen/bottom_margin_to_button_in_login" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

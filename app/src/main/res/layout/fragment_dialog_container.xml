@@ -8,7 +8,7 @@
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fragment_container_view"
         android:layout_gravity="center"
-        android:layout_width="350dp"
+        android:layout_width="@dimen/weather_fragment_width"
         android:layout_height="@dimen/weather_fragment_height" />
 
 </FrameLayout>

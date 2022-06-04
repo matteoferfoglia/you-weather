@@ -25,7 +25,7 @@
             android:id="@+id/progress_loader_textView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="50dp"
+            android:layout_margin="@dimen/common_margin"
             android:text="@string/waiting_for_location"
             android:textAlignment="center" />
 
@@ -119,7 +119,7 @@
             <ImageView
                 android:id="@+id/weather_condition_icon"
                 android:layout_width="match_parent"
-                android:layout_height="125dp"
+                android:layout_height="@dimen/weather_condition_icon_height_in_insertion_fragment"
                 android:layout_margin="@dimen/common_margin"
                 app:layout_constraintTop_toBottomOf="@id/weather_condition_label"
                 app:layout_constraintBottom_toBottomOf="parent"

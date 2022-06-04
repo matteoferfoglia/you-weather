@@ -5,4 +5,11 @@
     <dimen name="weather_fragment_height">180dp</dimen>
     <dimen name="common_margin">25dp</dimen>
     <dimen name="label_widths">125dp</dimen>
+    <dimen name="bottom_margin_to_button_in_login">100dp</dimen>
+    <dimen name="weather_fragment_width">350dp</dimen>
+    <dimen name="searchbar_height">48dp</dimen>
+    <dimen name="common_padding">5dp</dimen>
+    <dimen name="searchicon_in_searchbar_width">40dp</dimen>
+    <dimen name="horiz_margin_for_text_row_item_in_dropdown_menu">38dp</dimen>
+    <dimen name="weather_condition_icon_height_in_insertion_fragment">125dp</dimen>
 </resources>

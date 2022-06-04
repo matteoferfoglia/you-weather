@@ -46,7 +46,7 @@
         <androidx.appcompat.widget.SearchView
             android:id="@+id/search_bar"
             android:layout_width="0dp"
-            android:layout_height="48dp"
+            android:layout_height="@dimen/searchbar_height"
             app:defaultQueryHint="@string/search_location"
             app:iconifiedByDefault="false"
             android:focusable="false"
@@ -61,7 +61,7 @@
             android:id="@+id/search_bar_results"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="5dp"
+            android:layout_marginHorizontal="@dimen/common_padding"
             android:foregroundGravity="center"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -71,7 +71,7 @@
 
         <ImageView
             android:id="@+id/use_current_position_button"
-            android:layout_width="40dp"
+            android:layout_width="@dimen/searchicon_in_searchbar_width"
             android:layout_height="0dp"
             android:contentDescription="@string/use_current_position"
             android:src="@drawable/ic_baseline_my_location_50"
