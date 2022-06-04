@@ -10,10 +10,13 @@ import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
+import it.units.youweather.R;
 import it.units.youweather.entities.forecast_fields.Coordinates;
 import it.units.youweather.utils.LocationHelper;
+import it.units.youweather.utils.ResourceHelper;
 import it.units.youweather.utils.Timing;
 
 /**
@@ -54,9 +57,15 @@ public class City implements Serializable {
      */
     private transient ScheduledExecutorService sunriseAndSunsetResetScheduler = null;
 
+    /**
+     * Mutex used to wait for the sunrise and the sunset times to be set.
+     */
+    private final transient AtomicBoolean sunriseAndSunsetTimesForCityAreSet =
+            new AtomicBoolean(false);
+
     private City() {
 
-        setSunriseAndSunsetTimesForToday();
+        new Thread(this::setSunriseAndSunsetTimesForToday).start();
 
         sunriseAndSunsetResetScheduler = Executors.newScheduledThreadPool(1);
         {
@@ -92,24 +101,71 @@ public class City implements Serializable {
      * or {@link Timing#epochTimeInvalidInitialization} in case of invalid initialization.
      */
     public long getSunriseUTCTimeInSecondsSinceEpochOrInvalidInitialization() {
+        waitForSunriseAndSunsetToBeSet();
         return todaySunrise.get();
     }
 
-    private void setSunriseAndSunsetTimesForToday() {   // TODO : test
+    private void waitForSunriseAndSunsetToBeSet() {
+        final int RETRY_PERIOD_MILLIS = 10;
+        while (!sunriseAndSunsetTimesForCityAreSet.get()) {
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                Log.e(TAG, "Interrupted", e);
+            }
+        }
+    }
+
+    private void setSunriseAndSunsetTimesForToday() {
+        final long START_TIME_MILLIS = Timing.getMillisSinceEpoch();
+        final long DELAY_BETWEEN_ATTEMPTS_MILLIS = 10;
+        final long MAX_TOTAL_DELAY_FOR_ATTEMPTS_MILLIS = 15_000;
+        final long END_TIME_ATTEMPTS_MILLIS = START_TIME_MILLIS + MAX_TOTAL_DELAY_FOR_ATTEMPTS_MILLIS;
+
+        boolean coordinatesAreSet = false;
+
+        while (Timing.getMillisSinceEpoch() < END_TIME_ATTEMPTS_MILLIS && !coordinatesAreSet) {
+            if (lat >= 0 && lon >= 0) {
+                coordinatesAreSet = true;
+            } else {
+                try {
+                    Thread.sleep(DELAY_BETWEEN_ATTEMPTS_MILLIS);
+                } catch (InterruptedException e) {
+                    Log.e(TAG, "Interrupted thread", e);
+                    break;
+                }
+            }
+        }
+
+        if (!coordinatesAreSet) {
+            Log.e(TAG, ResourceHelper.getResString(R.string.unable_to_set_sunrise_and_sunset_coordinates_for_city));
+        }
+
         LocationHelper.getForecastForCoordinates(
                 new Coordinates(lat, lon),
                 forecast -> {
                     todaySunrise.set(forecast.getSunriseUTCTimeInSecondsSinceEpoch());
                     todaySunset.set(forecast.getSunsetUTCTimeInSecondsSinceEpoch());
+
+                    sunriseAndSunsetTimesForCityAreSet.set(true);
                 },
                 e -> {
-
                     Log.e(TAG, "Unable to get sunset and sunrise times, set to "
                             + Timing.epochTimeInvalidInitialization, e);
 
                     todaySunrise.set(Timing.epochTimeInvalidInitialization);
                     todaySunset.set(Timing.epochTimeInvalidInitialization);
+
+                    sunriseAndSunsetTimesForCityAreSet.set(true);
                 });
+
+        while (!sunriseAndSunsetTimesForCityAreSet.get()) {
+            try {
+                Thread.sleep(DELAY_BETWEEN_ATTEMPTS_MILLIS);
+            } catch (InterruptedException e) {
+                Log.e(TAG, "Interrupted", e);
+            }
+        }
     }
 
     /**
@@ -117,6 +173,7 @@ public class City implements Serializable {
      * or {@link Timing#epochTimeInvalidInitialization} in case of invalid initialization.
      */
     public long getSunsetUTCTimeInSecondsSinceEpochOrInvalidInitialization() {
+        waitForSunriseAndSunsetToBeSet();
         return todaySunset.get();
     }
 

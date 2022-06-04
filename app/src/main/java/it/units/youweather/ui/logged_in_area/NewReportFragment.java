@@ -36,6 +36,7 @@ import it.units.youweather.utils.LocationHelper;
 import it.units.youweather.utils.PermissionsHelper;
 import it.units.youweather.utils.ResourceHelper;
 import it.units.youweather.utils.Stoppable;
+import it.units.youweather.utils.Utility;
 import it.units.youweather.utils.auth.Authentication;
 import it.units.youweather.utils.storage.DBHelper;
 
@@ -144,20 +145,17 @@ public class NewReportFragment extends Fragment {
                                                 requireActivity(), android.R.layout.simple_spinner_item, locationNames);
                                         arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-                                        activity_.runOnUiThread(() -> {
-                                            viewBinding.locationName.setAdapter(arrayAdapter);
-                                            showOrHideProgressLoader(false, R.string.blank_string);
-                                        });
+                                        Utility.runOnUiThread(
+                                                activity_,
+                                                () -> {
+                                                    viewBinding.locationName.setAdapter(arrayAdapter);
+                                                    showOrHideProgressLoader(false, R.string.blank_string);
+                                                });
                                         viewBinding.locationName.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                                             @Override
                                             public void onItemSelected(AdapterView<?> parent, View view, int position, long cityIndex) {
                                                 cityMatchingCurrentUserPosition = cities[(int) cityIndex];
-
-                                                // TODO: refactor needed
-
                                                 // TODO : what if coordinates do not map to any city?
-                                                // TODO : add fields to create a Forecast object (temperature, ...): only the location and the weather condition are mandatory, otherwise user cannot proceed with insertion
-
                                                 // Reference to the current selected weather condition
                                                 final AtomicReference<String> currentSelectedWeatherCondition = new AtomicReference<>(null);
 
@@ -174,8 +172,9 @@ public class NewReportFragment extends Fragment {
                                                                     .openStream();
                                                             Drawable weatherIcon = Drawable.createFromStream(iconIS, "weatherIcon");
 
-                                                            activity_.runOnUiThread(() ->
-                                                                    viewBinding.weatherConditionIcon.setImageDrawable(weatherIcon));
+                                                            Utility.runOnUiThread(
+                                                                    activity_,
+                                                                    () -> viewBinding.weatherConditionIcon.setImageDrawable(weatherIcon));
                                                         } catch (NullPointerException | IOException e) {
                                                             Log.e(TAG, "Error getting icon for weather condition \""
                                                                     + currentSelectedWeatherConditionLocal + "\"", e);

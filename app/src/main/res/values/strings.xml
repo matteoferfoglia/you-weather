@@ -110,6 +110,7 @@
     <string name="error_unable_to_retrieve_data">Unable to retrieve the data</string>
     <string name="loading">Loading</string>
     <string name="blank_string" />
+    <string name="unable_to_set_sunrise_and_sunset_coordinates_for_city">Unable to set coordinates for city</string>
 
     <!-- TODO: missing translations -->
 </resources>

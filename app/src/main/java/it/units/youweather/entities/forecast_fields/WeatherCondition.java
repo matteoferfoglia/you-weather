@@ -256,7 +256,7 @@ public class WeatherCondition implements Serializable {
         final int SECONDS_TO_MILLIS_FACTOR = 1_000;
         final long currentSecondsSinceEpoch = Timing.getMillisSinceEpoch() / SECONDS_TO_MILLIS_FACTOR;
         long sunriseAtCityInSecondsSinceEpoch = city.getSunriseUTCTimeInSecondsSinceEpochOrInvalidInitialization();
-        long sunsetAtCityInSecondsSinceEpoch = city.getSunriseUTCTimeInSecondsSinceEpochOrInvalidInitialization();
+        long sunsetAtCityInSecondsSinceEpoch = city.getSunsetUTCTimeInSecondsSinceEpochOrInvalidInitialization();
 
         if (sunriseAtCityInSecondsSinceEpoch == Timing.epochTimeInvalidInitialization
                 || sunsetAtCityInSecondsSinceEpoch == Timing.epochTimeInvalidInitialization) {  // unknown sunrise or sunset time
@@ -273,7 +273,7 @@ public class WeatherCondition implements Serializable {
 
                 Calendar eightPMOfToday = Calendar.getInstance();
                 eightPMOfToday.setTime(eightAMOfToday.getTime());
-                eightPMOfToday.add(Calendar.HOUR, 12);  // TODO: check correctness with Locale?
+                eightPMOfToday.add(Calendar.HOUR, 12);
 
                 millisFromEpochTo8am = eightAMOfToday.getTimeInMillis();
                 millisFromEpochTo8pm = eightPMOfToday.getTimeInMillis();
@@ -284,7 +284,7 @@ public class WeatherCondition implements Serializable {
 
         }
 
-        boolean isDay = // TODO: fix this: showed icons are wrong
+        boolean isDay =
                 sunriseAtCityInSecondsSinceEpoch <= currentSecondsSinceEpoch
                         && currentSecondsSinceEpoch <= sunsetAtCityInSecondsSinceEpoch;
 

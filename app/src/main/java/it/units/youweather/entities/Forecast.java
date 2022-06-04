@@ -66,7 +66,7 @@ public class Forecast implements Serializable {
     /**
      * @return the date-time of the data calculation.
      */
-    public String getDataCalulationDateTime() {
+    public String getDataCalculationDateTime() {
         return Timing.convertEpochMillisToFormattedDate(dt);    // TODO: test
     }
 
