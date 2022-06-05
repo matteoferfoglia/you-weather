@@ -31,6 +31,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import it.units.youweather.R;
 import it.units.youweather.databinding.FragmentUserPageWithHistoryBinding;
@@ -88,6 +91,13 @@ public class UserPageWithHistoryFragment extends Fragment {
      * must be shown.
      */
     private Date maxDateFiltered;
+
+    /**
+     * The {@link ScheduledExecutorService} to update the view with reports
+     * asynchronously downloaded from the database.
+     * {@link ScheduledExecutorService#shutdownNow()} must be invoked to terminate.
+     */
+    private ScheduledExecutorService periodicViewUpdateWithReportsFromDBService;
 
     /**
      * Initialize the {@link DatePickerDialog} for a button that should be shown
@@ -334,7 +344,19 @@ public class UserPageWithHistoryFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        getReportsFromDBAndPopulateView();
+        periodicViewUpdateWithReportsFromDBService = Executors.newScheduledThreadPool(1);
+        final int UPDATE_PERIOD_SECONDS = 5;
+        periodicViewUpdateWithReportsFromDBService
+                .scheduleAtFixedRate(getReportsFromDBAndPopulateView(), 0, UPDATE_PERIOD_SECONDS, TimeUnit.SECONDS);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        if (periodicViewUpdateWithReportsFromDBService != null) {
+            periodicViewUpdateWithReportsFromDBService.shutdownNow();
+        }
     }
 
     /**
@@ -350,11 +372,13 @@ public class UserPageWithHistoryFragment extends Fragment {
     }
 
     /**
-     * Starts a new task to asynchronously download the data from the DB
+     * @return the {@link Runnable} that asynchronously downloads the data from the DB
      * and populate this view.
+     * <strong>Notice</strong>: This {@link Runnable} must <strong>not</stron> be
+     * executed on the UI main thread.
      */
-    private void getReportsFromDBAndPopulateView() {
-        new Thread(() -> {
+    private Runnable getReportsFromDBAndPopulateView() {
+        return () -> {
             try {
                 DBHelper.pull(
                         WeatherReportPreview.createQueryToRetrieveByUserId(Authentication.getCurrentlySignedInUserOrNull(requireContext()).getUserId()),
@@ -377,7 +401,7 @@ public class UserPageWithHistoryFragment extends Fragment {
             } catch (NoSuchFieldException e) {
                 Log.e(TAG, "Unknown reporter", e);
             }
-        }).start();
+        };
 
     }
 
