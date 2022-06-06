@@ -1,10 +1,12 @@
 package it.units.youweather.entities.forecast_fields;
 
+import androidx.annotation.NonNull;
+
 import java.io.Serializable;
 
 public class Clouds implements Serializable {
 
-    private int all;
+    private volatile int all;
 
     private Clouds() {
     }
@@ -17,6 +19,7 @@ public class Clouds implements Serializable {
         this.all = all;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "Clouds{" + "all=" + all + '}';

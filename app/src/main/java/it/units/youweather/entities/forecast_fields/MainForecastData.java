@@ -1,15 +1,17 @@
 package it.units.youweather.entities.forecast_fields;
 
+import androidx.annotation.NonNull;
+
 import java.io.Serializable;
 
 public class MainForecastData implements Serializable {
 
-    private double temp;        // in Kelvin
-    private double feels_like;
-    private double temp_min;    // in Kelvin
-    private double temp_max;    // in Kelvin
-    private double pressure;
-    private double humidity;
+    private volatile double temp;        // in Kelvin
+    private volatile double feels_like;
+    private volatile double temp_min;    // in Kelvin
+    private volatile double temp_max;    // in Kelvin
+    private volatile double pressure;
+    private volatile double humidity;
 
     public MainForecastData() {
     }
@@ -62,6 +64,7 @@ public class MainForecastData implements Serializable {
         this.humidity = humidity;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "MainForecastData{" + "temp=" + temp + ", feels_like=" + feels_like + ", temp_min=" + temp_min + ", temp_max=" + temp_max + ", pressure=" + pressure + ", humidity=" + humidity + '}';

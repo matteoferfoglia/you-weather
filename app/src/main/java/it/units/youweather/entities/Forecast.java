@@ -21,17 +21,17 @@ import it.units.youweather.utils.Timing;
  */
 @SuppressWarnings("unused") // used for de/serialization
 public class Forecast implements Serializable {
-    private Coordinates coord;
-    private WeatherCondition[] weather;
-    private MainForecastData main;
-    private int visibility;
-    private Wind wind;
-    private Clouds clouds;
-    private long dt;
-    private Sys sys;
-    private int timezone;
-    private long id;
-    private String name;
+    private volatile Coordinates coord;
+    private volatile WeatherCondition[] weather;
+    private volatile MainForecastData main;
+    private volatile int visibility;
+    private volatile Wind wind;
+    private volatile Clouds clouds;
+    private volatile long dt;
+    private volatile Sys sys;
+    private volatile int timezone;
+    private volatile long id;
+    private volatile String name;
 
     private Forecast() {
     }

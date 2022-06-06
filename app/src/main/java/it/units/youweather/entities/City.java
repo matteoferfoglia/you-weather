@@ -33,12 +33,12 @@ import it.units.youweather.utils.Timing;
 public class City implements Serializable {
     private static final String TAG = City.class.getSimpleName();
 
-    private String name;
-    private Map<String, String> local_names;
-    private double lat;
-    private double lon;
-    private String country;
-    private String state;
+    private volatile String name;
+    private volatile Map<String, String> local_names;
+    private volatile double lat;
+    private volatile double lon;
+    private volatile String country;
+    private volatile String state;
 
     /**
      * Saves the sunrise time for today in this{@link City}.

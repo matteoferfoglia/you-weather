@@ -1,11 +1,13 @@
 package it.units.youweather.entities.forecast_fields;
 
+import androidx.annotation.NonNull;
+
 import java.io.Serializable;
 
 public class Wind implements Serializable {
 
-    private double speed;
-    private int deg;
+    private volatile double speed;
+    private volatile int deg;
 
     private Wind() {
     }
@@ -26,6 +28,7 @@ public class Wind implements Serializable {
         this.deg = deg;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "Wind{" + "speed=" + speed + ", deg=" + deg + '}';

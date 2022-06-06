@@ -13,8 +13,8 @@ public class Coordinates implements Serializable {
 
     private static final String TAG = Coordinates.class.getSimpleName();
 
-    private double lon;
-    private double lat;
+    private volatile double lon;
+    private volatile double lat;
 
     private Coordinates() {
     }

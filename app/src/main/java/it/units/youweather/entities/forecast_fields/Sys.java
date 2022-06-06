@@ -8,12 +8,12 @@ import it.units.youweather.utils.Timing;
 
 public class Sys implements Serializable {
 
-    private int type;
-    private int id;
-    private double message;
-    private String country;
-    private long sunrise;
-    private long sunset;
+    private volatile int type;
+    private volatile int id;
+    private volatile double message;
+    private volatile String country;
+    private volatile long sunrise;
+    private volatile long sunset;
 
     private Sys() {
     }

@@ -225,10 +225,10 @@ public class WeatherCondition implements Serializable {
         return weatherConditions;
     }
 
-    private int id;
-    private String main;
-    private String description;
-    private String icon; // Each description provides both the icon for the day and for the night.
+    private volatile int id;
+    private volatile String main;
+    private volatile String description;
+    private volatile String icon; // Each description provides both the icon for the day and for the night.
     //                      It would be better to have separate fields for daily and nightly icon,
     //                      but the server sends an object of this type, so this Java uses the
     //                      same fields to deserialize the object received from the server directly
