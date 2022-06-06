@@ -76,6 +76,16 @@ public class HomeFragment extends Fragment {
         }
     }
 
+    public HomeFragment() { // public no-args constructor
+    }
+
+    public static HomeFragment newInstance() {
+        Bundle args = new Bundle();
+        HomeFragment fragment = new HomeFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -245,8 +255,8 @@ public class HomeFragment extends Fragment {
                                 () -> {
                                     FragmentTransaction ft = getChildFragmentManager().beginTransaction();
                                     ft.add(
-                                            viewBinding.fragmentWeatherViewerReportByOtherUsers.getId(),
-                                            WeatherReportFragment.newInstance(finalMostRecentWr))
+                                                    viewBinding.fragmentWeatherViewerReportByOtherUsers.getId(),
+                                                    WeatherReportFragment.newInstance(finalMostRecentWr))
                                             .commitNow();
                                     viewBinding.fragmentWeatherViewerReportByOtherUsers.setVisibility(View.VISIBLE);
                                     viewBinding.weatherReportByOtherUserTextview.setVisibility(View.VISIBLE);

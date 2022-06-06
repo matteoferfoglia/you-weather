@@ -142,6 +142,16 @@ public class UserPageWithHistoryFragment extends Fragment {
 
     }
 
+    public UserPageWithHistoryFragment() { // public no-args constructor
+    }
+
+    public static UserPageWithHistoryFragment newInstance() {
+        Bundle args = new Bundle();
+        UserPageWithHistoryFragment fragment = new UserPageWithHistoryFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -166,7 +176,7 @@ public class UserPageWithHistoryFragment extends Fragment {
         viewBinding.reportHistoryHeader.setText(getString(
                 R.string.history_of_your_reports,
                 Objects.requireNonNull(Authentication
-                        .getCurrentlySignedInUserOrNull(requireContext()))
+                                .getCurrentlySignedInUserOrNull(requireContext()))
                         .getDisplayName()));
 
         SharedData.setValueIfAbsent(SharedData.SharedDataName.USER_PAGE_WITH_HISTORY_FRAGMENT_FILTER_DATE_CHECKED, viewBinding.checkBoxFilterByDates.isChecked());

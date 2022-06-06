@@ -90,6 +90,16 @@ public class MapWithReportHistoryFragment extends Fragment {
      */
     private MapView mapView;
 
+    public MapWithReportHistoryFragment() { // public no-args constructor
+    }
+
+    public static MapWithReportHistoryFragment newInstance() {
+        Bundle args = new Bundle();
+        MapWithReportHistoryFragment fragment = new MapWithReportHistoryFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

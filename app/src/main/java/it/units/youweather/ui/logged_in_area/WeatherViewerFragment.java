@@ -63,6 +63,16 @@ public class WeatherViewerFragment extends Fragment {
 
     private static final String TAG = WeatherViewerFragment.class.getSimpleName();
 
+    public WeatherViewerFragment() { // public no-args constructor
+    }
+
+    public static WeatherViewerFragment newInstance() {
+        Bundle args = new Bundle();
+        WeatherViewerFragment fragment = new WeatherViewerFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

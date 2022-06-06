@@ -45,6 +45,16 @@ public class TakeAPhotoFragment extends Fragment {
      */
     public static final String CAPTURED_PHOTO_BUNDLE_KEY = "capturedPhoto";
 
+    public TakeAPhotoFragment() { // public no-args constructor
+    }
+
+    public static TakeAPhotoFragment newInstance() {
+        Bundle args = new Bundle();
+        TakeAPhotoFragment fragment = new TakeAPhotoFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

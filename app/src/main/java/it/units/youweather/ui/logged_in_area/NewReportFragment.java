@@ -1,6 +1,7 @@
 package it.units.youweather.ui.logged_in_area;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,6 +14,7 @@ import android.widget.Toast;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
 
@@ -21,6 +23,7 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -35,7 +38,6 @@ import it.units.youweather.entities.storage.WeatherReportPreview;
 import it.units.youweather.utils.ImagesHelper;
 import it.units.youweather.utils.LocationHelper;
 import it.units.youweather.utils.PermissionsHelper;
-import it.units.youweather.utils.ResourceHelper;
 import it.units.youweather.utils.Stoppable;
 import it.units.youweather.utils.Utility;
 import it.units.youweather.utils.auth.Authentication;
@@ -79,22 +81,133 @@ public class NewReportFragment extends Fragment {
      * the activity.
      */
     private Stoppable locationListener;
+    private ViewGroup container;
+
+    public NewReportFragment() {  // public no-args constructor
+    }
+
+    public static NewReportFragment newInstance() {
+        Bundle args = new Bundle();
+        NewReportFragment fragment = new NewReportFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     @Override
     public void onStop() {
         super.onStop();
 
+        if (viewBinding != null) {
+            viewBinding.locationName.setAdapter(null);
+            viewBinding.locationName.setOnItemSelectedListener(null);
+            viewBinding.weatherConditionSpinner.setAdapter(null);
+            viewBinding.weatherConditionSpinner.setOnItemSelectedListener(null);
+        }
         if (locationListener != null) {
             locationListener.stop();    // to be stopped because it might own this activity and lead to memory leak
         }
     }
 
+
+    @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        super.onCreateView(inflater, container, savedInstanceState);
 
         // Inflate the layout for this fragment
         viewBinding = FragmentNewReportBinding.inflate(getLayoutInflater());
+
+        // Save the container for this fragment
+        this.container = container;
+
+        // Get picture from other fragment
+        final ImagesHelper.SerializableBitmap[] serializableBitmaps = new ImagesHelper.SerializableBitmap[1];   // array to make it final
+        assert TakeAPhotoFragment.CAPTURED_PHOTO_REQUEST_KEY != null;
+        requireActivity().getSupportFragmentManager()
+                .setFragmentResultListener(TakeAPhotoFragment.CAPTURED_PHOTO_REQUEST_KEY, this,
+                        (requestKey, bundle) -> {
+                            Serializable capturedPictureObj = bundle.getSerializable(TakeAPhotoFragment.CAPTURED_PHOTO_BUNDLE_KEY);
+                            if (capturedPictureObj instanceof ImagesHelper.SerializableBitmap) {
+                                serializableBitmaps[0] = (ImagesHelper.SerializableBitmap) capturedPictureObj;
+                            }
+                        });
+
+        // Insertion button
+        viewBinding.insertNewReportButton.setOnClickListener(view_ -> {
+
+            showOrHideProgressLoader(true, R.string.loading);
+
+            new Thread(() -> {
+
+                if (cityMatchingCurrentUserPosition != null) {
+                    WeatherCondition wcToSaveOnDb = Objects.requireNonNull(
+                            WeatherCondition.getInstanceForDescription(
+                                    (String) viewBinding.weatherConditionSpinner.getSelectedItem(), cityMatchingCurrentUserPosition));
+                    WeatherReport weatherReport = new WeatherReport(
+                            Authentication.getCurrentlySignedInUserOrNull(requireContext()).getUserId(),
+                            cityMatchingCurrentUserPosition,
+                            new Coordinates(latitude, longitude),
+                            wcToSaveOnDb,
+                            serializableBitmaps[0]);
+                    Runnable unableToPushErrorHandler = () -> {
+                        showOrHideProgressLoader(false, R.string.blank_string);
+                        Log.e(TAG, "Unable to push to DB " + weatherReport);
+                    };
+                    DBHelper.push(
+                            weatherReport,
+                            () -> {
+
+                                WeatherReportPreview weatherReportPreview =
+                                        new WeatherReportPreview(weatherReport.getId(), weatherReport);
+
+                                DBHelper.push(weatherReportPreview,
+                                        () -> {
+                                            Log.d(TAG, "Pushed to DB " + weatherReport);
+                                            Toast.makeText(requireContext(), R.string.weather_report_added, Toast.LENGTH_LONG)
+                                                    .show();
+                                            recreateThisFragment();
+                                        },
+                                        unableToPushErrorHandler);
+
+                            },
+                            unableToPushErrorHandler);
+                } else {
+                    Activity activity = getActivity();
+                    if (activity != null) {
+                        activity.runOnUiThread(() ->
+                                Toast.makeText(requireContext(), R.string.cannot_insert_without_location, Toast.LENGTH_LONG)
+                                        .show());
+                    }
+                }
+
+            }).start();
+        });
+
+        return viewBinding.getRoot();
+    }
+
+    private void recreateThisFragment() {
+        Activity activity = getActivity();
+        if (activity != null
+                && getParentFragmentManager().getFragments().contains(this) /*check the fragment has not changed for external reasons*/) {
+
+            // recreate this fragment
+            activity.runOnUiThread(() ->
+                    getParentFragmentManager()
+                            .beginTransaction()
+                            .replace(container.getId(), new NewReportFragment())
+                            .commitNow());
+        }
+    }
+
+    @Override
+    public void onStart() {
+
+        super.onStart();
+
+        // Force Locale to update (like system language)
+        Context context = requireContext();
+        getResources().updateConfiguration(context.getResources().getConfiguration(), context.getResources().getDisplayMetrics());
 
         showOrHideProgressLoader(true, R.string.waiting_for_location);
 
@@ -155,10 +268,11 @@ public class NewReportFragment extends Fragment {
 
                                                 // Weather icon setter
                                                 final Runnable weatherIconSetter = () -> new Thread(() -> {
+
                                                     String currentSelectedWeatherConditionLocal = currentSelectedWeatherCondition.get();
                                                     try {
                                                         if (currentSelectedWeatherConditionLocal == null) {
-                                                            currentSelectedWeatherConditionLocal = ResourceHelper.getResString(R.string.WEATHER800);
+                                                            currentSelectedWeatherConditionLocal = getString(R.string.WEATHER800);
                                                         }
                                                         InputStream iconIS = new URL(WeatherCondition
                                                                 .getIconUrlForDescription(currentSelectedWeatherConditionLocal, cityMatchingCurrentUserPosition))
@@ -168,9 +282,14 @@ public class NewReportFragment extends Fragment {
                                                         Utility.runOnUiThread(
                                                                 activity_,
                                                                 () -> viewBinding.weatherConditionIcon.setImageDrawable(weatherIcon));
+
                                                     } catch (NullPointerException | IOException e) {
                                                         Log.e(TAG, "Error getting icon for weather condition \""
                                                                 + currentSelectedWeatherConditionLocal + "\"", e);
+                                                    } catch (NoSuchElementException noSuchElementException) {
+                                                        // Exception due to delay for update Locale settings (e.g., if the user change the system language while using the system)
+                                                        Log.e(TAG, "Errors with translations. Recreating this fragment.");
+                                                        recreateThisFragment();
                                                     }
                                                 }).start();
                                                 weatherIconSetter.run();
@@ -179,7 +298,7 @@ public class NewReportFragment extends Fragment {
                                                 ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(
                                                         activity_, android.R.layout.simple_spinner_item, WeatherCondition.getWeatherDescriptions());
                                                 arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                                                final int spinnerPosition_sunny = arrayAdapter.getPosition(ResourceHelper.getResString(R.string.WEATHER800)); // clear sky
+                                                final int spinnerPosition_sunny = arrayAdapter.getPosition(getString(R.string.WEATHER800)); // clear sky
                                                 viewBinding.weatherConditionSpinner.setAdapter(arrayAdapter);
                                                 viewBinding.weatherConditionSpinner.setSelection(spinnerPosition_sunny);
                                                 viewBinding.weatherConditionSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -222,82 +341,6 @@ public class NewReportFragment extends Fragment {
             Log.i(TAG, "Missing permissions for location.");
         }
 
-        // Get picture from other fragment
-        final ImagesHelper.SerializableBitmap[] serializableBitmaps = new ImagesHelper.SerializableBitmap[1];   // array to make it final
-        assert TakeAPhotoFragment.CAPTURED_PHOTO_REQUEST_KEY != null;
-        requireActivity().getSupportFragmentManager()
-                .setFragmentResultListener(TakeAPhotoFragment.CAPTURED_PHOTO_REQUEST_KEY, this,
-                        (requestKey, bundle) -> {
-                            Serializable capturedPictureObj = bundle.getSerializable(TakeAPhotoFragment.CAPTURED_PHOTO_BUNDLE_KEY);
-                            if (capturedPictureObj instanceof ImagesHelper.SerializableBitmap) {
-                                serializableBitmaps[0] = (ImagesHelper.SerializableBitmap) capturedPictureObj;
-                            }
-                        });
-
-        // Insertion button
-        viewBinding.insertNewReportButton.setOnClickListener(view_ -> {
-
-            showOrHideProgressLoader(true, R.string.loading);
-
-            new Thread(() -> {
-
-                if (cityMatchingCurrentUserPosition != null) {
-                    WeatherCondition wcToSaveOnDb = Objects.requireNonNull(
-                            WeatherCondition.getInstanceForDescription(
-                                    (String) viewBinding.weatherConditionSpinner.getSelectedItem(), cityMatchingCurrentUserPosition));
-                    WeatherReport weatherReport = new WeatherReport(
-                            Authentication.getCurrentlySignedInUserOrNull(requireContext()).getUserId(),
-                            cityMatchingCurrentUserPosition,
-                            new Coordinates(latitude, longitude),
-                            wcToSaveOnDb,
-                            serializableBitmaps[0]);
-                    Runnable unableToPushErrorHandler = () -> {
-                        showOrHideProgressLoader(false, R.string.blank_string);
-                        Log.e(TAG, "Unable to push to DB " + weatherReport);
-                    };
-                    DBHelper.push(
-                            weatherReport,
-                            () -> {
-
-                                WeatherReportPreview weatherReportPreview =
-                                        new WeatherReportPreview(weatherReport.getId(), weatherReport);
-
-                                DBHelper.push(weatherReportPreview,
-                                        () -> {
-                                            Log.d(TAG, "Pushed to DB " + weatherReport);
-                                            Toast.makeText(requireContext(), R.string.weather_report_added, Toast.LENGTH_LONG)
-                                                    .show();
-
-                                            Activity activity = getActivity();
-                                            if (activity != null
-                                                    && getParentFragmentManager().getFragments().contains(this) /*check the fragment has not changed for external reasons*/) {
-
-                                                // recreate this fragment
-                                                activity.runOnUiThread(() ->
-                                                        getParentFragmentManager()
-                                                                .beginTransaction()
-                                                                .replace(container.getId(), new NewReportFragment())
-                                                                .commitNow());
-                                            }
-
-                                        },
-                                        unableToPushErrorHandler);
-
-                            },
-                            unableToPushErrorHandler);
-                } else {
-                    Activity activity = getActivity();
-                    if (activity != null) {
-                        activity.runOnUiThread(() ->
-                                Toast.makeText(requireContext(), R.string.cannot_insert_without_location, Toast.LENGTH_LONG)
-                                        .show());
-                    }
-                }
-
-            }).start();
-        });
-
-        return viewBinding.getRoot();
     }
 
     /**

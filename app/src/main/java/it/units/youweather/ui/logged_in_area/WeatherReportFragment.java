@@ -53,7 +53,7 @@ public class WeatherReportFragment extends Fragment {
     private WeatherReport weatherReport;
     private FragmentWeatherReportBinding viewBinding;
 
-    private WeatherReportFragment() {
+    public WeatherReportFragment() {
     } // Required empty public constructor
 
     /**
