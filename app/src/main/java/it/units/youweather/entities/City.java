@@ -4,9 +4,13 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.google.firebase.database.Exclude;
+
 import java.io.Serializable;
 import java.util.Calendar;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -181,6 +185,31 @@ public class City implements Serializable {
         sunriseAndSunsetResetScheduler.shutdownNow();
     }
 
+    /**
+     * @return the locale-dependent name of this instance.
+     */
+    @Exclude // do not need to save extra property, because can be computed
+    public String getLocalName() {
+        return getLocaleNameForCityOrDefault(local_names, name);
+    }
+
+    /**
+     * @param local_names The {@link Map} of {@link Locale} names for a {@link City}
+     *                    (see {@link #local_names}).
+     * @return the locale-dependent name for the given {@link City}.
+     */
+    public static String getLocaleNameForCityOrDefault(@NonNull Map<String, String> local_names, @NonNull String defaultName) {
+        try {
+            return Objects.requireNonNull(local_names).get(Locale.getDefault().getLanguage());   // try to return the local name for the city
+        } catch (Exception e) {
+            Log.i(TAG, "Local name for city not found, will use " + defaultName);
+        }
+        return defaultName;
+    }
+
+    /**
+     * @return the locale-<strong>in</strong>dependent name of this instance.
+     */
     public String getName() {
         return name;
     }
@@ -232,7 +261,18 @@ public class City implements Serializable {
     @NonNull
     @Override
     public String toString() {
-        return name
+        return getLocalName()
+                + (country != null ? (", " + country) : "")
+                + (state != null ? (", " + state) : "");
+    }
+
+    /**
+     * Version of {@link Object#toString()} that does not depend
+     * on the {@link Locale} for the city name.
+     */
+    @NonNull
+    public String toStringLocaleIndependent() {
+        return getName()
                 + (country != null ? (", " + country) : "")
                 + (state != null ? (", " + state) : "");
     }

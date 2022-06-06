@@ -26,7 +26,9 @@ public abstract class Timing {
         Date date = new Date(secondsSinceEpoch);
         SimpleDateFormat sdf = new SimpleDateFormat("EEEE, d MMMM, yyyy HH:mm", Locale.getDefault());
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-        return sdf.format(date) + " UTC";
+        String formattedDate = sdf.format(date) + " UTC";
+        formattedDate = Character.toUpperCase(formattedDate.charAt(0)) + formattedDate.substring(1);
+        return formattedDate;
     }
 
     /**

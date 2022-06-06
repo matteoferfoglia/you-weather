@@ -1,5 +1,7 @@
 package it.units.youweather.entities.forecast_fields;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 
 import java.io.Serializable;
@@ -13,16 +15,24 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import it.units.youweather.R;
 import it.units.youweather.entities.City;
 import it.units.youweather.utils.ResourceHelper;
 import it.units.youweather.utils.Timing;
+import it.units.youweather.utils.functionals.Predicate;
+import it.units.youweather.utils.functionals.Supplier;
 
 /**
  * @author Matteo Ferfoglia
  */
 public class WeatherCondition implements Serializable {
+
+    /**
+     * TAG for logger.
+     */
+    private static final String TAG = WeatherCondition.class.getSimpleName();
 
     // See https://openweathermap.org/weather-conditions for description
 
@@ -48,7 +58,7 @@ public class WeatherCondition implements Serializable {
      * {@link DAY_NIGHT#initialLetter} of {@link DAY_NIGHT#NIGHT} for
      * a nightly one.
      */
-    private static final Map<String, WeatherCondition> weatherConditions = populateWeatherDescriptions();
+    private static Map<String, WeatherCondition> weatherConditions = populateWeatherDescriptions();
 
     /**
      * @return The {@link ArrayList} with the descriptions for aby weather conditions.
@@ -78,24 +88,40 @@ public class WeatherCondition implements Serializable {
 
         WeatherCondition[] instancesToReturn = new WeatherCondition[DAY_NIGHT.values().length];
 
-        Objects.requireNonNull(description);
+        AtomicInteger numOfAddedInstances = new AtomicInteger(0);
+        Runnable bodyOfThisMethod = () -> {
+            Objects.requireNonNull(description);
 
-        int numOfAddedInstance = 0;
-        for (WeatherCondition w : weatherConditions.values()) {
-            if (w.getDescription().equals(description)) {
-                if (numOfAddedInstance < instancesToReturn.length) {
-                    instancesToReturn[numOfAddedInstance++] = w;
-                } else {
-                    throw new IllegalStateException("More instances than expected");
+            numOfAddedInstances.set(0);
+            for (WeatherCondition w : weatherConditions.values()) {
+                if (w.getDescription().equals(description)) {
+                    if (numOfAddedInstances.get() < instancesToReturn.length) {
+                        instancesToReturn[numOfAddedInstances.getAndIncrement()] = w;
+                    } else {
+                        throw new IllegalStateException("More instances than expected");
+                    }
                 }
+            }
+        };
+
+        Predicate<Void> errorRetrievingTheCorrectInstance =
+                (Void) -> numOfAddedInstances.get() == 0;
+
+        bodyOfThisMethod.run();
+
+        if (errorRetrievingTheCorrectInstance.test(null)) {
+
+            // try to update fields (maybe the user changed the language of the system)
+            weatherConditions = populateWeatherDescriptions();
+            bodyOfThisMethod.run();
+
+            if (errorRetrievingTheCorrectInstance.test(null)) {
+                throw new NoSuchElementException("\"" + description + "\" not found");
             }
         }
 
-        if (numOfAddedInstance == 0) {
-            throw new NoSuchElementException("\"" + description + "\" not found");
-        } else {
-            return instancesToReturn;
-        }
+        // If here: instance found
+        return instancesToReturn;
     }
 
     /**
@@ -244,6 +270,10 @@ public class WeatherCondition implements Serializable {
         }
     }
 
+    public int getId() {
+        return id;
+    }
+
     /**
      * @param weatherDescription The {@link #description} for the weather.
      * @param city               The {@link City} for which the weather refers: it is used to
@@ -319,7 +349,29 @@ public class WeatherCondition implements Serializable {
     }
 
     public String getDescription() {
-        return description;
+        // Exploits the weatherConditions Map<> to get the Locale (translated) description
+        // for this instance, considering that the key of that map is built from the id
+        // of the instance and the initial letter of an enum value from DAY_NIGHT
+        // (the weatherConditions Map<> was created to get icons, which are different
+        // for the day and the night, while for this procedure we can arbitrarily choose
+        // day or night)
+        Supplier<WeatherCondition> dummyInstanceToGetTheTranslatedDescriptionSupplier = () ->
+                weatherConditions.get(id + DAY_NIGHT.DAY.initialLetter);
+
+        WeatherCondition dummyInstanceToGetTheTranslatedDescription =
+                dummyInstanceToGetTheTranslatedDescriptionSupplier.get();
+        if (dummyInstanceToGetTheTranslatedDescription == null) {
+
+            // Try to re-populate (maybe issues with translations)
+            weatherConditions = populateWeatherDescriptions();
+            dummyInstanceToGetTheTranslatedDescription =
+                    dummyInstanceToGetTheTranslatedDescriptionSupplier.get();
+            if (dummyInstanceToGetTheTranslatedDescription == null) {
+                Log.i(TAG, "Error in getting description, using this instance");
+                dummyInstanceToGetTheTranslatedDescription = this;
+            }
+        }
+        return dummyInstanceToGetTheTranslatedDescription.description;
     }
 
     public String getIcon() {
@@ -329,7 +381,7 @@ public class WeatherCondition implements Serializable {
     @NonNull
     @Override
     public String toString() {
-        return "WeatherCondition{" + "id=" + id + ", main=" + main + ", description=" + description + ", icon=" + icon + '}';
+        return "WeatherCondition{" + "id=" + id + ", main=" + main + ", description=" + getDescription() + ", icon=" + icon + '}';
     }
 
     enum WeatherMain {

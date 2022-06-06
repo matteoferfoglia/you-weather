@@ -4,8 +4,12 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.google.firebase.database.Exclude;
+
 import java.lang.reflect.Field;
 import java.util.Date;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 
 import it.units.youweather.entities.City;
@@ -40,9 +44,15 @@ public class WeatherReportPreview extends DBEntity {
     private volatile String weatherReportDetailsKey;
 
     /**
-     * The name of the location to which this instance refers to.
+     * The {@link java.util.Map} with all the {@link Locale}
+     * name for the location to which this instance refers to.
      */
-    private volatile String locationName;
+    private volatile Map<String, String> localeLocationNames;
+
+    /**
+     * The default name for location to which this instance refers to.
+     */
+    private volatile String locationDefaultName;
 
     /**
      * The property returned by {@link LoggedInUser#getUserId()} of the {@link LoggedInUser}
@@ -81,7 +91,8 @@ public class WeatherReportPreview extends DBEntity {
         this();
         this.weatherReportDetailsKey = Objects.requireNonNull(weatherReportDetailsKey);
         Objects.requireNonNull(weatherReport);
-        this.locationName = weatherReport.getCity().toString();
+        this.locationDefaultName = weatherReport.getCity().getName();
+        this.localeLocationNames = weatherReport.getCity().getLocal_names();
         this.reporterUserId = weatherReport.getReporterUserId();
         this.reportedTimeMillisSinceEpoch = weatherReport.getMillisecondsSinceEpoch();
         this.weatherCondition = weatherReport.getWeatherCondition();
@@ -97,8 +108,13 @@ public class WeatherReportPreview extends DBEntity {
         return weatherReportDetailsKey;
     }
 
+    @Exclude // this property can be computed and we do not need to save it
     public String getLocationName() {
-        return locationName;
+        return City.getLocaleNameForCityOrDefault(getLocaleLocationNames(), getLocationDefaultName());
+    }
+
+    public Map<String, String> getLocaleLocationNames() {
+        return localeLocationNames;
     }
 
     public long getReportedTimeMillisSinceEpoch() {
@@ -115,6 +131,10 @@ public class WeatherReportPreview extends DBEntity {
 
     public Coordinates getCoordinates() {
         return coordinates;
+    }
+
+    public String getLocationDefaultName() {
+        return locationDefaultName;
     }
 
     /**
@@ -177,7 +197,7 @@ public class WeatherReportPreview extends DBEntity {
         WeatherReportPreview that = (WeatherReportPreview) o;
         return reportedTimeMillisSinceEpoch == that.reportedTimeMillisSinceEpoch
                 && Objects.equals(weatherReportDetailsKey, that.weatherReportDetailsKey)
-                && Objects.equals(locationName, that.locationName)
+                && Objects.equals(localeLocationNames, that.localeLocationNames)
                 && Objects.equals(reporterUserId, that.reporterUserId)
                 && Objects.equals(location_time, that.location_time)
                 && Objects.equals(weatherCondition, that.weatherCondition)
@@ -187,7 +207,7 @@ public class WeatherReportPreview extends DBEntity {
     @Override
     public int hashCode() {
         return Objects.hash(
-                weatherReportDetailsKey, locationName, reporterUserId,
+                weatherReportDetailsKey, localeLocationNames, reporterUserId,
                 reportedTimeMillisSinceEpoch, location_time, weatherCondition, coordinates);
     }
 }
