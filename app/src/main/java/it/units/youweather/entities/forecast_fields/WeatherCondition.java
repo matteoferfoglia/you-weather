@@ -3,6 +3,9 @@ package it.units.youweather.entities.forecast_fields;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+import com.google.firebase.database.Exclude;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -241,6 +244,7 @@ public class WeatherCondition implements Serializable {
      * @throws NoSuchElementException if the icon is not available.
      */
     @NonNull
+    @Exclude
     public static String getDailyIconUrl(@NonNull String description) {
         return getIconURLFromDescription(description, DAY_NIGHT.DAY);
     }
@@ -255,11 +259,13 @@ public class WeatherCondition implements Serializable {
      * Like {@link #getDailyIconUrl(String)}, but for the night.
      */
     @NonNull
+    @Exclude
     public static String getNightlyIconUrl(@NonNull String description) {
         return getIconURLFromDescription(description, DAY_NIGHT.NIGHT);
     }
 
     @NonNull
+    @Exclude
     private String getIconForDayOrNight(DAY_NIGHT dayNight) {
         WeatherCondition storedInstance =
                 weatherConditions.get(id + Objects.requireNonNull(dayNight).getInitialLetter());
@@ -278,11 +284,51 @@ public class WeatherCondition implements Serializable {
      * @param weatherDescription The {@link #description} for the weather.
      * @param city               The {@link City} for which the weather refers: it is used to
      *                           detect sunrise and sunset times to get the correct icon.
+     * @return The instance of this class matching the given description, targeted for the
+     * given {@link City} (from which sunrise/sunset time are detected to deduce if now it
+     * is day or night, from which the correct instance detection depends).
+     */
+    @Nullable
+    @Exclude
+    public static WeatherCondition getInstanceForDescription(
+            @NonNull String weatherDescription, @NonNull City city) {
+
+        String iconUrlForDescription =
+                getIconUrlForDescription(Objects.requireNonNull(weatherDescription), city);
+
+        WeatherCondition[] instancesForDescription =
+                getInstancesForDescription(Objects.requireNonNull(weatherDescription));
+
+        for (WeatherCondition weatherCondition : instancesForDescription) {
+            if (iconUrlForDescription != null
+                    && weatherCondition.getIconUrl().equals(iconUrlForDescription)) {
+                return weatherCondition;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @param weatherDescription The {@link #description} for the weather.
+     * @param city               The {@link City} for which the weather refers: it is used to
+     *                           detect sunrise and sunset times to get the correct icon.
      * @return The URL (as {@link String}) for the given weather description.
      */
     public static String getIconUrlForDescription(
             @NonNull String weatherDescription, @NonNull City city) {
 
+        if (isDay(city)) {
+            return getDailyIconUrl(Objects.requireNonNull(weatherDescription));
+        } else {
+            return getNightlyIconUrl(Objects.requireNonNull(weatherDescription));
+        }
+    }
+
+    /**
+     * @return true if it is currently day at the given city, false if now it is night.
+     */
+    private static boolean isDay(@NonNull City city) {
         final int SECONDS_TO_MILLIS_FACTOR = 1_000;
         final long currentSecondsSinceEpoch = Timing.getMillisSinceEpoch() / SECONDS_TO_MILLIS_FACTOR;
         long sunriseAtCityInSecondsSinceEpoch = city.getSunriseUTCTimeInSecondsSinceEpochOrInvalidInitialization();
@@ -314,15 +360,8 @@ public class WeatherCondition implements Serializable {
 
         }
 
-        boolean isDay =
-                sunriseAtCityInSecondsSinceEpoch <= currentSecondsSinceEpoch
-                        && currentSecondsSinceEpoch <= sunsetAtCityInSecondsSinceEpoch;
-
-        if (isDay) {
-            return getDailyIconUrl(Objects.requireNonNull(weatherDescription));
-        } else {
-            return getNightlyIconUrl(Objects.requireNonNull(weatherDescription));
-        }
+        return sunriseAtCityInSecondsSinceEpoch <= currentSecondsSinceEpoch
+                && currentSecondsSinceEpoch <= sunsetAtCityInSecondsSinceEpoch;
     }
 
     private WeatherCondition() {

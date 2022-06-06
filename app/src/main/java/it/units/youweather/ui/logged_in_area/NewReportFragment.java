@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -241,11 +242,14 @@ public class NewReportFragment extends Fragment {
             new Thread(() -> {
 
                 if (cityMatchingCurrentUserPosition != null) {
+                    WeatherCondition wcToSaveOnDb = Objects.requireNonNull(
+                            WeatherCondition.getInstanceForDescription(
+                                    (String) viewBinding.weatherConditionSpinner.getSelectedItem(), cityMatchingCurrentUserPosition));
                     WeatherReport weatherReport = new WeatherReport(
                             Authentication.getCurrentlySignedInUserOrNull(requireContext()).getUserId(),
                             cityMatchingCurrentUserPosition,
                             new Coordinates(latitude, longitude),
-                            WeatherCondition.getInstancesForDescription((String) viewBinding.weatherConditionSpinner.getSelectedItem())[0],
+                            wcToSaveOnDb,
                             serializableBitmaps[0]);
                     Runnable unableToPushErrorHandler = () -> {
                         showOrHideProgressLoader(false, R.string.blank_string);
