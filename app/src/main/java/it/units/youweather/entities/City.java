@@ -76,7 +76,7 @@ public class City implements Serializable {
             // Schedules a thread to reset sunrise and sunset time at midnight
 
             Calendar lastMidnight = Calendar.getInstance();
-            lastMidnight.set(Calendar.HOUR, 0);
+            lastMidnight.set(Calendar.HOUR_OF_DAY, 0);
             lastMidnight.set(Calendar.MINUTE, 0);
             lastMidnight.set(Calendar.SECOND, 0);
             lastMidnight.set(Calendar.MILLISECOND, 0);
