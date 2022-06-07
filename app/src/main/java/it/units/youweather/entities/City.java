@@ -261,7 +261,8 @@ public class City implements Serializable {
     @NonNull
     @Override
     public String toString() {
-        return getLocalName()
+        String localName = getLocalName();
+        return (localName != null ? localName : name)
                 + (country != null ? (", " + country) : "")
                 + (state != null ? (", " + state) : "");
     }
