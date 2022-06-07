@@ -47,12 +47,20 @@ public abstract class Timing {
     }
 
     /**
+     * @param millisSinceEpoch Amount of milliseconds passed since Epoch.
+     * @return the {@link Date} for the given amount amount of milliseconds since Epoch.
+     */
+    public static Date getDateFromMillisSinceEpoch(long millisSinceEpoch) {
+        return new Date(millisSinceEpoch);
+    }
+
+    /**
      * @param millisSinceEpoch Milliseconds elapsed since Epoch.
      * @return The locale date-time (as {@link String}) obtained from the conversion
      * of the given parameter (milliseconds since epoch).
      */
     public static String convertMillisSinceEpochToLocale(long millisSinceEpoch) {
-        return SimpleDateFormat.getDateTimeInstance().format(new Date(millisSinceEpoch));
+        return SimpleDateFormat.getDateTimeInstance().format(getDateFromMillisSinceEpoch(millisSinceEpoch));
     }
 
     /**

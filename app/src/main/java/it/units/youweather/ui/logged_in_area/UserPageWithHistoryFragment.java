@@ -398,6 +398,20 @@ public class UserPageWithHistoryFragment extends Fragment {
                             Collections.sort(weatherReports, (a, b) -> (int) (a.getReportedTimeMillisSinceEpoch() - b.getReportedTimeMillisSinceEpoch()));
                             Log.i(TAG, retrievedWeatherReports.size() + " elements retrieved from the DB");
                             shownWeatherReports = new LinkedList<>(weatherReports);
+                            if (minDateFiltered != null) {
+                                for (WeatherReportPreview wrp : weatherReports) {
+                                    if (Timing.getDateFromMillisSinceEpoch(wrp.getReportedTimeMillisSinceEpoch()).compareTo(minDateFiltered) < 0) {
+                                        shownWeatherReports.remove(wrp);
+                                    }
+                                }
+                            }
+                            if (maxDateFiltered != null) {
+                                for (WeatherReportPreview wrp : weatherReports) {
+                                    if (Timing.getDateFromMillisSinceEpoch(wrp.getReportedTimeMillisSinceEpoch()).compareTo(maxDateFiltered) > 0) {
+                                        shownWeatherReports.remove(wrp);
+                                    }
+                                }
+                            }
                             sendDataToMapFragment();
                             populateReportHistoryTable();
                         },
