@@ -105,5 +105,4 @@
     <string name="blank_string" translatable="false" />
     <string name="unable_to_set_sunrise_and_sunset_coordinates_for_city">Unable to set coordinates for city</string>
 
-    <!-- TODO: missing translations -->
 </resources>

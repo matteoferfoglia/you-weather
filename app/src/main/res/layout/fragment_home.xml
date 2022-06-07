@@ -6,8 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".ui.logged_in_area.HomeFragment">
 
-    <!-- TODO : dimensions (search for "dp") should be moved to resources -->
-
     <LinearLayout
         android:id="@+id/home_header"
         android:layout_width="match_parent"
