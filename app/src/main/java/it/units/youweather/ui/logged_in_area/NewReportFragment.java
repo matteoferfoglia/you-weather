@@ -38,6 +38,7 @@ import it.units.youweather.entities.storage.WeatherReportPreview;
 import it.units.youweather.utils.ImagesHelper;
 import it.units.youweather.utils.LocationHelper;
 import it.units.youweather.utils.PermissionsHelper;
+import it.units.youweather.utils.SharedData;
 import it.units.youweather.utils.Stoppable;
 import it.units.youweather.utils.Utility;
 import it.units.youweather.utils.auth.Authentication;
@@ -81,6 +82,18 @@ public class NewReportFragment extends Fragment {
      * the activity.
      */
     private Stoppable locationListener;
+
+    /**
+     * The {@link String} description for the current selected
+     * {@link WeatherCondition} from the Spinner.
+     */
+    private AtomicReference<String> currentSelectedWeatherCondition;
+
+    /**
+     * Saves the previous id for the spinner of the weather condition.
+     */
+    private long oldIconIdInWeatherConditionSpinner = -1;
+
     private ViewGroup container;
 
     public NewReportFragment() {  // public no-args constructor
@@ -119,6 +132,8 @@ public class NewReportFragment extends Fragment {
 
         // Save the container for this fragment
         this.container = container;
+
+        viewBinding.weatherConditionIcon.setVisibility(View.INVISIBLE); // will become visible after setting the last known weather condition
 
         // Get picture from other fragment
         final ImagesHelper.SerializableBitmap[] serializableBitmaps = new ImagesHelper.SerializableBitmap[1];   // array to make it final
@@ -264,10 +279,22 @@ public class NewReportFragment extends Fragment {
                                                 cityMatchingCurrentUserPosition = cities[(int) cityIndex];
 
                                                 // Reference to the current selected weather condition
-                                                final AtomicReference<String> currentSelectedWeatherCondition = new AtomicReference<>(null);
+                                                currentSelectedWeatherCondition = new AtomicReference<>(null);
+                                                final AtomicBoolean lastKnownWeatherConditionSet = new AtomicBoolean(false);
 
                                                 // Weather icon setter
                                                 final Runnable weatherIconSetter = () -> new Thread(() -> {
+
+                                                    final int DELAY_RETRY_MILLIS = 50;
+                                                    final int MAX_NUM_OF_RETRIES = 50;
+                                                    int retryNum = 0;
+                                                    while (!lastKnownWeatherConditionSet.get() && retryNum++ < MAX_NUM_OF_RETRIES) {
+                                                        try {
+                                                            Thread.sleep(DELAY_RETRY_MILLIS);
+                                                        } catch (InterruptedException e) {
+                                                            Log.i(TAG, "Interrupted but not a problem", e);
+                                                        }
+                                                    }
 
                                                     String currentSelectedWeatherConditionLocal = currentSelectedWeatherCondition.get();
                                                     try {
@@ -281,7 +308,11 @@ public class NewReportFragment extends Fragment {
 
                                                         Utility.runOnUiThread(
                                                                 activity_,
-                                                                () -> viewBinding.weatherConditionIcon.setImageDrawable(weatherIcon));
+                                                                () -> {
+                                                                    viewBinding.weatherConditionIcon.setImageDrawable(weatherIcon);
+                                                                    viewBinding.weatherConditionIcon.setVisibility(View.VISIBLE);
+                                                                    viewBinding.progressLoaderWeatherIcon.setVisibility(View.INVISIBLE);
+                                                                });
 
                                                     } catch (NullPointerException | IOException e) {
                                                         Log.e(TAG, "Error getting icon for weather condition \""
@@ -298,14 +329,31 @@ public class NewReportFragment extends Fragment {
                                                 ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(
                                                         activity_, android.R.layout.simple_spinner_item, WeatherCondition.getWeatherDescriptions());
                                                 arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                                                final int spinnerPosition_sunny = arrayAdapter.getPosition(getString(R.string.WEATHER800)); // clear sky
                                                 viewBinding.weatherConditionSpinner.setAdapter(arrayAdapter);
-                                                viewBinding.weatherConditionSpinner.setSelection(spinnerPosition_sunny);
+                                                String lastKnownChosenWeatherCondition = SharedData.getValue(SharedData.SharedDataName.NEW_REPORT_LAST_INSERTED_WEATHER_CONDITION);
+                                                int lastKnownSpinnerPosition = arrayAdapter.getPosition(lastKnownChosenWeatherCondition);
+                                                currentSelectedWeatherCondition.set(lastKnownChosenWeatherCondition);
+                                                if (lastKnownSpinnerPosition >= 0) {
+                                                    viewBinding.weatherConditionSpinner.setSelection(lastKnownSpinnerPosition);
+                                                } else {
+                                                    final int spinnerPosition_sunny = arrayAdapter.getPosition(getString(R.string.WEATHER800)); // clear sky
+                                                    viewBinding.weatherConditionSpinner.setSelection(spinnerPosition_sunny);
+                                                }
+                                                lastKnownWeatherConditionSet.set(true);
                                                 viewBinding.weatherConditionSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                                                     @Override
                                                     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                                                        currentSelectedWeatherCondition.set(arrayAdapter.getItem((int) id));
-                                                        weatherIconSetter.run();
+                                                        if (id != oldIconIdInWeatherConditionSpinner) {
+                                                            viewBinding.progressLoaderWeatherIcon.setVisibility(View.VISIBLE);
+                                                            viewBinding.weatherConditionIcon.setVisibility(View.INVISIBLE);
+
+                                                            String selectedWeatherCondition = arrayAdapter.getItem((int) id);
+                                                            currentSelectedWeatherCondition.set(selectedWeatherCondition);
+                                                            weatherIconSetter.run();
+
+                                                            SharedData.setValue(SharedData.SharedDataName.NEW_REPORT_LAST_INSERTED_WEATHER_CONDITION, selectedWeatherCondition);
+                                                            oldIconIdInWeatherConditionSpinner = id;
+                                                        }
                                                     }
 
                                                     @Override

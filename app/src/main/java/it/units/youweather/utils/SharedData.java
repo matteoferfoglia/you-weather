@@ -55,6 +55,13 @@ public abstract class SharedData {
          * Saves the user's last known position.
          */
         USER_LAST_KNOWN_POSITION,
+
+        /**
+         * In fragment {@link it.units.youweather.ui.logged_in_area.NewReportFragment},
+         * saves the last inserted {@link it.units.youweather.entities.forecast_fields.WeatherCondition}
+         * from the spinner.
+         */
+        NEW_REPORT_LAST_INSERTED_WEATHER_CONDITION,
     }
 
     /**
